@@ -56,6 +56,7 @@
 #source('ROM.dart');
 #source('Tile.dart');
 #source('Scale.dart');
+#source('SourceDataLine.dart');
 #source('UI.dart');
 #source('Util.dart');
 
