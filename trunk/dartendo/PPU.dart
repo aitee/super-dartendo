@@ -36,7 +36,7 @@ class PPU {
   int _vramTmpAddress = 0;
   int _vramBufferedReadValue = 0;
   bool _firstWrite = true;    // VRAM/Scroll Hi/Lo latch
-  List<int> _vramMirrorTable = 0; // Mirroring Lookup Table.
+  List<int> _vramMirrorTable; // Mirroring Lookup Table.
 
 
   // SPR-RAM I/O:
@@ -189,7 +189,7 @@ class PPU {
     }
 
     // Initialize mirroring lookup table:
-    _vramMirrorTable = new List<int>(0x8000);
+    _vramMirrorTable = Util.newIntList(0x8000, 0);
     for (int i = 0; i < 0x8000; i++) {
       _vramMirrorTable[i] = i;
     }
