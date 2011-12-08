@@ -13,32 +13,32 @@ class Input {
     // Input handler
     input.on.change.add((html.Event event) {
       print("change");
-      unwrapDomObject(event).preventDefault();
+      htmlimpl.unwrapDomObject(event).preventDefault();
       loadFile(input.files.item(0));
     });
     
     // Add dragging events
     content.on.dragEnter.add((html.Event event) {
       print("dragEnter");
-      unwrapDomObject(event).preventDefault();
+      htmlimpl.unwrapDomObject(event).preventDefault();
       content.style.border = '4px solid #b1ecb3';
       return false;
     });
   
     content.on.dragOver.add((html.Event event) {
-      unwrapDomObject(event).preventDefault();
+      htmlimpl.unwrapDomObject(event).preventDefault();
       return false;
     });
   
     content.on.dragLeave.add((html.Event event) {
-      unwrapDomObject(event).preventDefault();
+      htmlimpl.unwrapDomObject(event).preventDefault();
       return false;
     });
   
     content.on.drop.add((html.Event event) {
-      unwrapDomObject(event).preventDefault();
+      htmlimpl.unwrapDomObject(event).preventDefault();
       content.style.border = '4px solid transparent';
-      loadFile(unwrapDomObject(event).dataTransfer.files[0]);
+      loadFile(htmlimpl.unwrapDomObject(event).dataTransfer.files[0]);
       return false;
     });
   }
@@ -49,7 +49,7 @@ class Input {
     html.document.query('#file-content').style.border = "1px solid black";
 
     FileReader reader = new FileReader();
-    reader.readAsText(unwrapDomObject(file));
+    reader.readAsText(htmlimpl.unwrapDomObject(file));
 
     (handler() {
       print(reader.readyState);

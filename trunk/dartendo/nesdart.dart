@@ -1,6 +1,6 @@
-#import('dart:dom');
+#import('dart:htmlimpl', prefix:'htmlimpl');
 #import('dart:html', prefix:'html');
-#import('dart:htmlimpl');
+#import('dart:dom');
 
 #source('ByteBuffer.dart');
 #source('Util.dart');
