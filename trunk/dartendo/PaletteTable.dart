@@ -10,7 +10,10 @@ class PaletteTable {
     }
     
     int currentEmph = -1;
-    int currentHue, currentSaturation, currentLightness, currentContrast;
+    int currentHue = 0;
+    int currentSaturation = 0;
+    int currentLightness = 0;
+    int currentContrast = 0;
 
 
     // Load the NTSC palette:

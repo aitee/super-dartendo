@@ -111,22 +111,6 @@
         return vScreen;
     }
 
-     BufferView getPatternView() {
-        return null;
-    }
-
-     BufferView getSprPalView() {
-        return null;
-    }
-
-     BufferView getNameTableView() {
-        return null;
-    }
-
-     BufferView getImgPalView() {
-        return null;
-    }
-
      String getWindowCaption() {
         return "";
     }

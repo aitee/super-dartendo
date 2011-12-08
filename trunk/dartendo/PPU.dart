@@ -323,7 +323,7 @@ class PPU {
 
     // Make sure everything is rendered:
     if (lastRenderedScanline < 239) {
-      renderFramePartially(nes.gui.getScreenView().getBuffer(), lastRenderedScanline + 1, 240 - lastRenderedScanline);
+      renderFramePartially(buffer, lastRenderedScanline + 1, 240 - lastRenderedScanline);
     }
 
     endFrame();
@@ -425,8 +425,6 @@ class PPU {
   }
 
   void startFrame() {
-    List<int> buffer = nes.getGui().getScreenView().getBuffer();
-
     // Set background color:
     int bgColor = 0;
 
@@ -476,7 +474,6 @@ class PPU {
   }
 
   void endFrame() {
-    List<int> buffer = nes.getGui().getScreenView().getBuffer();
 
     // Draw spr#0 hit coordinates:
     if (_showSpr0Hit) {
@@ -905,30 +902,6 @@ class PPU {
       renderSpritesPartially(startScan, scanCount, false);
     }
 
-    BufferView screen = nes.getGui().getScreenView();
-    if (screen.scalingEnabled() && /*!screen.useHWScaling() &&*/ !requestRenderAll) {
-      // Check which scanlines have changed, to try to
-      // speed up scaling:
-      int j, jmax;
-      if (startScan + scanCount > 240) {
-        scanCount = 240 - startScan;
-      }
-      for (int i = startScan; i < startScan + scanCount; i++) {
-        _scanlineChanged[i] = false;
-        _si = i << 8;
-        jmax = _si + 256;
-        for (j = _si; j < jmax; j++) {
-          if (buffer[j] != _oldFrame[j]) {
-            _scanlineChanged[i] = true;
-            break;
-          }
-          _oldFrame[j] = buffer[j];
-        }
-        for (int k = j; k < jmax; ++k)
-          _oldFrame[k] = buffer[k];
-      }
-    }
-
     _validTileData = false;
   }
 
@@ -1022,7 +995,6 @@ class PPU {
   }
 
   void renderSpritesPartially(int startscan, int scancount, bool bgPri) {
-    buffer = nes.getGui().getScreenView().getBuffer();
     if (f_spVisibility == 1) {
       int sprT1, sprT2;
 
@@ -1211,99 +1183,6 @@ class PPU {
       }
     }
     return false;
-  }
-
-  // Renders the contents of the
-  // pattern table into an image.
-  void renderPattern() {
-    BufferView scr = nes.getGui().getPatternView();
-    List<int> buffer = scr.getBuffer();
-
-    int tIndex = 0;
-    for (int j = 0; j < 2; j++) {
-      for (int y = 0; y < 16; y++) {
-        for (int x = 0; x < 16; x++) {
-          ptTile[tIndex].renderSimple(j * 128 + x * 8, y * 8, buffer, 0, _sprPalette);
-          tIndex++;
-        }
-      }
-    }
-    nes.getGui().getPatternView().imageReady(false);
-  }
-
-  void renderNameTables() {
-    List<int> buffer = nes.getGui().getNameTableView().getBuffer();
-    if (f_bgPatternTable == 0) {
-      _baseTile = 0;
-    } else {
-      _baseTile = 256;
-    }
-
-    int ntx_max = 2;
-    int nty_max = 2;
-
-    if (_currentMirroring == ROM.HORIZONTAL_MIRRORING) {
-      ntx_max = 1;
-    } else if (_currentMirroring == ROM.VERTICAL_MIRRORING) {
-      nty_max = 1;
-    }
-
-    for (int nty = 0; nty < nty_max; nty++) {
-      for (int ntx = 0; ntx < ntx_max; ntx++) {
-        int nt = _ntable1[nty * 2 + ntx];
-        int x = ntx * 128;
-        int y = nty * 120;
-
-        // Render nametable:
-        for (int ty = 0; ty < 30; ty++) {
-          for (int tx = 0; tx < 32; tx++) {
-            //ptTile[baseTile+_nameTable[nt].getTileIndex(tx,ty)].render(0,0,4,4,x+tx*4,y+ty*4,buffer,_nameTable[nt].getAttrib(tx,ty),imgPalette,false,false,0,dummyPixPriTable);
-            ptTile[_baseTile + _nameTable[nt].getTileIndex(tx, ty)].renderSmall(x + tx * 4, y + ty * 4, buffer, _nameTable[nt].getAttrib(tx, ty), _imgPalette);
-          }
-        }
-      }
-    }
-    
-    if (_currentMirroring == ROM.HORIZONTAL_MIRRORING) {
-      // double horizontally:
-      for (int y = 0; y < 240; y++) {
-        for (int x = 0; x < 128; x++) {
-          buffer[(y << 8) + 128 + x] = buffer[(y << 8) + x];
-        }
-      }
-    } else if (_currentMirroring == ROM.VERTICAL_MIRRORING) {
-      // double vertically:
-      for (int y = 0; y < 120; y++) {
-        for (int x = 0; x < 256; x++) {
-          buffer[(y << 8) + 0x7800 + x] = buffer[(y << 8) + x];
-        }
-      }
-    }
-
-    nes.getGui().getNameTableView().imageReady(false);
-  }
-
-  void renderPalettes() {
-    List<int> buffer = nes.getGui().getImgPalView().getBuffer();
-    for (int i = 0; i < 16; i++) {
-      for (int y = 0; y < 16; y++) {
-        for (int x = 0; x < 16; x++) {
-          buffer[y * 256 + i * 16 + x] = _imgPalette[i];
-        }
-      }
-    }
-
-    buffer = nes.getGui().getSprPalView().getBuffer();
-    for (int i = 0; i < 16; i++) {
-      for (int y = 0; y < 16; y++) {
-        for (int x = 0; x < 16; x++) {
-          buffer[y * 256 + i * 16 + x] = _sprPalette[i];
-        }
-      }
-    }
-
-    nes.getGui().getImgPalView().imageReady(false);
-    nes.getGui().getSprPalView().imageReady(false);
   }
 
   // This will write to PPU memory, and

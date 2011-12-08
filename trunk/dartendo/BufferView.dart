@@ -15,10 +15,6 @@ class BufferView {
      int width = 0;
      int height = 0;
      
-     List<int> pix;
-     List<int> pix_scaled;
-     int scaleMode = 0;
-     
      // FPS counter variables:
      bool showFPS = false;
      int prevFrameTime = 0;
@@ -35,14 +31,12 @@ class BufferView {
        this.nes = nes;
        this.width = width;
        this.height = height;
-       this.scaleMode = -1;
     }
 
      void setScaleMode(int newMode) {
        if (newMode != SCALE_NONE) {
        print('SCALE NOT SUPPORTED, USING NO SCALE');
        }
-       scaleMode = SCALE_NONE;
     }
 
      void init() {
@@ -73,20 +67,6 @@ class BufferView {
       
      }
      
-     List<int> getBuffer() => pix;
-
-     bool scalingEnabled() {
-        return scaleMode != SCALE_NONE;
-    }
-
-     int getScaleMode() {
-        return scaleMode;
-    }
-
-     bool useNormalScaling() {
-        return (scaleMode == SCALE_NORMAL);
-    }
-
      void paint() {
 
         // Skip if not needed:
@@ -97,15 +77,19 @@ class BufferView {
         //JJG: TODO: DRAW NES HERE
         
         //print('Getting imagedata');
-        var arr = context.getImageData(0,0,150,50);
+        var arr = context.getImageData(0,0,256,240);
         var data = arr.data;
         //print(data.length);
-        for (var i=0;i<150*50*4;) {
+        for (var i=0;i<256*240*4;) {
           //print('Setting pixels');
-          data[i++] = 0; // r
-          data[i++] = 0; // g
-          data[i++] = 0; // b
-          data[i++] = 255; // a
+          data[i] = nes.ppu.buffer[i]; // r
+          i++;
+          data[i] = nes.ppu.buffer[i]; // g
+          i++;
+          data[i] = nes.ppu.buffer[i]; // b
+          i++;
+          data[i] = 255; // a
+          i++;
         }
         //print('Blitting imagedata');
         var a = 1;
