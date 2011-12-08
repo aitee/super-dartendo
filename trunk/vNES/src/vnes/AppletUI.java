@@ -67,7 +67,7 @@ public class AppletUI implements UI {
         vScreen.addKeyListener(kbJoy2);
     }
 
-    public void imageReady(boolean skipFrame) {
+    public void imageReady() {
 
         // Sound stuff:
         int tmp = nes.getPapu().bufferIndex;

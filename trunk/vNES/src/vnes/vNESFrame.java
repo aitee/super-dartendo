@@ -101,9 +101,10 @@ public class vNESFrame extends javax.swing.JFrame implements Runnable {
 
       public void run() {
         vNESFrame frame = new vNESFrame();
-    frame.setVisible(true);
-    frame.init();
-    frame.start();
+        frame.setVisible(true);
+        frame.init();
+        frame.start();
+        System.out.println("FRAME INIT COMPLETE");
       }
     });
   }
@@ -200,6 +201,16 @@ public class vNESFrame extends javax.swing.JFrame implements Runnable {
         }
         
         System.out.println("ROM LOADED");
+        
+        while(true) {
+          nes.getCpu().active = true;
+ 		nes.getCpu().initRun();
+                while (!nes.getCpu().stopRunning) {
+                  nes.getCpu().emulate();
+                }
+                nes.getCpu().finishRun();
+          nes.getCpu().active = false;
+       }
 
     }
 

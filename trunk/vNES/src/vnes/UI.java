@@ -39,7 +39,7 @@ public interface UI {
 
     public HiResTimer getTimer();
 
-    public void imageReady(boolean skipFrame);
+    public void imageReady();
 
     public void init(boolean showGui);
 

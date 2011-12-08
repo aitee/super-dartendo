@@ -23,6 +23,7 @@ public class ScreenView extends BufferView {
 
     private MyMouseAdapter mouse;
     private boolean notifyImageReady;
+    public boolean frameFinished;
 
     public ScreenView(NES nes, int width, int height) {
         super(nes, width, height);
@@ -82,11 +83,17 @@ public class ScreenView extends BufferView {
 
         // Draw image first:
         super.imageReady(skipFrame);
+        
+        frameFinished = true;
+    }
+    
+    public void finishFrame() {
+      if(!frameFinished) return;
+      frameFinished=false;
 
         // Notify GUI, so it can write the sound buffer:
         if (notifyImageReady) {
-            nes.getGui().imageReady(skipFrame);
+            nes.getGui().imageReady();
         }
-
     }
 }

@@ -22,11 +22,7 @@ emulator. During emulation, this is run in a loop that decodes and executes
 instructions and invokes emulation of the PPU and pAPU.
 */
 
-public final class CPU implements Runnable{
-
-
-	// Thread:
-	Thread myThread;
+public final class CPU {
 
 	// References to other parts of NES :
 	public NES nes;
@@ -67,11 +63,51 @@ public final class CPU implements Runnable{
 	public int cyclesToHalt;
 	public boolean stopRunning;
 	public boolean crash;
+        
+        public boolean active;
 
+		// References to other parts of NES:
+		PPU 		 ppu  ;
+		PAPU 		 papu ;
+
+
+		// Registers:
+		int REG_ACC 	;
+		int REG_X 		;
+		int REG_Y 		;
+		int REG_STATUS 	;
+		int REG_PC 		;
+
+		// Status flags:
+		int F_CARRY 	;
+		int F_ZERO 	;
+		int F_INTERRUPT ;
+		int F_DECIMAL 	;
+		int F_NOTUSED   ;
+		int F_BRK 	;
+		int F_OVERFLOW 	;
+		int F_SIGN 	;
+
+
+		// Misc. variables
+		int opinf;
+		int opaddr;
+		int addrMode;
+		int addr;
+		int palCnt;
+		int cycleCount;
+		int cycleAdd;
+		int temp;
+		int add;
+
+		boolean palEmu ;
+		boolean emulateSound ;
+		boolean asApplet ;
 
 	// Constructor:
 	public CPU(NES nes){
 		this.nes = nes;
+                active = false;
 	}
 
 	// Initialize:
@@ -92,6 +128,47 @@ public final class CPU implements Runnable{
 		F_INTERRUPT_NEW = 1;
 		irqRequested = false;
 
+		// NES Memory
+		// (when memory mappers switch ROM banks
+		// this will be written to, no need to
+		// update reference):
+		mem = nes.cpuMem.mem;
+
+		// References to other parts of NES:
+		mmap = nes.memMapper;
+		 		 ppu  = nes.ppu;
+		 		 papu = nes.papu;
+
+
+		// Registers:
+		 REG_ACC 	= REG_ACC_NEW;
+		 REG_X 		= REG_X_NEW;
+		 REG_Y 		= REG_Y_NEW;
+		 REG_STATUS 	= REG_STATUS_NEW;
+		 REG_PC 		= REG_PC_NEW;
+
+		// Status flags:
+		 F_CARRY 	= F_CARRY_NEW;
+		 F_ZERO 	= (F_ZERO_NEW==0?1:0);
+		 F_INTERRUPT = F_INTERRUPT_NEW;
+		 F_DECIMAL 	= F_DECIMAL_NEW;
+		 F_NOTUSED   = F_NOTUSED_NEW;
+		 F_BRK 	= F_BRK_NEW;
+		 F_OVERFLOW 	= F_OVERFLOW_NEW;
+		 F_SIGN 	= F_SIGN_NEW;
+
+
+		// Misc. variables
+		 opinf=0;
+		 opaddr=0;
+		 addrMode=0;
+		 addr=0;
+		 palCnt=0;
+
+		 palEmu = Globals.palEmulation;
+		 emulateSound = Globals.enableSound;
+		 asApplet = Globals.appletMode;
+		stopRunning = false;
 	}
 
 	public void stateLoad(ByteBuffer buf){
@@ -171,40 +248,24 @@ public final class CPU implements Runnable{
 	}
 
 	public synchronized void beginExecution(){
-
-		if(myThread!=null && myThread.isAlive()){
-			endExecution();
-		}
-
-		myThread = new Thread(this);
-		myThread.start();
-		myThread.setPriority(Thread.MIN_PRIORITY);
-
 	}
 
 	public synchronized void endExecution(){
-		//System.out.println("* Attempting to stop CPU thread.");
-		if(myThread!=null && myThread.isAlive()){
-			try{
-				stopRunning = true;
-				myThread.join();
-
-			}catch(InterruptedException ie){
-				//System.out.println("** Unable to stop CPU thread!");
-				ie.printStackTrace();
-			}
-		}else{
-			//System.out.println("* CPU Thread was not alive.");
-		}
+		stopRunning = true;
 	}
 
 	public boolean isRunning(){
-		return (myThread!=null && myThread.isAlive());
+		return active;
 	}
 
 	public void run(){
+          /*
 		initRun();
-		emulate();
+                while (!stopRunning) {
+                  emulate();
+                }
+                finishRun();
+                */
 	}
 
 	public synchronized void initRun(){
@@ -215,56 +276,10 @@ public final class CPU implements Runnable{
 	public void emulate(){
 
 
-		// NES Memory
-		// (when memory mappers switch ROM banks
-		// this will be written to, no need to
-		// update reference):
-		mem = nes.cpuMem.mem;
-
-		// References to other parts of NES:
-		MemoryMapper mmap = nes.memMapper;
-		PPU 		 ppu  = nes.ppu;
-		PAPU 		 papu = nes.papu;
 
 
-		// Registers:
-		int REG_ACC 	= REG_ACC_NEW;
-		int REG_X 		= REG_X_NEW;
-		int REG_Y 		= REG_Y_NEW;
-		int REG_STATUS 	= REG_STATUS_NEW;
-		int REG_PC 		= REG_PC_NEW;
 
-		// Status flags:
-		int F_CARRY 	= F_CARRY_NEW;
-		int F_ZERO 	= (F_ZERO_NEW==0?1:0);
-		int F_INTERRUPT = F_INTERRUPT_NEW;
-		int F_DECIMAL 	= F_DECIMAL_NEW;
-		int F_NOTUSED   = F_NOTUSED_NEW;
-		int F_BRK 	= F_BRK_NEW;
-		int F_OVERFLOW 	= F_OVERFLOW_NEW;
-		int F_SIGN 	= F_SIGN_NEW;
-
-
-		// Misc. variables
-		int opinf=0;
-		int opaddr=0;
-		int addrMode=0;
-		int addr=0;
-		int palCnt=0;
-		int cycleCount;
-		int cycleAdd;
-		int temp;
-		int add;
-
-		boolean palEmu = Globals.palEmulation;
-		boolean emulateSound = Globals.enableSound;
-		boolean asApplet = Globals.appletMode;
-		stopRunning = false;
-
-		while(true){
-
-
-			if(stopRunning)break;
+			if(stopRunning)return;
 
 			// Check interrupts:
 			if(irqRequested){
@@ -1287,9 +1302,12 @@ public final class CPU implements Runnable{
 			if(emulateSound){
 				papu.clockFrameCounter(cycleCount);
 			}
+                        
+                        nes.getGui().getScreenView().finishFrame();
 			
-		} // End of run loop.
-
+	}
+        
+        public void finishRun() {
 		// Save registers:
 		REG_ACC_NEW 	= REG_ACC;
 		REG_X_NEW 	= REG_X;
@@ -1306,8 +1324,7 @@ public final class CPU implements Runnable{
 		F_NOTUSED_NEW   = F_NOTUSED;
 		F_OVERFLOW_NEW 	= F_OVERFLOW;
 		F_SIGN_NEW 	= F_SIGN;
-
-	}
+        }
 
 	public int load(int addr){
 		return addr<0x2000 ? mem[addr&0x7FF] : mmap.load(addr);

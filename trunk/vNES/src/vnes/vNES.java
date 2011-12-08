@@ -20,7 +20,7 @@ package vnes;
 import java.awt.*;
 import javax.swing.JPanel;
 
-public class vNES extends JPanel implements Runnable {
+public class vNES extends JPanel {
 
     boolean scale;
     boolean scanlines;
@@ -91,8 +91,7 @@ public class vNES extends JPanel implements Runnable {
 
     public void start() {
 
-        Thread t = new Thread(this);
-        t.start();
+      run();
 
     }
 

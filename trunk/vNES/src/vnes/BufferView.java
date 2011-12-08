@@ -206,6 +206,10 @@ public class BufferView extends JPanel {
         }
 
     }
+    
+    public void finishFrame() {
+      
+    }
 
     public Image getImage() {
         return img;
