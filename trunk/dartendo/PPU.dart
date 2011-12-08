@@ -205,24 +205,23 @@ class PPU {
     for (int i = 0; i < _oldFrame.length; i++) {
       _oldFrame[i] = -1;
     }
+    
+    print('[PPU] initialized');
   }
 
   // Sets Nametable mirroring.
   void setMirroring(int mirroring) {
-    if (mirroring == _currentMirroring) {
+    if (mirroring == _currentMirroring)
       return;
-    }
 
     _currentMirroring = mirroring;
     triggerRendering();
 
     // Remove mirroring:
-    if (_vramMirrorTable == null) {
+    if (_vramMirrorTable == null)
       _vramMirrorTable = Util.newIntList(0x8000, 0);
-    }
-    for (int i = 0; i < 0x8000; i++) {
+    for (int i = 0; i < 0x8000; i++)
       _vramMirrorTable[i] = i;
-    }
 
     // Palette mirroring:
     defineMirrorRegion(0x3f20, 0x3f00, 0x20);
@@ -285,9 +284,8 @@ class PPU {
   // Assumes the regions don't overlap.
   // The 'to' region is the region that is physically in memory.
   void defineMirrorRegion(int fromStart, int toStart, int size) {
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++)
       _vramMirrorTable[fromStart + i] = toStart + i;
-    }
   }
 
   // Emulates PPU cycles
@@ -316,19 +314,18 @@ class PPU {
   }
 
   void startVBlank() {
+    print('[PPU] VBLANK');
     // Start VBlank period:
     // Do VBlank.
-    if (Globals.debug) {
+    if (Globals.debug)
       Globals.println("VBlank occurs!");
-    }
 
     // Do NMI:
     nes.getCpu().requestIrq(CPU.IRQ_NMI);
 
     // Make sure everything is rendered:
-    if (lastRenderedScanline < 239) {
+    if (lastRenderedScanline < 239)
       renderFramePartially(buffer, lastRenderedScanline + 1, 240 - lastRenderedScanline);
-    }
 
     endFrame();
 
@@ -469,35 +466,28 @@ class PPU {
       }
     }
 
-    for (int i = 0; i < buffer.length; i++) {
+    for (int i = 0; i < buffer.length; i++)
       buffer[i] = bgColor;
-    }
-    for (int i = 0; i < _pixrendered.length; i++) {
+    for (int i = 0; i < _pixrendered.length; i++)
       _pixrendered[i] = 65;
-    }
   }
 
   void endFrame() {
-
     // Draw spr#0 hit coordinates:
     if (_showSpr0Hit) {
       // Spr 0 position:
       if (sprX[0] >= 0 && sprX[0] < 256 && sprY[0] >= 0 && sprY[0] < 240) {
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; i++)
             buffer[(sprY[0] << 8) + i] = 0xFF5555;
-        }
-        for (int i = 0; i < 240; i++) {
+        for (int i = 0; i < 240; i++)
             buffer[(i << 8) + sprX[0]] = 0xFF5555;
-        }
       }
       // Hit position:
       if (spr0HitX >= 0 && spr0HitX < 256 && spr0HitY >= 0 && spr0HitY < 240) {
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; i++)
             buffer[(spr0HitY << 8) + i] = 0x55FF55;
-        }
-        for (int i = 0; i < 240; i++) {
+        for (int i = 0; i < 240; i++)
             buffer[(i << 8) + spr0HitX] = 0x55FF55;
-        }
       }
     }
 

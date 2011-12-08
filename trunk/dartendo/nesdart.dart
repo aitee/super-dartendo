@@ -89,6 +89,20 @@ class snes {
     
     intList[3] = 2;
     print(intList);
+    
+    canvas.addEventListener('click', (Event e) {}, true);
+    window.addEventListener('keydown', (Event e) {
+      Expect.isTrue(e is KeyboardEvent);
+      KeyboardEvent ke = e;
+      gui.kbJoy1.keyPressed(ke);
+    }, true);
+    window.addEventListener('keyup', (Event e) {
+      Expect.isTrue(e is KeyboardEvent);
+      KeyboardEvent ke = e;
+      gui.kbJoy1.keyReleased(ke);
+    }, true);
+    //element.on.keyUp.add( (EventListener event) { 
+      //print('KEY RELEASED'); }); 
   }
 
   void run(Input input) {
