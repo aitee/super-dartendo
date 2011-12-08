@@ -28,29 +28,19 @@ class PaletteTable {
 
     // Load a palette file:
     bool loadPalette(String file) {
-        // cannot read from files in dart... what to do?
         bool debugMe = false;
                 
         if (debugMe) print("Entering PaletteTable.loadPalette try block.");        
         try {
-            List<int> palette = FileLoader.loadFile(file);
+            origTable = FileLoader.loadFile(file);
             
             if (debugMe) print("PaletteTable.loadPalette: Finished loading palette.");            
-            for (var i = 0; i < palette.length; ++i) {
-              //int r, g, b;
-              //b = palette[i] & 0xFF;
-              //g = (palette[i] >> 8) & 0xFF;
-              //r = (palette[i] >> 16) & 0xFF;
-              //origTable[i] = r | (g<<8) | (b<<16);
-              
-              origTable[i] = palette[i];
-            }
 
             setEmphasis(0);
             makeTables();
             updatePalette();
             
-            if (debugMe) print("PalleteTable.loadPalette success!");
+            if (debugMe) print("PaletteTable.loadPalette success!");
             return true;
 
         } catch (Exception e) {
