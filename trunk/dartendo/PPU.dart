@@ -1,6 +1,5 @@
 class PPU {
   NES nes;
-  HiResTimer timer;  // TODO: unused?
   Memory ppuMem;
   Memory sprMem;
   
@@ -143,8 +142,7 @@ class PPU {
 
     // Initialize misc vars:
     scanline = 0;
-    timer = nes.getGui().getTimer();
-
+    
     // Create sprite arrays:
     sprX = new List<int>(64);
     sprY = new List<int>(64);
