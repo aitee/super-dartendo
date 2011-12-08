@@ -102,7 +102,7 @@
     */
 
      void reset() {
-        allKeysState = new List<int>(255);
+        allKeysState = Util.newBoolList(255, false);
     }
 
      void update() {
