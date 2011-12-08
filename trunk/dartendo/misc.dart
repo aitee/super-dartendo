@@ -14,7 +14,7 @@ class MiscClass {
 
     String hex8(int i) {
         String s = i.toRadixString(16);
-        while (s.length() < 2) {
+        while (s.length < 2) {
             s = "0" + s;
         }
         return s.toUpperCase();
@@ -22,7 +22,7 @@ class MiscClass {
 
     String hex16(int i) {
         String s = i.toRadixString(16);
-        while (s.length() < 4) {
+        while (s.length < 4) {
             s = "0" + s;
         }
         return s.toUpperCase();
@@ -34,7 +34,7 @@ class MiscClass {
       // TODO: will this actually work with negative numbers
       // as intended?
       String binString = num.toRadixString(2);
-      while(binString.length() < N) {
+      while(binString.length < N) {
         binString = '0' + binString;
       }
     }
@@ -62,7 +62,7 @@ class MiscClass {
     }
 
     String pad(String str, String padStr, int length) {
-        while (str.length() < length) {
+        while (str.length < length) {
             str += padStr;
         }
         return str;
@@ -72,10 +72,11 @@ class MiscClass {
         rndret = rnd[nextRnd];
         nextRnd++;
         if (nextRnd >= rnd.length) {
-            nextRnd = (int) (Math.random() * (rnd.length - 1));
+            nextRnd = (Math.random() * (rnd.length - 1)).toInt();
         }
         return rndret;
     }
 }
 
-MiscClass Misc = new MiscClass();
+
+MiscClass Misc;

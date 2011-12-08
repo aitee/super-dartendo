@@ -65,15 +65,15 @@ class Controller {
   var canvas;
   var context;
 
-  bool scale;
-  bool sound;
-  bool fps;
-  bool stereo;
-  bool timeemulation;
-  bool showsoundbuffer;
-  int samplerate;
-  int romSize;
-  int progress;
+  bool scale = false;
+  bool sound = false;
+  bool fps = false;
+  bool stereo = false;
+  bool timeemulation = false;
+  bool showsoundbuffer = false;
+  int samplerate = 0;
+  int romSize = 0;
+  int progress = 0;
   AppletUI gui;
   NES nes;
   BufferView panelScreen;
@@ -87,6 +87,7 @@ class Controller {
   
   
   Controller() {
+    Misc = new MiscClass();
     Globals = new SGlobals();
     Util = new CUtil();
     canvas = document.getElementById("webGlCanvas");
