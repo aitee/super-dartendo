@@ -18,14 +18,20 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 class Mapper182 extends MapperDefault {
 
     int irq_counter = 0;
-    boolean irq_enabled = false;
-    List<int> regs = new List<int>(1);
+    bool irq_enabled = false;
+    List<int> regs = null;
 
     void init(NES nes) {
         super.init(nes);
         reset();
     }
 
+    void reset() {
+      regs = Util.newIntList(1);
+      irq_enabled = false;
+      irq_counter = 0;
+    }
+       
     void write(int address, int value) {
 
         if (address < 0x8000) {
@@ -151,10 +157,5 @@ class Mapper182 extends MapperDefault {
 
         return 0;
 
-    }
-
-    void reset() {
-        irq_enabled = false;
-        irq_counter = 0;
     }
 }

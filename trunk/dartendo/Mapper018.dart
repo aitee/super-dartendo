@@ -20,7 +20,7 @@ class Mapper018 extends MapperDefault {
     int irq_counter = 0;
     int irq_latch = 0;
     bool irq_enabled = false;
-    List<int> regs = Util.newIntList(11, 0);
+    List<int> regs = null;
     int num_8k_banks = 0;
     int patch = 0;
 
@@ -29,6 +29,27 @@ class Mapper018 extends MapperDefault {
         reset();
     }
 
+    void reset() {
+      regs = Util.newIntList(11, 0);
+      
+      regs[0] = 0;
+      regs[1] = 1;
+      regs[2] = num_8k_banks - 2;
+      regs[3] = num_8k_banks - 1;
+      regs[4] = 0;
+      regs[5] = 0;
+      regs[6] = 0;
+      regs[7] = 0;
+      regs[8] = 0;
+      regs[9] = 0;
+      regs[10] = 0;
+
+      // IRQ Settings
+      irq_enabled = false;
+      irq_latch = 0;
+      irq_counter = 0;
+  }
+        
     void mapperInternalStateLoad(ByteBuffer buf) {
         super.mapperInternalStateLoad(buf);
 
@@ -306,26 +327,5 @@ class Mapper018 extends MapperDefault {
         }
 
         return 0;
-
-    }
-
-    void reset() {
-
-        regs[0] = 0;
-        regs[1] = 1;
-        regs[2] = num_8k_banks - 2;
-        regs[3] = num_8k_banks - 1;
-        regs[4] = 0;
-        regs[5] = 0;
-        regs[6] = 0;
-        regs[7] = 0;
-        regs[8] = 0;
-        regs[9] = 0;
-        regs[10] = 0;
-
-        // IRQ Settings
-        irq_enabled = false;
-        irq_latch = 0;
-        irq_counter = 0;
     }
 }

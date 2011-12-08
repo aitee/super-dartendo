@@ -20,14 +20,32 @@ class Mapper021 extends MapperDefault {
     int irq_counter = 0;
     int irq_latch = 0;
     int irq_enabled = 0;
-    List<int> regs = Util.newIntList(9, 0);
+    List<int> regs = null;
 
     void init(NES nes) {
         super.init(nes);
         reset();
     }
 
-    void write(int address, int value) {
+    void reset() {
+      regs = Util.newIntList(9, 0);
+      regs[0] = 0;
+      regs[1] = 1;
+      regs[2] = 2;
+      regs[3] = 3;
+      regs[4] = 4;
+      regs[5] = 5;
+      regs[6] = 6;
+      regs[7] = 7;
+      regs[8] = 0;
+
+      // IRQ Settings
+      irq_enabled = 0;
+      irq_latch = 0;
+      irq_counter = 0;
+  }
+        
+  void write(int address, int value) {
         if (address < 0x8000) {
             super.write(address, value);
         } else {
@@ -275,23 +293,5 @@ class Mapper021 extends MapperDefault {
 
         return 0;
 
-    }
-
-    void reset() {
-
-        regs[0] = 0;
-        regs[1] = 1;
-        regs[2] = 2;
-        regs[3] = 3;
-        regs[4] = 4;
-        regs[5] = 5;
-        regs[6] = 6;
-        regs[7] = 7;
-        regs[8] = 0;
-
-        // IRQ Settings
-        irq_enabled = 0;
-        irq_latch = 0;
-        irq_counter = 0;
     }
 }

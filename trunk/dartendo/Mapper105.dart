@@ -18,9 +18,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 class Mapper105 extends MapperDefault {
 
     int irq_counter = 0;
-    boolean irq_enabled = false;
+    bool irq_enabled = false;
     int init_state = 0;
-    List<int> regs = new List<int>(4);
+    List<int> regs = null;
     int bits = 0;
     int write_count = 0;
 
@@ -29,6 +29,22 @@ class Mapper105 extends MapperDefault {
         reset();
     }
 
+    void reset() {
+      regs = Util.newIntList(4, 0);
+      regs[0] = 0x0C;
+      regs[1] = 0x00;
+      regs[2] = 0x00;
+      regs[3] = 0x10;
+
+      bits = 0;
+      write_count = 0;
+
+      irq_enabled = false;
+      irq_counter = 0;
+      init_state = 0;
+  }
+    
+    
     void mapperInternalStateLoad(ByteBuffer buf) {
         super.mapperInternalStateLoad(buf);
 
@@ -167,20 +183,5 @@ class Mapper105 extends MapperDefault {
         // Do Reset-Interrupt:
         nes.getCpu().requestIrq(CPU.IRQ_RESET);
 
-    }
-
-    void reset() {
-
-        regs[0] = 0x0C;
-        regs[1] = 0x00;
-        regs[2] = 0x00;
-        regs[3] = 0x10;
-
-        bits = 0;
-        write_count = 0;
-
-        irq_enabled = false;
-        irq_counter = 0;
-        init_state = 0;
     }
 }

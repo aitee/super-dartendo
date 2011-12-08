@@ -17,11 +17,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class Mapper032 extends MapperDefault {
 
-    List<int> regs = Util.newIntList(1, 0);
+    List<int> regs = null;
     int patch = 0;
 
     void init(NES nes) {
         super.init(nes);
+        regs = Util.newIntList(1, 0);
     }
 
     void write(int address, int value) {

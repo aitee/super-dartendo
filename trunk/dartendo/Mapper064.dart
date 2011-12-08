@@ -20,12 +20,25 @@ class Mapper064 extends MapperDefault {
     int irq_counter = 0;
     int irq_latch = 0;
     bool irq_enabled = false;
-    List<int> regs = Util.newIntList(3, 0);
+    List<int> regs = null;
 
     void init(NES nes) {
         super.init(nes);
         reset();
     }
+    
+    void reset() {
+
+      // Set Interrupts
+      irq_latch = 0;
+      irq_counter = 0;
+      irq_enabled = false;
+      
+      regs = Util.newIntList(3, 0);
+      regs[0] = 0;
+      regs[1] = 0;
+      regs[2] = 0;
+  }    
 
     void write(int address, int value) {
 
@@ -232,19 +245,6 @@ class Mapper064 extends MapperDefault {
         }
 
         return 0;
-
-    }
-
-    void reset() {
-
-        // Set Interrupts
-        irq_latch = 0;
-        irq_counter = 0;
-        irq_enabled = false;
-
-        regs[0] = 0;
-        regs[1] = 0;
-        regs[2] = 0;
 
     }
 }

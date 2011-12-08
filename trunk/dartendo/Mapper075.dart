@@ -17,11 +17,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class Mapper075 extends MapperDefault {
 
-    List<int> regs = Util.newIntList(2, 0);
+    List<int> regs = null;
 
     void init(NES nes) {
         super.init(nes);
+        regs = Util.newIntList(2, 0);
     }
+    
+    void reset() {
+      regs[0] = 0;
+      regs[1] = 1;
+  }
+   
 
     void write(int address, int value) {
 
@@ -98,8 +105,4 @@ class Mapper075 extends MapperDefault {
 
     }
 
-    void reset() {
-        regs[0] = 0;
-        regs[1] = 1;
-    }
 }
