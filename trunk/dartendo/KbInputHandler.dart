@@ -46,14 +46,14 @@
         allKeysState[kc] = true;
 
         // Can't hold both left & right or up & down at same time:
-        if (kc == keyMapping[InputHandler.KEY_LEFT]) {
-            allKeysState[keyMapping[InputHandler.KEY_RIGHT]] = false;
-        } else if (kc == keyMapping[InputHandler.KEY_RIGHT]) {
-            allKeysState[keyMapping[InputHandler.KEY_LEFT]] = false;
-        } else if (kc == keyMapping[InputHandler.KEY_UP]) {
-            allKeysState[keyMapping[InputHandler.KEY_DOWN]] = false;
-        } else if (kc == keyMapping[InputHandler.KEY_DOWN]) {
-            allKeysState[keyMapping[InputHandler.KEY_UP]] = false;
+        if (kc == keyMapping[KbInputHandler.KEY_LEFT]) {
+            allKeysState[keyMapping[KbInputHandler.KEY_RIGHT]] = false;
+        } else if (kc == keyMapping[KbInputHandler.KEY_RIGHT]) {
+            allKeysState[keyMapping[KbInputHandler.KEY_LEFT]] = false;
+        } else if (kc == keyMapping[KbInputHandler.KEY_UP]) {
+            allKeysState[keyMapping[KbInputHandler.KEY_DOWN]] = false;
+        } else if (kc == keyMapping[KbInputHandler.KEY_DOWN]) {
+            allKeysState[keyMapping[KbInputHandler.KEY_UP]] = false;
         }
     }
 
@@ -86,7 +86,7 @@
                     break;
                 }
                 case KeyName.F12: {
-                    JOptionPane.showInputDialog("Save Code for Resuming Game.", "Test");
+                    // JOptionPane.showInputDialog("Save Code for Resuming Game.", "Test");
                     break;
                 }
             }
