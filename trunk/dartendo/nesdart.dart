@@ -38,6 +38,8 @@
 
 #source('misc.dart');
 #source('NameTable.dart');
+#source('PaletteTable.dart');
+#source('memory.dart');
 
 class snes {
   var canvas;

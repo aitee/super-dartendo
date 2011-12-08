@@ -1,5 +1,5 @@
 class MiscClass {
-    boolean debug = Globals.debug;
+    bool debug = Globals.debug;
     List<double> rnd = new List<double>(10000);
     int nextRnd = 0;
     double rndret;
