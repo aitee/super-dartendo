@@ -32,17 +32,6 @@ public class ByteBuffer {
     public boolean expandable = true;
     public int expandBy = 4096;
 
-    public ByteBuffer(int size, int byteOrdering) {
-        if (size < 1) {
-            size = 1;
-        }
-        buf = new int[size];
-        this.size = size;
-        this.byteOrder = byteOrdering;
-        curPos = 0;
-        hasBeenErrors = false;
-    }
-
     public ByteBuffer(byte[] content, int byteOrdering) {
         try {
             buf = new int[content.length];
