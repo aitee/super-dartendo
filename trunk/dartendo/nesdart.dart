@@ -3,6 +3,7 @@
 #source('MemoryMapper.dart');
 #source('ByteBuffer.dart');
 #source('Util.dart');
+#source('misc.dart');
 
 class snes {
   var canvas;
