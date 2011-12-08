@@ -68,7 +68,7 @@
 
         if (id == 0) {
             switch (ke.keyIdentifier) {
-                case KeyboardEvent.F5: {
+                case KeyName.F5: {
                     // Reset game:
                     if (nes.isRunning()) {
                         nes.stopEmulation();
@@ -78,14 +78,14 @@
                     }
                     break;
                 }
-                case KeyboardEvent.F10: {
+                case KeyName.F10: {
                     // Just using this to display the battery RAM contents to user.
                     if (nes.rom != null) {
                         nes.rom.closeRom();
                     }
                     break;
                 }
-                case KeyboardEvent.F12: {
+                case KeyName.F12: {
                     JOptionPane.showInputDialog("Save Code for Resuming Game.", "Test");
                     break;
                 }
@@ -94,7 +94,7 @@
 
     }
 
-     void keyTyped(KeyEvent ke) {
+     void keyTyped(KeyboardEvent ke) {
         // Ignore.
     }
 
