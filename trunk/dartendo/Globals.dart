@@ -19,14 +19,9 @@
       bool enableSound = true;
       bool focused = false;
 
-      HashMap keycodes; //Java key codes
-      HashMap controls; //vNES controls codes
-
       NES nes;
       
       Globals() {
-        keycodes = new HashMap<int,int>(); //Java key codes
-        controls = new HashMap<int,int>(); //vNES controls codes
       }
 
       void println(String s) {
@@ -34,6 +29,5 @@
     }
 }
  
- SGlobals Globals
- 
+ SGlobals Globals = new SGlobals();
  
