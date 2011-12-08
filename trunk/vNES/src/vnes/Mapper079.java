@@ -24,7 +24,7 @@ public class Mapper079 extends MapperDefault {
 
     }
 
-    public void writelow(int address, short value) {
+    public void writelow(int address, int value) {
 
         if (address < 0x4000) {
             super.writelow(address, value);

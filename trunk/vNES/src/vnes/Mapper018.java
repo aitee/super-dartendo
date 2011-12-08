@@ -46,14 +46,14 @@ public class Mapper018 extends MapperDefault {
         super.mapperInternalStateLoad(buf);
 
         // Version:
-        buf.putByte((short) 1);
+        buf.putByte((int) 1);
 
         buf.putInt(irq_counter);
         buf.putInt(irq_latch);
         buf.putBoolean(irq_enabled);
     }
 
-    public void write(int address, short value) {
+    public void write(int address, int value) {
 
         if (address < 0x8000) {
             super.write(address, value);

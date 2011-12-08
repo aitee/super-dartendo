@@ -32,7 +32,7 @@ public class Mapper009 extends MapperDefault {
 
     }
 
-    public void write(int address, short value) {
+    public void write(int address, int value) {
 
         if (address < 0x8000) {
 
@@ -189,7 +189,7 @@ public class Mapper009 extends MapperDefault {
         super.mapperInternalStateSave(buf);
 
         // Version:
-        buf.putByte((short) 1);
+        buf.putByte((int) 1);
 
         // State:
         buf.putByte((byte) latchLo);

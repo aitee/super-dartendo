@@ -38,13 +38,13 @@ public class Tile {
         pix = new int[64];
     }
 
-    public void setBuffer(short[] scanline) {
+    public void setBuffer(int[] scanline) {
         for (y = 0; y < 8; y++) {
             setScanline(y, scanline[y], scanline[y + 8]);
         }
     }
 
-    public void setScanline(int sline, short b1, short b2) {
+    public void setScanline(int sline, int b1, int b2) {
         initialized = true;
         tIndex = sline << 3;
         for (x = 0; x < 8; x++) {

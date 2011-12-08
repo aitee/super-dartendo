@@ -40,7 +40,7 @@ public final class PAPU {
     int frameIrqCounter;
     int frameIrqCounterMax;
     int initCounter;
-    short channelEnableValue;
+    int channelEnableValue;
     byte b1, b2, b3, b4;
     int bufferSize = 2048;
     int bufferIndex;
@@ -184,7 +184,7 @@ public final class PAPU {
         return nes;
     }
 
-    public short readReg(int address) {
+    public int readReg(int address) {
 
         // Read 0x4015:
         int tmp = 0;
@@ -200,11 +200,11 @@ public final class PAPU {
         dmc.irqGenerated = false;
 
         ////System.out.println("$4015 read. Value = "+Misc.bin8(tmp)+" countseq = "+countSequence);
-        return (short) tmp;
+        return (int) tmp;
 
     }
 
-    public void writeReg(int address, short value) {
+    public void writeReg(int address, int value) {
 
         if (address >= 0x4000 && address < 0x4004) {
 
@@ -312,7 +312,7 @@ public final class PAPU {
     // in the GUI.
     public void updateChannelEnable(int value) {
 
-        channelEnableValue = (short) value;
+        channelEnableValue = (int) value;
         square1.setEnabled(userEnableSquare1 && (value & 1) != 0);
         square2.setEnabled(userEnableSquare2 && (value & 2) != 0);
         triangle.setEnabled(userEnableTriangle && (value & 4) != 0);

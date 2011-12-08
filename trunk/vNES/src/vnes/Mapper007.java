@@ -20,7 +20,7 @@ public class Mapper007 extends MapperDefault {
 
     int currentOffset;
     int currentMirroring;
-    short[] prgrom;
+    int[] prgrom;
 
     public void init(NES nes) {
 
@@ -33,14 +33,14 @@ public class Mapper007 extends MapperDefault {
 
         // Read out all PRG rom:
         int bc = rom.getRomBankCount();
-        prgrom = new short[bc * 16384];
+        prgrom = new int[bc * 16384];
         for (int i = 0; i < bc; i++) {
             System.arraycopy(rom.getRomBank(i), 0, prgrom, i * 16384, 16384);
         }
 
     }
 
-    public short load(int address) {
+    public int load(int address) {
 
         if (address < 0x8000) {
 
@@ -59,7 +59,7 @@ public class Mapper007 extends MapperDefault {
         }
     }
 
-    public void write(int address, short value) {
+    public void write(int address, int value) {
 
         if (address < 0x8000) {
 
@@ -106,10 +106,10 @@ public class Mapper007 extends MapperDefault {
         super.mapperInternalStateSave(buf);
 
         // Version:
-        buf.putByte((short) 1);
+        buf.putByte((int) 1);
 
         // State:
-        buf.putByte((short) currentMirroring);
+        buf.putByte((int) currentMirroring);
         buf.putInt(currentOffset);
 
     }

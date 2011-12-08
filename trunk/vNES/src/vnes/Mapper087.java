@@ -22,7 +22,7 @@ public class Mapper087 extends MapperDefault {
         super.init(nes);
     }
 
-    public void writelow(int address, short value) {
+    public void writelow(int address, int value) {
 
         if (address < 0x6000) {
             // Let the base mapper take care of it.

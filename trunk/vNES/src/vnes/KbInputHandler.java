@@ -33,8 +33,8 @@ public class KbInputHandler implements KeyListener, InputHandler {
         keyMapping = new int[InputHandler.NUM_KEYS];
     }
 
-    public short getKeyState(int padKey) {
-        return (short) (allKeysState[keyMapping[padKey]] ? 0x41 : 0x40);
+    public int getKeyState(int padKey) {
+        return (int) (allKeysState[keyMapping[padKey]] ? 0x41 : 0x40);
     }
 
     public void mapKey(int padKey, int kbKeycode) {

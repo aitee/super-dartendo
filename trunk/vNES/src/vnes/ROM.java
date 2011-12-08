@@ -33,10 +33,10 @@ public class ROM {
     public static final int CHRROM_MIRRORING = 7;
     boolean failedSaveFile = false;
     boolean saveRamUpToDate = true;
-    short[] header;
-    short[][] rom;
-    short[][] vrom;
-    short[] saveRam;
+    int[] header;
+    int[][] rom;
+    int[][] vrom;
+    int[] saveRam;
     Tile[][] vromTile;
     NES nes;
     int romCount;
@@ -183,7 +183,7 @@ public class ROM {
 
         this.fileName = fileName;
         FileLoader loader = new FileLoader();
-        short[] b = loader.loadFile(fileName, nes.getGui());
+        int[] b = loader.loadFile(fileName, nes.getGui());
 
         if (b == null || b.length == 0) {
 
@@ -194,7 +194,7 @@ public class ROM {
         }
 
         // Read header:
-        header = new short[16];
+        header = new int[16];
         for (int i = 0; i < 16; i++) {
             header[i] = b[i];
         }
@@ -234,8 +234,8 @@ public class ROM {
             mapperType &= 0xF;
         }
 
-        rom = new short[romCount][16384];
-        vrom = new short[vromCount][4096];
+        rom = new int[romCount][16384];
+        vrom = new int[vromCount][4096];
         vromTile = new Tile[vromCount][256];
 
         //try{
@@ -320,15 +320,15 @@ public class ROM {
         return vromCount;
     }
 
-    public short[] getHeader() {
+    public int[] getHeader() {
         return header;
     }
 
-    public short[] getRomBank(int bank) {
+    public int[] getRomBank(int bank) {
         return rom[bank];
     }
 
-    public short[] getVromBank(int bank) {
+    public int[] getVromBank(int bank) {
         return vrom[bank];
     }
 
@@ -500,7 +500,7 @@ public class ROM {
         }
     }
 
-    public short[] getBatteryRam() {
+    public int[] getBatteryRam() {
 
         return saveRam;
 
@@ -509,7 +509,7 @@ public class ROM {
     private void loadBatteryRam() {
         if (batteryRam) {
             try {
-                saveRam = new short[0x2000];
+                saveRam = new int[0x2000];
                 saveRamUpToDate = true;
 
                 // Get hex-encoded memory string from user:
@@ -529,7 +529,7 @@ public class ROM {
                 // Convert hex-encoded memory string to bytes:
                 for (int i = 0; i < saveRam.length; i++) {
                     String hexByte = encodedData.substring(i * 2, i * 2 + 2);
-                    saveRam[i] = Short.parseShort(hexByte, 16);
+                    saveRam[i] = Integer.parseInt(hexByte, 16);
                 }
 
                 //System.out.println("Battery RAM loaded.");
@@ -544,7 +544,7 @@ public class ROM {
         }
     }
 
-    public void writeBatteryRam(int address, short value) {
+    public void writeBatteryRam(int address, int value) {
 
         if (!failedSaveFile && !batteryRam && enableSave) {
             loadBatteryRam();

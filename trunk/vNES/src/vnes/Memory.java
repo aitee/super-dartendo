@@ -4,19 +4,19 @@ import java.io.*;
 
 public class Memory{
 	
-	public short[] mem;
+	public int[] mem;
 	int memLength;
 	NES nes;
 	
 	public Memory(NES nes, int byteCount){
 		this.nes = nes;
-		mem = new short[byteCount];
+		mem = new int[byteCount];
 		memLength = byteCount;
 	}
 	
 	public void stateLoad(ByteBuffer buf){
 		
-		if(mem==null)mem=new short[memLength];
+		if(mem==null)mem=new int[memLength];
 		buf.readByteArray(mem);
 		
 	}
@@ -35,11 +35,11 @@ public class Memory{
 		return memLength;
 	}
 	
-	public void write(int address, short value){
+	public void write(int address, int value){
 		mem[address] = value;
 	}
 	
-	public short load(int address){
+	public int load(int address){
 		return mem[address];
 	}
 	
@@ -69,14 +69,14 @@ public class Memory{
 		
 	}
 	
-	public void write(int address, short[] array, int length){
+	public void write(int address, int[] array, int length){
 	
 		if(address+length > mem.length)return;
 		System.arraycopy(array,0,mem,address,length);
 		
 	}
 	
-	public void write(int address, short[] array, int arrayoffset, int length){
+	public void write(int address, int[] array, int arrayoffset, int length){
 		
 		if(address+length > mem.length)return;
 		System.arraycopy(array,arrayoffset,mem,address,length);

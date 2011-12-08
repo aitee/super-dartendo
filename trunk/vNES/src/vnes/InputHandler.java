@@ -31,7 +31,7 @@ public interface InputHandler {
     // Key count:
     public static final int NUM_KEYS = 8;
 
-    public short getKeyState(int padKey);
+    public int getKeyState(int padKey);
 
     public void mapKey(int padKey, int deviceKey);
 

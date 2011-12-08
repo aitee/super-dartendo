@@ -54,7 +54,7 @@ public class Mapper071 extends MapperDefault {
 
     }
 
-    public void write(int address, short value) {
+    public void write(int address, int value) {
 
         if (address < 0x8000) {
 

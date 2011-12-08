@@ -27,7 +27,7 @@ public class Globals {
     // Microseconds per frame:
     public static int frameTime = 1000000 / preferredFrameRate;
     // What value to flush memory with on power-up:
-    public static short memoryFlushValue = 0xFF;
+    public static int memoryFlushValue = 0xFF;
 
     public static final boolean debug = true;
     public static final boolean fsdebug = false;

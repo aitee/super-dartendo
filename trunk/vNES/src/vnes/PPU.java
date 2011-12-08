@@ -50,13 +50,13 @@ public class PPU {
     // VRAM I/O:
     int vramAddress;
     int vramTmpAddress;
-    short vramBufferedReadValue;
+    int vramBufferedReadValue;
     boolean firstWrite = true; 		// VRAM/Scroll Hi/Lo latch
     int[] vramMirrorTable; 			// Mirroring Lookup Table.
     int i;
 
     // SPR-RAM I/O:
-    short sramAddress; // 8-bit only.
+    int sramAddress; // 8-bit only.
 
     // Counters:
     int cntFV;
@@ -107,7 +107,7 @@ public class PPU {
     boolean requestEndFrame;
     boolean nmiOk;
     int nmiCounter;
-    short tmp;
+    int tmp;
     boolean dummyCycleToggle;
 
     // Vars used when updating regs/address:
@@ -648,14 +648,14 @@ public class PPU {
         int n = 1 << flag;
         int memValue = nes.getCpuMemory().load(0x2002);
         memValue = ((memValue & (255 - n)) | (value ? n : 0));
-        nes.getCpuMemory().write(0x2002, (short) memValue);
+        nes.getCpuMemory().write(0x2002, (int) memValue);
 
     }
 
 
     // CPU Register $2002:
     // Read the Status Register.
-    public short readStatusRegister() {
+    public int readStatusRegister() {
 
         tmp = nes.getCpuMemory().load(0x2002);
 
@@ -673,7 +673,7 @@ public class PPU {
 
     // CPU Register $2003:
     // Write the SPR-RAM address that is used for sramWrite (Register 0x2004 in CPU memory map)
-    public void writeSRAMAddress(short address) {
+    public void writeSRAMAddress(int address) {
         sramAddress = address;
     }
 
@@ -681,8 +681,8 @@ public class PPU {
     // CPU Register $2004 (R):
     // Read from SPR-RAM (Sprite RAM).
     // The address should be set first.
-    public short sramLoad() {
-        short tmp = sprMem.load(sramAddress);
+    public int sramLoad() {
+        int tmp = sprMem.load(sramAddress);
         /*sramAddress++; // Increment address
         sramAddress%=0x100;*/
         return tmp;
@@ -692,7 +692,7 @@ public class PPU {
     // CPU Register $2004 (W):
     // Write to SPR-RAM (Sprite RAM).
     // The address should be set first.
-    public void sramWrite(short value) {
+    public void sramWrite(int value) {
         sprMem.write(sramAddress, value);
         spriteRamWriteUpdate(sramAddress, value);
         sramAddress++; // Increment address
@@ -704,7 +704,7 @@ public class PPU {
     // Write to scroll registers.
     // The first write is the vertical offset, the second is the
     // horizontal offset:
-    public void scrollWrite(short value) {
+    public void scrollWrite(int value) {
 
         triggerRendering();
         if (firstWrite) {
@@ -765,7 +765,7 @@ public class PPU {
 
     // CPU Register $2007(R):
     // Read from PPU memory. The address should be set first.
-    public short vramLoad() {
+    public int vramLoad() {
 
         cntsToAddress();
         regsToAddress();
@@ -773,7 +773,7 @@ public class PPU {
         // If address is in range 0x0000-0x3EFF, return buffered values:
         if (vramAddress <= 0x3EFF) {
 
-            short tmp = vramBufferedReadValue;
+            int tmp = vramBufferedReadValue;
 
             // Update buffered value:
             if (vramAddress < 0x2000) {
@@ -797,7 +797,7 @@ public class PPU {
         }
 
         // No buffering in this mem range. Read normally.
-        short tmp = mirroredLoad(vramAddress);
+        int tmp = mirroredLoad(vramAddress);
 
         // Increment by either 1 or 32, depending on d2 of Control Register 1:
         vramAddress += (f_addrInc == 1 ? 32 : 1);
@@ -811,7 +811,7 @@ public class PPU {
 
     // CPU Register $2007(W):
     // Write to PPU memory. The address should be set first.
-    public void vramWrite(short value) {
+    public void vramWrite(int value) {
 
         triggerRendering();
         cntsToAddress();
@@ -840,11 +840,11 @@ public class PPU {
     // CPU Register $4014:
     // Write 256 bytes of main memory
     // into Sprite RAM.
-    public void sramDMA(short value) {
+    public void sramDMA(int value) {
 
         Memory cpuMem = nes.getCpuMemory();
         int baseAddress = value * 0x100;
-        short data;
+        int data;
         for (int i = sramAddress; i < 256; i++) {
             data = cpuMem.load(baseAddress + i);
             sprMem.write(i, data);
@@ -941,7 +941,7 @@ public class PPU {
 
     // Reads from memory, taking into account
     // mirroring/mapping of address ranges.
-    private short mirroredLoad(int address) {
+    private int mirroredLoad(int address) {
 
         return ppuMem.load(vramMirrorTable[address]);
 
@@ -949,7 +949,7 @@ public class PPU {
 
     // Writes to memory, taking into account
     // mirroring/mapping of address ranges.
-    private void mirroredWrite(int address, short value) {
+    private void mirroredWrite(int address, int value) {
 
         if (address >= 0x3f00 && address < 0x3f20) {
 
@@ -1486,7 +1486,7 @@ public class PPU {
     // This will write to PPU memory, and
     // update internally buffered data
     // appropriately.
-    private void writeMem(int address, short value) {
+    private void writeMem(int address, int value) {
 
         ppuMem.write(address, value);
 
@@ -1562,7 +1562,7 @@ public class PPU {
 
     // Updates the internal pattern
     // table buffers with this new byte.
-    public void patternWrite(int address, short value) {
+    public void patternWrite(int address, int value) {
         int tileIndex = address / 16;
         int leftOver = address % 16;
         if (leftOver < 8) {
@@ -1572,7 +1572,7 @@ public class PPU {
         }
     }
 
-    public void patternWrite(int address, short[] value, int offset, int length) {
+    public void patternWrite(int address, int[] value, int offset, int length) {
 
         int tileIndex;
         int leftOver;
@@ -1605,7 +1605,7 @@ public class PPU {
 
     // Updates the internal name table buffers
     // with this new byte.
-    public void nameTableWrite(int index, int address, short value) {
+    public void nameTableWrite(int index, int address, int value) {
         nameTable[index].writeTileIndex(address, value);
 
         // Update Sprite #0 hit:
@@ -1617,13 +1617,13 @@ public class PPU {
     // Updates the internal pattern
     // table buffers with this new attribute
     // table byte.
-    public void attribTableWrite(int index, int address, short value) {
+    public void attribTableWrite(int index, int address, int value) {
         nameTable[index].writeAttrib(address, value);
     }
 
     // Updates the internally buffered sprite
     // data with this new byte of info.
-    public void spriteRamWriteUpdate(int address, short value) {
+    public void spriteRamWriteUpdate(int address, int value) {
 
         int tIndex = address / 4;
 
@@ -1739,7 +1739,7 @@ public class PPU {
 
 
             // VRAM I/O:
-            vramBufferedReadValue = (short) buf.readInt();
+            vramBufferedReadValue = (int) buf.readInt();
             firstWrite = buf.readBoolean();
             //System.out.println("firstWrite: "+firstWrite);
 
@@ -1753,7 +1753,7 @@ public class PPU {
 
 
             // SPR-RAM I/O:
-            sramAddress = (short) buf.readInt();
+            sramAddress = (int) buf.readInt();
 
             // Rendering progression:
             curX = buf.readInt();
@@ -1766,7 +1766,7 @@ public class PPU {
             nmiOk = buf.readBoolean();
             dummyCycleToggle = buf.readBoolean();
             nmiCounter = buf.readInt();
-            tmp = (short) buf.readInt();
+            tmp = (int) buf.readInt();
 
 
             // Stuff used during rendering:
@@ -1789,7 +1789,7 @@ public class PPU {
             }
 
             // Update internally stored stuff from VRAM memory:
-			/*short[] mem = ppuMem.mem;
+			/*int[] mem = ppuMem.mem;
 
             // Palettes:
             for(int i=0x3f00;i<0x3f20;i++){
@@ -1797,7 +1797,7 @@ public class PPU {
             }
              */
             // Sprite data:
-            short[] sprmem = nes.getSprMemory().mem;
+            int[] sprmem = nes.getSprMemory().mem;
             for (int i = 0; i < sprmem.length; i++) {
                 spriteRamWriteUpdate(i, sprmem[i]);
             }
@@ -1810,7 +1810,7 @@ public class PPU {
 
 
         // Version:
-        buf.putByte((short) 1);
+        buf.putByte((int) 1);
 
 
         // Counters:
@@ -1872,15 +1872,15 @@ public class PPU {
 
         // Stuff used during rendering:
         for (int i = 0; i < bgbuffer.length; i++) {
-            buf.putByte((short) bgbuffer[i]);
+            buf.putByte((int) bgbuffer[i]);
         }
         for (int i = 0; i < pixrendered.length; i++) {
-            buf.putByte((short) pixrendered[i]);
+            buf.putByte((int) pixrendered[i]);
         }
 
         // Name tables:
         for (int i = 0; i < 4; i++) {
-            buf.putByte((short) ntable1[i]);
+            buf.putByte((int) ntable1[i]);
             nameTable[i].stateSave(buf);
         }
 

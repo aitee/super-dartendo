@@ -23,7 +23,7 @@ import java.net.URI;
 public class FileLoader {
 
     // Load a file.
-    public short[] loadFile(String fileName, UI ui) {
+    public int[] loadFile(String fileName, UI ui) {
 
         int flen;
         byte[] tmp = new byte[2048];
@@ -120,9 +120,9 @@ public class FileLoader {
 
         }
 
-        short[] ret = new short[flen];
+        int[] ret = new int[flen];
         for (int i = 0; i < flen; i++) {
-            ret[i] = (short) (tmp[i] & 255);
+            ret[i] = (int) (tmp[i] & 255);
         }
         return ret;
 

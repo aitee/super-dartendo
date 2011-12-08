@@ -24,7 +24,7 @@ public class Mapper078 extends MapperDefault {
 
     }
 
-    public void write(int address, short value) {
+    public void write(int address, int value) {
 
         int prg_bank = value & 0x0F;
         int chr_bank = (value & 0xF0) >> 4;

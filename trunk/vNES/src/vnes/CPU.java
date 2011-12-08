@@ -31,7 +31,7 @@ public final class CPU implements Runnable{
 	// References to other parts of NES :
 	private NES nes;
 	private MemoryMapper mmap;
-	private short[] mem;
+	private int[] mem;
 
 	// CPU Registers:
 	public int REG_ACC_NEW;
@@ -117,7 +117,7 @@ public final class CPU implements Runnable{
 	public void stateSave(ByteBuffer buf){
 
 		// Save info version:
-		buf.putByte((short)1);
+		buf.putByte((int)1);
 
 		// Save registers:
 		buf.putInt(getStatus());
@@ -515,7 +515,7 @@ public final class CPU implements Runnable{
 						temp = (temp<<1)&255;
 						F_SIGN = (temp>>7)&1;
 						F_ZERO = temp;
-						write(addr,(short)temp);
+						write(addr,(int)temp);
 
 					}
 					break;
@@ -755,7 +755,7 @@ public final class CPU implements Runnable{
 					temp = (load(addr)-1)&0xFF;
 					F_SIGN = (temp>>7)&1;
 					F_ZERO = temp;
-					write(addr,(short)temp);
+					write(addr,(int)temp);
 					break;
 
 				}case 21:{
@@ -805,7 +805,7 @@ public final class CPU implements Runnable{
 					temp = (load(addr)+1)&0xFF;
 					F_SIGN = (temp>>7)&1;
 					F_ZERO = temp;
-					write(addr,(short)(temp&0xFF));
+					write(addr,(int)(temp&0xFF));
 					break;
 
 				}case 25:{
@@ -914,7 +914,7 @@ public final class CPU implements Runnable{
 						temp = load(addr) & 0xFF;
 						F_CARRY = temp&1;
 						temp >>= 1;
-						write(addr,(short)temp);
+						write(addr,(int)temp);
 
 					}
 					F_SIGN = 0;
@@ -1028,7 +1028,7 @@ public final class CPU implements Runnable{
 						add = F_CARRY;
 						F_CARRY = (temp>>7)&1;
 						temp = ((temp<<1)&0xFF)+add;	
-						write(addr,(short)temp);
+						write(addr,(int)temp);
 
 					}
 					F_SIGN = (temp>>7)&1;
@@ -1055,7 +1055,7 @@ public final class CPU implements Runnable{
 						add = F_CARRY<<7;
 						F_CARRY = temp&1;
 						temp = (temp>>1)+add;
-						write(addr,(short)temp);
+						write(addr,(int)temp);
 
 					}
 					F_SIGN = (temp>>7)&1;
@@ -1157,7 +1157,7 @@ public final class CPU implements Runnable{
 					// *******
 
 					// Store accumulator in memory
-					write(addr,(short)REG_ACC);
+					write(addr,(int)REG_ACC);
 					break;
 
 				}case 48:{
@@ -1167,7 +1167,7 @@ public final class CPU implements Runnable{
 					// *******
 
 					// Store index X in memory
-					write(addr,(short)REG_X);
+					write(addr,(int)REG_X);
 					break;
 
 				}case 49:{
@@ -1177,7 +1177,7 @@ public final class CPU implements Runnable{
 					// *******
 
 					// Store index Y in memory:
-					write(addr,(short)REG_Y);
+					write(addr,(int)REG_Y);
 					break;
 
 				}case 50:{
@@ -1321,7 +1321,7 @@ public final class CPU implements Runnable{
 			;
 	}
 	
-	private void write(int addr, short val){
+	private void write(int addr, int val){
 		if(addr < 0x2000){
 			mem[addr&0x7FF] = val;
 		}else{
@@ -1341,7 +1341,7 @@ public final class CPU implements Runnable{
 	}
 
 	public void push(int value){
-		mmap.write(REG_SP,(short)value);
+		mmap.write(REG_SP,(int)value);
 		REG_SP--;
 		REG_SP = 0x0100 | (REG_SP&0xFF);
 	}
@@ -1350,7 +1350,7 @@ public final class CPU implements Runnable{
 		REG_SP = 0x0100 | (REG_SP&0xFF);
 	}
 
-	public short pull(){
+	public int pull(){
 		REG_SP++;
 		REG_SP = 0x0100 | (REG_SP&0xFF);
 		return mmap.load(REG_SP);

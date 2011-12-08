@@ -20,8 +20,8 @@ package vnes;
 public class NameTable {
 
     String name;
-    short[] tile;
-    short[] attrib;
+    int[] tile;
+    int[] attrib;
     int width;
     int height;
 
@@ -32,18 +32,18 @@ public class NameTable {
         this.width = width;
         this.height = height;
 
-        tile = new short[width * height];
-        attrib = new short[width * height];
+        tile = new int[width * height];
+        attrib = new int[width * height];
 
     }
 
-    public short getTileIndex(int x, int y) {
+    public int getTileIndex(int x, int y) {
 
         return tile[y * width + x];
 
     }
 
-    public short getAttrib(int x, int y) {
+    public int getAttrib(int x, int y) {
 
         return attrib[y * width + x];
 
@@ -51,7 +51,7 @@ public class NameTable {
 
     public void writeTileIndex(int index, int value) {
 
-        tile[index] = (short) value;
+        tile[index] = (int) value;
 
     }
 
@@ -74,7 +74,7 @@ public class NameTable {
                         tx = basex + sqx * 2 + x;
                         ty = basey + sqy * 2 + y;
                         attindex = ty * width + tx;
-                        attrib[ty * width + tx] = (short) ((add << 2) & 12);
+                        attrib[ty * width + tx] = (int) ((add << 2) & 12);
                     ////System.out.println("x="+tx+" y="+ty+" value="+attrib[ty*width+tx]+" index="+attindex);
                     }
                 }

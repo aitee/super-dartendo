@@ -78,7 +78,7 @@ public class Mapper001 extends MapperDefault {
     public void mapperInternalStateSave(ByteBuffer buf) {
 
         // Version:
-        buf.putByte((short) 1);
+        buf.putByte((int) 1);
 
         // Reg 0:
         buf.putInt(mirroring);
@@ -102,7 +102,7 @@ public class Mapper001 extends MapperDefault {
 
     }
 
-    public void write(int address, short value) {
+    public void write(int address, int value) {
 
         // Writes to addresses other than MMC registers are handled by NoMapper.
         if (address < 0x8000) {

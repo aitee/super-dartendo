@@ -23,13 +23,13 @@ public interface MemoryMapper {
 
     public void loadROM(ROM rom);
 
-    public void write(int address, short value);
+    public void write(int address, int value);
 
-    public short load(int address);
+    public int load(int address);
 
-    public short joy1Read();
+    public int joy1Read();
 
-    public short joy2Read();
+    public int joy2Read();
 
     public void reset();
 

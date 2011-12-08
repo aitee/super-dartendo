@@ -44,7 +44,7 @@ public class Mapper105 extends MapperDefault {
         super.mapperInternalStateSave(buf);
 
         // Version:
-        buf.putByte((short) 1);
+        buf.putByte((int) 1);
 
         // State:
         buf.putInt(irq_counter);
@@ -53,7 +53,7 @@ public class Mapper105 extends MapperDefault {
 
     }
 
-    public void write(int address, short value) {
+    public void write(int address, int value) {
 
         int reg_num = (address & 0x7FFF) >> 13;
 

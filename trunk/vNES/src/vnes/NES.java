@@ -54,9 +54,9 @@ public class NES {
         // Init sound registers:
         for (int i = 0; i < 0x14; i++) {
             if (i == 0x10) {
-                papu.writeReg(0x4010, (short) 0x10);
+                papu.writeReg(0x4010, (int) 0x10);
             } else {
-                papu.writeReg(0x4000 + i, (short) 0);
+                papu.writeReg(0x4000 + i, (int) 0);
             }
         }
 
@@ -123,7 +123,7 @@ public class NES {
         stopEmulation();
 
         // Version:
-        buf.putByte((short) 1);
+        buf.putByte((int) 1);
 
         // Let units save their state:
         cpuMem.stateSave(buf);
@@ -180,7 +180,7 @@ public class NES {
 
     public void clearCPUMemory() {
 
-        short flushval = Globals.memoryFlushValue;
+        int flushval = Globals.memoryFlushValue;
         for (int i = 0; i < 0x2000; i++) {
             cpuMem.mem[i] = flushval;
         }

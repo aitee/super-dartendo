@@ -20,7 +20,7 @@ public class Mapper068 extends MapperDefault {
 
     int r1, r2, r3, r4;
 
-    public void write(int address, short value) {
+    public void write(int address, int value) {
 
         if (address < 0x8000) {
             super.write(address, value);

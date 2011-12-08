@@ -21,7 +21,7 @@ public class MapperDefault implements MemoryMapper {
     public NES nes;
     public Memory cpuMem;
     public Memory ppuMem;
-    public short[] cpuMemArray;
+    public int[] cpuMemArray;
     public ROM rom;
     public CPU cpu;
     public PPU ppu;
@@ -70,7 +70,7 @@ public class MapperDefault implements MemoryMapper {
     public void stateSave(ByteBuffer buf) {
 
         // Version:
-        buf.putByte((short) 1);
+        buf.putByte((int) 1);
 
         // Joypad stuff:
         buf.putInt(joy1StrobeState);
@@ -84,9 +84,9 @@ public class MapperDefault implements MemoryMapper {
 
     public void mapperInternalStateLoad(ByteBuffer buf) {
 
-        buf.putByte((short) joy1StrobeState);
-        buf.putByte((short) joy2StrobeState);
-        buf.putByte((short) joypadLastWrite);
+        buf.putByte((int) joy1StrobeState);
+        buf.putByte((int) joy2StrobeState);
+        buf.putByte((int) joypadLastWrite);
 
     }
 
@@ -106,7 +106,7 @@ public class MapperDefault implements MemoryMapper {
         return gameGenieActive;
     }
 
-    public void write(int address, short value) {
+    public void write(int address, int value) {
 
         if (address < 0x2000) {
 
@@ -137,7 +137,7 @@ public class MapperDefault implements MemoryMapper {
 
     }
 
-    public void writelow(int address, short value) {
+    public void writelow(int address, int value) {
 
         if (address < 0x2000) {
             // Mirroring of RAM:
@@ -155,7 +155,7 @@ public class MapperDefault implements MemoryMapper {
 
     }
 
-    public short load(int address) {
+    public int load(int address) {
 
         // Wrap around:
         address &= 0xFFFF;
@@ -180,7 +180,7 @@ public class MapperDefault implements MemoryMapper {
 
     }
 
-    public short regLoad(int address) {
+    public int regLoad(int address) {
 
         switch (address >> 12) { // use fourth nibble (0xF000)
 
@@ -302,7 +302,7 @@ public class MapperDefault implements MemoryMapper {
                             }
 
                             w |= (mousePressed ? (0x1 << 4) : 0);
-                            return (short) (joy2Read() | w);
+                            return (int) (joy2Read() | w);
 
                         } else {
                             return joy2Read();
@@ -320,7 +320,7 @@ public class MapperDefault implements MemoryMapper {
 
     }
 
-    public void regWrite(int address, short value) {
+    public void regWrite(int address, int value) {
 
         switch (address) {
             case 0x2000: {
@@ -423,10 +423,10 @@ public class MapperDefault implements MemoryMapper {
 
     }
 
-    public short joy1Read() {
+    public int joy1Read() {
 
         InputHandler in = nes.getGui().getJoy1();
-        short ret;
+        int ret;
 
         switch (joy1StrobeState) {
             case 0:
@@ -464,10 +464,10 @@ public class MapperDefault implements MemoryMapper {
             case 16:
             case 17:
             case 18:
-                ret = (short) 0;
+                ret = (int) 0;
                 break;
             case 19:
-                ret = (short) 1;
+                ret = (int) 1;
                 break;
             default:
                 ret = 0;
@@ -482,7 +482,7 @@ public class MapperDefault implements MemoryMapper {
 
     }
 
-    public short joy2Read() {
+    public int joy2Read() {
         InputHandler in = nes.getGui().getJoy2();
         int st = joy2StrobeState;
 
@@ -508,13 +508,13 @@ public class MapperDefault implements MemoryMapper {
         } else if (st == 7) {
             return in.getKeyState(InputHandler.KEY_RIGHT);
         } else if (st == 16) {
-            return (short) 0;
+            return (int) 0;
         } else if (st == 17) {
-            return (short) 0;
+            return (int) 0;
         } else if (st == 18) {
-            return (short) 1;
+            return (int) 1;
         } else if (st == 19) {
-            return (short) 0;
+            return (int) 0;
         } else {
             return 0;
         }
@@ -578,7 +578,7 @@ public class MapperDefault implements MemoryMapper {
 
         if (rom.batteryRam) {
 
-            short[] ram = rom.getBatteryRam();
+            int[] ram = rom.getBatteryRam();
             if (ram != null && ram.length == 0x2000) {
 
                 // Load Battery RAM into memory:
@@ -594,7 +594,7 @@ public class MapperDefault implements MemoryMapper {
 
         // Loads a ROM bank into the specified address.
         bank %= rom.getRomBankCount();
-        short[] data = rom.getRomBank(bank);
+        int[] data = rom.getRomBank(bank);
         //cpuMem.write(address,data,data.length);
         System.arraycopy(rom.getRomBank(bank), 0, cpuMem.mem, address, 16384);
 
@@ -678,7 +678,7 @@ public class MapperDefault implements MemoryMapper {
         int bank16k = (bank8k / 2) % rom.getRomBankCount();
         int offset = (bank8k % 2) * 8192;
 
-        short[] bank = rom.getRomBank(bank16k);
+        int[] bank = rom.getRomBank(bank16k);
         cpuMem.write(address, bank, offset, 8192);
 
     }
