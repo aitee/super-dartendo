@@ -5,7 +5,7 @@ class BufferView {
      // Scale modes:
      static final int SCALE_NONE = 0;
      static final int SCALE_HW2X = 1;
-     static  final int SCALE_HW3X = 2;
+     static final int SCALE_HW3X = 2;
      static final int SCALE_NORMAL = 3;
      static final int SCALE_SCANLINE = 4;
      static final int SCALE_RASTER = 5;
@@ -13,8 +13,8 @@ class BufferView {
      NES nes;
      bool usingMenu = false;
      int width = 0;
-     int height = 0
-     ;
+     int height = 0;
+     
      List<int> pix;
      List<int> pix_scaled;
      int scaleMode = 0;
@@ -27,7 +27,7 @@ class BufferView {
      bool notifyImageReady = false;
      bool frameFinished = false;
 
-    // Constructor
+     // Constructor
      BufferView(NES nes, int width, int height) {
        canvas = document.getElementById("webGlCanvas");
        context = canvas.getContext('2d');
@@ -117,10 +117,8 @@ class BufferView {
     }
 
      void setFPSEnabled(bool val) {
-
         // Whether to show FPS count.
         showFPS = val;
-
     }
 
      int getBufferWidth() {

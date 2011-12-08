@@ -2,6 +2,7 @@ class PAPU {
 
     NES nes;
     Memory cpuMem;
+    
     //Mixer mixer;
     SourceDataLine line;
     ChannelSquare square1;
@@ -9,6 +10,7 @@ class PAPU {
     ChannelTriangle triangle;
     ChannelNoise noise;
     ChannelDM dmc;
+    
     List<int> lengthLookup;
     List<int> dmcFreqLookup;
     List<int> noiseWavelengthLookup;
@@ -16,38 +18,49 @@ class PAPU {
     List<int> tnd_table;
     List<int> ismpbuffer;
     List<int> sampleBuffer;
-    int frameIrqCounter;
-    int frameIrqCounterMax;
-    int initCounter;
-    int channelEnableValue;
-    int b1, b2, b3, b4; // Formerly bytes
+    
+    int frameIrqCounter = 0;
+    int frameIrqCounterMax = 0;
+    int initCounter = 0;
+    int channelEnableValue = 0;
+    // b1 - b4: Formerly bytes
+    int b1 = 0;
+    int b2 = 0;
+    int b3 = 0;
+    int b4 = 0;
+    
     int bufferSize = 2048;
-    int bufferIndex;
+    int bufferIndex = 0;
     int sampleRate = 44100;
-    bool frameIrqEnabled;
-    bool frameIrqActive;
-    bool frameClockNow;
+    
+    bool frameIrqEnabled = false;
+    bool frameIrqActive = false;
+    bool frameClockNow = false;
+    
     bool startedPlaying = false;
     bool recordOutput = false;
     bool stereo = true;
     bool initingHardware = false;
-     bool userEnableSquare1 = true;
-     bool userEnableSquare2 = true;
-     bool userEnableTriangle = true;
-     bool userEnableNoise = true;
-     bool userEnableDmc = true;
-    int masterFrameCounter;
-    int derivedFrameCounter;
-    int countSequence;
-    int sampleTimer;
-    int frameTime;
-    int sampleTimerMax;
-    int sampleCount;
-    int sampleValueL, sampleValueR;
+    
+    bool userEnableSquare1 = true;
+    bool userEnableSquare2 = true;
+    bool userEnableTriangle = true;
+    bool userEnableNoise = true;
+    bool userEnableDmc = true;
+    
+    int masterFrameCounter = 0;
+    int derivedFrameCounter = 0;
+    int countSequence = 0;
+    int sampleTimer = 0;
+    int frameTime = 0;
+    int sampleTimerMax = 0;
+    int sampleCount = 0;
+    int sampleValueL = 0;
+    int sampleValueR = 0;
     int triValue = 0;
-    int smpSquare1, smpSquare2, smpTriangle, smpNoise, smpDmc;
-    int accCount;
-    int sq_index, tnd_index;
+    int smpSquare1 = 0, smpSquare2 = 0, smpTriangle = 0, smpNoise = 0, smpDmc = 0;
+    int accCount = 0;
+    int sq_index = 0, tnd_index = 0;
 
     // DC removal vars:
     int prevSampleL = 0, prevSampleR = 0;
@@ -59,24 +72,24 @@ class PAPU {
     int dcValue = 0;
 
     // Master volume:
-    int masterVolume;
+    int masterVolume = 0;
 
     // Panning:
     List<int> panning;
 
     // Stereo positioning:
-    int stereoPosLSquare1;
-    int stereoPosLSquare2;
-    int stereoPosLTriangle;
-    int stereoPosLNoise;
-    int stereoPosLDMC;
-    int stereoPosRSquare1;
-    int stereoPosRSquare2;
-    int stereoPosRTriangle;
-    int stereoPosRNoise;
-    int stereoPosRDMC;
-    int extraCycles;
-    int maxCycles;
+    int stereoPosLSquare1 = 0;
+    int stereoPosLSquare2 = 0;
+    int stereoPosLTriangle = 0;
+    int stereoPosLNoise = 0;
+    int stereoPosLDMC = 0;
+    int stereoPosRSquare1 = 0;
+    int stereoPosRSquare2 = 0;
+    int stereoPosRTriangle = 0;
+    int stereoPosRNoise = 0;
+    int stereoPosRDMC = 0;
+    int extraCycles = 0;
+    int maxCycles = 0;
 
      PAPU(NES nes) {
 
@@ -898,13 +911,13 @@ class PAPU {
 
     }
 
-     SourceDataLine getLine() => line;
+    SourceDataLine getLine() => line;
    
-     bool isRunning() {
+    bool isRunning() {
         return (line != null && line.isActive());
     }
 
-     int getMillisToAvailableAbove(int target_avail) {
+    int getMillisToAvailableAbove(int target_avail) {
 
         double time;
         int cur_avail;
