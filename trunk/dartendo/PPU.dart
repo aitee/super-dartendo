@@ -156,6 +156,8 @@ class PPU {
     _dummyPixPriTable = Util.newIntList(256 * 240,0);
     _oldFrame = Util.newIntList(256 * 240,0);
     _scanlineChanged = Util.newBoolList(240, false);
+    
+    buffer = Util.newIntList(256*240,0);
   }
 
   void init() {
@@ -339,6 +341,7 @@ class PPU {
   }
 
   void endScanline() {
+    print("END SCANLINE "+scanline);
     if (scanline < 19 + _vblankAdd) {
       // VINT
       // do nothing.
@@ -413,6 +416,7 @@ class PPU {
     } else if (scanline == 261 + _vblankAdd) {
       // Dead scanline, no rendering.
       // Set VINT:
+      print("SETTING REQUESTENDFRAME");
       setStatusFlag(_STATUS_VBLANK, true);
       _requestEndFrame = true;
       _nmiCounter = 9;
@@ -473,6 +477,7 @@ class PPU {
   }
 
   void endFrame() {
+    print("IN ENDFRAME");
     // Draw spr#0 hit coordinates:
     if (_showSpr0Hit) {
       // Spr 0 position:

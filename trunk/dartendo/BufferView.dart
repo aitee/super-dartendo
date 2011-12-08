@@ -77,7 +77,7 @@ class BufferView {
 
         //JJG: TODO: DRAW NES HERE
         
-        //print('Getting imagedata');
+        print('Getting imagedata');
         var arr = context.getImageData(0,0,256,240);
         var data = arr.data;
         //print(data.length);
@@ -92,7 +92,7 @@ class BufferView {
           data[i] = 255; // a
           i++;
         }
-        //print('Blitting imagedata');
+        print('Blitting imagedata');
         var a = 1;
         var b = 2;
         var c = a ~/ b;

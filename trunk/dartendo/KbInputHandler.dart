@@ -39,7 +39,7 @@
   }
 
   void keyPressed(KeyboardEvent ke) {
-    print('[KbInputHandler] keyPressed: ${ke.keyIdentifier} (${ke.keyCode})')
+    print('[KbInputHandler] keyPressed: ${ke.keyIdentifier} (${ke.keyCode})');
     int kc = ke.keyCode;
     if (kc >= allKeysState.length)
       return;
@@ -58,7 +58,7 @@
   }
    
   void keyReleased(KeyboardEvent ke) {
-    print('[KbInputHandler] keyReleased: ${ke.keyIdentifier} (${ke.keyCode})')
+    print('[KbInputHandler] keyReleased: ${ke.keyIdentifier} (${ke.keyCode})');
 
   int kc = ke.keyCode;
   if (kc >= allKeysState.length)
@@ -93,6 +93,7 @@
       // JOptionPane.showInputDialog("Save Code for Resuming Game.", "Test");
       break;
     }
+  }
   }
 
   void keyTyped(KeyboardEvent ke) {

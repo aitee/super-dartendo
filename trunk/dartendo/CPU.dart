@@ -1290,8 +1290,6 @@ class CPU {
         papu.clockFrameCounter(cycleCount);
       }
                         
-      nes.getGui().getScreenView().finishFrame();
-      
   }
         
   void finishRun() {
