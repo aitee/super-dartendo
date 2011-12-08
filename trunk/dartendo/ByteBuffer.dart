@@ -1,6 +1,6 @@
 /*
 vNES
-Copyright © 2006-2011 Jamie Sanders
+Copyright © 2011 Occupy Nintendo
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General  License as published by the Free Software
