@@ -7,26 +7,23 @@ class CUtil {
     // void setRange(int start, int length, List<E> from, [int startFrom])
     dest.setRange(destPos, length, src, srcPos);
   }
-  
+
   void arrayTileCopy(List<Tile> src, int srcPos, List<Tile> dest, int destPos, int length)
   {
     // void setRange(int start, int length, List<E> from, [int startFrom])
     dest.setRange(destPos, length, src, srcPos);
   }
 
+  List<double> newDoubleList(int size, double defaultValue)  {
+    List<double> r = new List<double>(size);
+    for (int i = 0; i < size; ++i) r[i] = defaultValue;
+    return r;
+  }
+
   List<int> newIntList(int size, int defaultValue)
   {
     List<int> r = new List<int>(size);
     for(int i = 0; i < size; ++i) r[i] = defaultValue;
-    
-    return r;
-  }
-  
-  List<double> newDoubleList(int size, double defaultValue)
-  {
-    List<double> r = new List<double>(size);
-    for(int i = 0; i < size; ++i) r[i] = defaultValue;
-    
     return r;
   }
 
