@@ -9,6 +9,10 @@
 #source('CpuInfo.dart');
 
 #source('Color.dart');
+#source('ChannelDM.dart');
+#source('ChannelNoise.dart');
+#source('ChannelSquare.dart');
+#source('ChannelTriangle.dart');
 #source('Globals.dart');
 #source('KbInputHandler.dart');
 
@@ -56,6 +60,7 @@
 #source('ROM.dart');
 #source('Tile.dart');
 #source('UI.dart');
+#source('PapuChannel.dart');
 
 class Controller {
   var canvas;
