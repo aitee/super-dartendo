@@ -37,10 +37,8 @@
         keyMapping[padKey] = kbKeycode;
     }
 
-     /*
-     void keyPressed(KeyEvent ke) {
-
-        int kc = ke.getKeyCode();
+     void keyPressed(KeyboardEvent ke) {
+        int kc = ke.keyCode;
         if (kc >= allKeysState.length) {
             return;
         }
@@ -59,9 +57,9 @@
         }
     }
 
-     void keyReleased(KeyEvent ke) {
+     void keyReleased(KeyboardEvent ke) {
 
-        int kc = ke.getKeyCode();
+        int kc = ke.keyCode;
         if (kc >= allKeysState.length) {
             return;
         }
@@ -69,8 +67,8 @@
         allKeysState[kc] = false;
 
         if (id == 0) {
-            switch (kc) {
-                case KeyEvent.VK_F5: {
+            switch (ke.keyIdentifier) {
+                case KeyboardEvent.F5: {
                     // Reset game:
                     if (nes.isRunning()) {
                         nes.stopEmulation();
@@ -80,14 +78,14 @@
                     }
                     break;
                 }
-                case KeyEvent.VK_F10: {
+                case KeyboardEvent.F10: {
                     // Just using this to display the battery RAM contents to user.
                     if (nes.rom != null) {
                         nes.rom.closeRom();
                     }
                     break;
                 }
-                case KeyEvent.VK_F12: {
+                case KeyboardEvent.F12: {
                     JOptionPane.showInputDialog("Save Code for Resuming Game.", "Test");
                     break;
                 }
@@ -99,7 +97,6 @@
      void keyTyped(KeyEvent ke) {
         // Ignore.
     }
-    */
 
      void reset() {
         allKeysState = Util.newBoolList(255, false);

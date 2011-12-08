@@ -218,10 +218,16 @@ class Controller {
       print('GOT EVENT');
     }, true);
     window.addEventListener('keydown', (Event e) {
-      print('GOT KEY DOWN EVENT ' + e.keyCode);
+      Expect.isTrue(e is KeyboardEvent);
+      KeyboardEvent ke = e;
+      print('GOT KEY DOWN EVENT ' + ke.keyIdentifier);
+      gui.kbJoy1.keyPressed(ke);
     }, true);
     window.addEventListener('keyup', (Event e) {
-      print('GOT KEY UP EVENT ' + e.keyCode);
+      Expect.isTrue(e is KeyboardEvent);
+      KeyboardEvent ke = e;
+      print('GOT KEY UP EVENT ' + ke.keyIdentifier);
+      gui.kbJoy1.keyReleased(ke);
     }, true);
     //element.on.keyUp.add( (EventListener event) { 
       //print('KEY RELEASED'); }); 
