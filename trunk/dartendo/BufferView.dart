@@ -26,7 +26,7 @@ class BufferView {
 
      // Constructor
      BufferView(NES nes, int width, int height) {
-       canvas = document.getElementById("webGlCanvas");
+       canvas = document.query("#webGlCanvas");
        context = canvas.getContext('2d');
 
        this.nes = nes;
@@ -81,14 +81,16 @@ class BufferView {
         var arr = context.getImageData(0,0,256,240);
         var data = arr.data;
         //print(data.length);
+        var ppui=0;
         for (var i=0;i<256*240*4;) {
           //print('Setting pixels');
-          data[i] = nes.ppu.buffer[i]; // r
+          data[i] = (nes.ppu.buffer[ppui])&0xFF; // r
           i++;
-          data[i] = nes.ppu.buffer[i]; // g
+          data[i] = (nes.ppu.buffer[ppui]>>8)&0xFF; // g
           i++;
-          data[i] = nes.ppu.buffer[i]; // b
+          data[i] = (nes.ppu.buffer[ppui]>>16)&0xFF; // b
           i++;
+          ppui++;
           data[i] = 255; // a
           i++;
         }
@@ -97,7 +99,7 @@ class BufferView {
         var b = 2;
         var c = a ~/ b;
         //print(c);
-        context.putImageData(arr, 0, 0, 0,   0, 150, 50);
+        context.putImageData(arr, 0, 0, 0,   0, 256, 240);
 
     }
 

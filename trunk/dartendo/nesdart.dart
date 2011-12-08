@@ -1,7 +1,8 @@
-#import('dart:dom');
+#import('dart:html');
 #import('dart:json');
-#import('dart:html', prefix:'html');
-#import('dart:htmlimpl', prefix:'htmlimpl');
+//#import('dart:html', prefix:'html');
+#import('dart:htmlimpl');
+#import('dart:dom', prefix:'dom');
 
 #source('AppletUI.dart');
 #source('BufferView.dart');
@@ -15,7 +16,6 @@
 #source('CpuInfo.dart');
 #source('FileLoader.dart');
 #source('Globals.dart');
-#source('input.dart');
 #source('KbInputHandler.dart');
 #source('MemoryMapper.dart');
 #source('Mapper001.dart');
@@ -94,7 +94,7 @@ class Controller {
     Globals = new SGlobals();
     Util = new CUtil();
     Misc = new MiscClass();
-    canvas = document.getElementById("webGlCanvas");
+    canvas = document.query("#webGlCanvas");
     context = canvas.getContext('2d');
      scale = false;
      sound = false;
@@ -220,12 +220,27 @@ class Controller {
     intList[3] = 2;
     print(intList);
     
+    /*
     canvas.addEventListener('click', (Event e) {
       print('GOT EVENT');
     }, true);
     canvas.addEventListener('click', (Event e) {
       print('GOT EVENT');
     }, true);
+    */
+    window.on.keyDown.add((Event e) {
+      Expect.isTrue(e is KeyboardEvent);
+      KeyboardEvent ke = e;
+      print('GOT KEY DOWN EVENT ' + ke.keyIdentifier);
+      gui.kbJoy1.keyPressed(ke);
+    }, true);
+    window.on.keyUp.add((Event e) {
+      Expect.isTrue(e is KeyboardEvent);
+      KeyboardEvent ke = e;
+      print('GOT KEY UP EVENT ' + ke.keyIdentifier);
+      gui.kbJoy1.keyReleased(ke);
+    }, true);
+    /*
     window.addEventListener('keydown', (Event e) {
       Expect.isTrue(e is KeyboardEvent);
       KeyboardEvent ke = e;
@@ -238,6 +253,7 @@ class Controller {
       print('GOT KEY UP EVENT ' + ke.keyIdentifier);
       gui.kbJoy1.keyReleased(ke);
     }, true);
+    */
     //element.on.keyUp.add( (EventListener event) { 
       //print('KEY RELEASED'); }); 
 
@@ -332,19 +348,21 @@ class Controller {
   void animate(int time) {
     //print("test: " + time);
     //canvas.width = canvas.width;
+    
+    
+    
+            if (nes.getCpu().stopRunning) {
+              print('NOT RUNNING');
+              nes.getCpu().finishRun();
+              return;
+            }
 
-    if (nes.getCpu().stopRunning) {
-      print('NOT RUNNING');
-      nes.getCpu().finishRun();
-      return;
-    }
-
-    while (true) {
-      nes.getCpu().emulate();
-      if (nes.getGui().getScreenView().frameFinished) {
-        nes.getGui().getScreenView().finishFrame();
-        break;
-      }
+    while(true) {
+            nes.getCpu().emulate();
+            if(nes.getGui().getScreenView().frameFinished) {
+              nes.getGui().getScreenView().finishFrame();
+              break;
+            }
     }
     lastTime = time;
     window.webkitRequestAnimationFrame(animate, canvas);
@@ -356,7 +374,5 @@ class Controller {
 }
 
 void main() {
-  Input input = new Input();
-  input.init();
   new Controller().run();
 }

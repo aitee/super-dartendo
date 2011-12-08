@@ -341,7 +341,6 @@ class PPU {
   }
 
   void endScanline() {
-    print("END SCANLINE "+scanline);
     if (scanline < 19 + _vblankAdd) {
       // VINT
       // do nothing.
