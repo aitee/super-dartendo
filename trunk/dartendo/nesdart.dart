@@ -1,7 +1,7 @@
 #import('dart:dom');
 #import('dart:json');
 #import('dart:html', prefix:'html');
-#import('dart:htmlimpl', prefix:'html');
+#import('dart:htmlimpl', prefix:'htmlimpl');
 
 #source('AppletUI.dart');
 #source('BufferView.dart');
@@ -15,6 +15,7 @@
 #source('CpuInfo.dart');
 #source('FileLoader.dart');
 #source('Globals.dart');
+#source('input.dart');
 #source('KbInputHandler.dart');
 #source('MemoryMapper.dart');
 #source('Mapper001.dart');
@@ -331,21 +332,19 @@ class Controller {
   void animate(int time) {
     //print("test: " + time);
     //canvas.width = canvas.width;
-    
-    
-    
-            if (nes.getCpu().stopRunning) {
-              print('NOT RUNNING');
-              nes.getCpu().finishRun();
-              return;
-            }
 
-    while(true) {
-            nes.getCpu().emulate();
-            if(nes.getGui().getScreenView().frameFinished) {
-              nes.getGui().getScreenView().finishFrame();
-              break;
-            }
+    if (nes.getCpu().stopRunning) {
+      print('NOT RUNNING');
+      nes.getCpu().finishRun();
+      return;
+    }
+
+    while (true) {
+      nes.getCpu().emulate();
+      if (nes.getGui().getScreenView().frameFinished) {
+        nes.getGui().getScreenView().finishFrame();
+        break;
+      }
     }
     lastTime = time;
     window.webkitRequestAnimationFrame(animate, canvas);
@@ -357,5 +356,7 @@ class Controller {
 }
 
 void main() {
+  Input input = new Input();
+  input.init();
   new Controller().run();
 }
