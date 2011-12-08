@@ -54,6 +54,17 @@ class CUtil {
     return r;
   }
   
+  void printDebug(String content, bool toPrint) {
+    if (toPrint) {
+      print(content);
+    }
+  }
+  
+  void printVerbose(String content, bool toPrint) {
+    if (toPrint) {
+      print(content);
+    }
+  }
 }
 
 CUtil Util = null;
