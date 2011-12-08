@@ -1,14 +1,10 @@
 #import('dart:dom');
+#source('AppletUI.dart');
+#source('BufferView.dart');
 #source('ByteBuffer.dart');
-#source('memory.dart');
-#source('UI.dart');
 #source('Color.dart');
 #source('Globals.dart');
-#source('AppletUI.dart');
 #source('KbInputHandler.dart');
-#source('BufferView.dart');
-#source('NES.dart');
-#source('ROM.dart');
 #source('MemoryMapper.dart');
 #source('Mapper001.dart');
 #source('Mapper002.dart');
@@ -40,14 +36,14 @@
 #source('Mapper105.dart');
 #source('Mapper140.dart');
 #source('Mapper182.dart');
-#source('Color.dart');
-#source('Globals.dart');
-#source('AppletUI.dart');
-#source('KbInputHandler.dart');
-#source('PaletteTable.dart');
+#source('MapperDefault.dart');
 #source('memory.dart');
-#source('Tile.dart');
+#source('NES.dart');
+#source('PaletteTable.dart');
 #source('PAPU.dart');
+#source('ROM.dart');
+#source('Tile.dart');
+#source('UI.dart');
 
 class Controller {
   var canvas;
