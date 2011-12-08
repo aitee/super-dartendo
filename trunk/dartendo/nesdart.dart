@@ -71,9 +71,11 @@ class Controller {
   bool stereo = false;
   bool timeemulation = false;
   bool showsoundbuffer = false;
+  
   int samplerate = 0;
   int romSize = 0;
   int progress = 0;
+  
   AppletUI gui;
   NES nes;
   BufferView panelScreen;
@@ -81,10 +83,9 @@ class Controller {
   Color bgColor;
   bool started;
   
-  int lastTime;
+  int lastTime = 0;
   
-  int sleepTime;
-  
+  int sleepTime = 0;
   
   Controller() {
     Misc = new MiscClass();
