@@ -26,8 +26,7 @@ class PaletteTable {
 
     // Load the PAL palette:
     bool loadPALPalette() {
-      Expect.fail('PAL NOT SUPPORTED');
-        return loadPalette("palettes/pal.txt");
+        return loadPalette("palettes/pal.json");
     }
 
     // Load a palette file:
@@ -36,20 +35,14 @@ class PaletteTable {
         int r, g, b;
 
         try {
-
-            if (file.toLowerCase().endsWith("pal")) {
-              Expect.fail("PAL NOT SUPPORTED");
-            } else {
-
-              List<int> palette = FileLoader.loadFile(file);
+            List<int> palette = FileLoader.loadFile(file);
+            
+            for (var i = 0; i<palette.length; ++i) {
+              b = palette[i] & 0xFF;
+              g = (palette[i]>>8) & 0xFF;
+              r = (palette[i]>>16) & 0xFF;
               
-              for (var i = 0; i<palette.length; i++) {
-                b = palette[i]%256;
-                g = (palette[i]>>8)%256;
-                r = (palette[i]>>16)%256;
-                
-                origTable[i] = r | (g<<8) | (b<<16);
-              }
+              origTable[i] = r | (g<<8) | (b<<16);
             }
 
             setEmphasis(0);
