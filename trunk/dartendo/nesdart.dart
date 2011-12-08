@@ -3,19 +3,15 @@
 #source('AppletUI.dart');
 #source('BufferView.dart');
 #source('ByteBuffer.dart');
-
-#source('Util.dart');  
-#source('CPU.dart');
-#source('CpuInfo.dart');
-
-#source('Color.dart');
 #source('ChannelDM.dart');
 #source('ChannelNoise.dart');
 #source('ChannelSquare.dart');
 #source('ChannelTriangle.dart');
+#source('Color.dart');
+#source('CPU.dart');
+#source('CpuInfo.dart');
 #source('Globals.dart');
 #source('KbInputHandler.dart');
-
 #source('MapperDefault.dart');
 #source('MemoryMapper.dart');
 #source('Mapper001.dart');
@@ -49,20 +45,17 @@
 #source('Mapper140.dart');
 #source('Mapper182.dart');
 #source('MapperDefault.dart');
-#source('Color.dart');
-#source('Globals.dart');
-#source('AppletUI.dart');
-#source('KbInputHandler.dart');
-#source('PaletteTable.dart');
 #source('memory.dart');
 #source('NES.dart');
 #source('PaletteTable.dart');
+#source('PAPU.dart');
+#source('PapuChannel.dart');
+#source('PPU.dart');
 #source('ROM.dart');
 #source('Tile.dart');
 #source('Scale.dart');
 #source('UI.dart');
-#source('PapuChannel.dart');
-#source('PPU.dart');
+#source('Util.dart');
 
 class Controller {
   var canvas;

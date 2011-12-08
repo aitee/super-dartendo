@@ -2,7 +2,7 @@ class PAPU {
 
     NES nes;
     Memory cpuMem;
-    Mixer mixer;
+    //Mixer mixer;
     SourceDataLine line;
     ChannelSquare square1;
     ChannelSquare square2;
@@ -20,7 +20,7 @@ class PAPU {
     int frameIrqCounterMax;
     int initCounter;
     int channelEnableValue;
-    byte b1, b2, b3, b4;
+    int b1, b2, b3, b4; // Formerly bytes
     int bufferSize = 2048;
     int bufferIndex;
     int sampleRate = 44100;
@@ -97,13 +97,13 @@ class PAPU {
         dmc = new ChannelDM(this);
 
         masterVolume = 256;
-        panning = new List<int>{
+        panning = [
                     80,
                     170,
                     100,
                     150,
                     128
-                };
+                ];
         setPanning(panning);
 
         // Initialize lookup tables:
@@ -125,7 +125,7 @@ class PAPU {
         // not yet.
     }
 
-     synchronized void start() {
+     void start() {
 
         //System.out.println("* Starting PAPU lines.");
         if (line != null && line.isActive()) {
@@ -134,14 +134,17 @@ class PAPU {
         }
 
         bufferIndex = 0;
-        Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
-
+        
+        // TODO: Figure out how to properly enable audio
+        //List<Mixer.Info> mixerInfo = AudioSystem.getMixerInfo();
+        var mixerInfo = null;
+        
         if (mixerInfo == null || mixerInfo.length == 0) {
             //System.out.println("No audio mixer available, sound disabled.");
             Globals.enableSound = false;
             return;
         }
-
+/*
         mixer = AudioSystem.getMixer(mixerInfo[1]);
 
         AudioFormat audioFormat = new AudioFormat(sampleRate, 16, (stereo ? 2 : 1), true, false);
@@ -155,7 +158,7 @@ class PAPU {
 
         } catch (Exception e) {
             //System.out.println("Couldn't get sound lines.");
-        }
+        }*/
 
     }
 
@@ -179,7 +182,7 @@ class PAPU {
         dmc.irqGenerated = false;
 
         ////System.out.println("$4015 read. Value = "+Misc.bin8(tmp)+" countseq = "+countSequence);
-        return (int) tmp;
+        return tmp;
 
     }
 
@@ -291,7 +294,7 @@ class PAPU {
     // in the GUI.
      void updateChannelEnable(int value) {
 
-        channelEnableValue = (int) value;
+        channelEnableValue = value;
         square1.setEnabled(userEnableSquare1 && (value & 1) != 0);
         square2.setEnabled(userEnableSquare2 && (value & 2) != 0);
         triangle.setEnabled(userEnableTriangle && (value & 4) != 0);
@@ -781,7 +784,7 @@ class PAPU {
         return 0;
     }
 
-     synchronized void setSampleRate(int rate, bool restart) {
+     void setSampleRate(int rate, bool restart) {
 
         bool cpuRunning = nes.isRunning();
         if (cpuRunning) {
@@ -789,10 +792,10 @@ class PAPU {
         }
 
         sampleRate = rate;
-        sampleTimerMax = (int) ((1024.0 * Globals.CPU_FREQ_NTSC * Globals.preferredFrameRate) /
-                (sampleRate * 60.0d));
+        sampleTimerMax = ((1024.0 * Globals.CPU_FREQ_NTSC * Globals.preferredFrameRate) /
+                (sampleRate * 60.0)).toInt();
 
-        frameTime = (int) ((14915.0 * (double) Globals.preferredFrameRate) / 60.0d);
+        frameTime = ((14915.0 * Globals.preferredFrameRate) / 60.0).toInt();
 
         sampleTimer = 0;
         bufferIndex = 0;
@@ -808,7 +811,7 @@ class PAPU {
 
     }
 
-     synchronized void setStereo(bool s, bool restart) {
+     void setStereo(bool s, bool restart) {
 
         if (stereo == s) {
             return;
@@ -819,9 +822,9 @@ class PAPU {
 
         stereo = s;
         if (stereo) {
-            sampleBuffer = new byte[bufferSize * 4];
+            sampleBuffer = Util.newIntList(bufferSize * 4, 0);
         } else {
-            sampleBuffer = new byte[bufferSize * 2];
+            sampleBuffer = Util.newIntList(bufferSize * 2, 0);
         }
 
         if (restart) {
@@ -892,7 +895,8 @@ class PAPU {
 
     }
 
-     SourceDataLine getLine() {
+    
+    SourceDataLine getLine() {
         return line;
     }
 
@@ -911,7 +915,7 @@ class PAPU {
         time = ((target_avail - cur_avail) * 1000) / sampleRate;
         time /= (stereo ? 4 : 2);
 
-        return (int) time;
+        return time.toInt();
 
     }
 
@@ -921,7 +925,7 @@ class PAPU {
 
      void initLengthLookup() {
 
-        lengthLookup = new List<int>{
+        lengthLookup = [
                     0x0A, 0xFE,
                     0x14, 0x02,
                     0x28, 0x04,
@@ -938,13 +942,13 @@ class PAPU {
                     0x48, 0x1A,
                     0x10, 0x1C,
                     0x20, 0x1E
-                };
+                ];
 
     }
 
      void initDmcFrequencyLookup() {
 
-        dmcFreqLookup = new int[16];
+        dmcFreqLookup = new List<int>(16);
 
         dmcFreqLookup[0x0] = 0xD60;
         dmcFreqLookup[0x1] = 0xBE0;
@@ -968,7 +972,7 @@ class PAPU {
 
      void initNoiseWavelengthLookup() {
 
-        noiseWavelengthLookup = new int[16];
+        noiseWavelengthLookup = new List<int>(16);
 
         noiseWavelengthLookup[0x0] = 0x004;
         noiseWavelengthLookup[0x1] = 0x008;
@@ -991,8 +995,8 @@ class PAPU {
 
      void initDACtables() {
 
-        square_table = new int[32 * 16];
-        tnd_table = new int[204 * 16];
+        square_table = new List<int>(32 * 16);
+        tnd_table = new List<int>(204 * 16);
         double value;
 
         int ival;
@@ -1002,10 +1006,10 @@ class PAPU {
         for (int i = 0; i < 32 * 16; i++) {
 
 
-            value = 95.52 / (8128.0 / ((double) i / 16.0) + 100.0);
+            value = 95.52 / (8128.0 / (i / 16.0) + 100.0);
             value *= 0.98411;
             value *= 50000.0;
-            ival = (int) value;
+            ival = value.toInt();
 
             square_table[i] = ival;
             if (ival > max_sqr) {
@@ -1016,10 +1020,10 @@ class PAPU {
 
         for (int i = 0; i < 204 * 16; i++) {
 
-            value = 163.67 / (24329.0 / ((double) i / 16.0) + 100.0);
+            value = 163.67 / (24329.0 / (i / 16.0) + 100.0);
             value *= 0.98411;
             value *= 50000.0;
-            ival = (int) value;
+            ival = value.toInt();
 
             tnd_table[i] = ival;
             if (ival > max_tnd) {
