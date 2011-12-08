@@ -49,3 +49,5 @@ public interface MemoryMapper {
 
     public void latchAccess(int address);
 }
+
+
