@@ -13,9 +13,9 @@ handlers:
   static_files: nesdart.html
   upload: nesdart.html
 
-- url: /(.*\.(html|css|js|png))
+- url: /(.*\.(html|css|js|png|json|dart))
   static_files: \1
-  upload: (.*\.(html|css|js|png))
+  upload: (.*\.(html|css|js|png|json|dart))
 
 - url: (.*)
   script: main.app
