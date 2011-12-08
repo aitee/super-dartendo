@@ -65,6 +65,7 @@ class Controller {
   var context;
 
   bool scale = false;
+  bool scanlines = false;
   bool sound = false;
   bool fps = false;
   bool stereo = false;
@@ -110,7 +111,6 @@ class Controller {
 
    void init() {
     readParams();
-    System.gc();
 
     gui = new AppletUI(this);
     gui.init(false);
@@ -121,7 +121,6 @@ class Controller {
     nes = gui.getNES();
     nes.enableSound(sound);
     nes.reset();
-
 }
 
  void addScreenView() {
@@ -140,9 +139,7 @@ class Controller {
         }
 
     } else {
-
         panelScreen.setBounds(0, 0, 256, 240);
-
     }
 
 }

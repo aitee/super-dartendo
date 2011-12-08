@@ -2,38 +2,40 @@ class BufferView {
 
   var canvas;
   var context;
-    // Scale modes:
-      static final int SCALE_NONE = 0;
-      static final int SCALE_HW2X = 1;
-      static  final int SCALE_HW3X = 2;
-      static final int SCALE_NORMAL = 3;
-      static final int SCALE_SCANLINE = 4;
-      static final int SCALE_RASTER = 5;
+     // Scale modes:
+     static final int SCALE_NONE = 0;
+     static final int SCALE_HW2X = 1;
+     static  final int SCALE_HW3X = 2;
+     static final int SCALE_NORMAL = 3;
+     static final int SCALE_SCANLINE = 4;
+     static final int SCALE_RASTER = 5;
+     
      NES nes;
      bool usingMenu = false;
-     int width;
-     int height;
+     int width = 0;
+     int height = 0
+     ;
      List<int> pix;
      List<int> pix_scaled;
-     int scaleMode;
-    // FPS counter variables:
+     int scaleMode = 0;
+     
+     // FPS counter variables:
      bool showFPS = false;
-     int prevFrameTime;
+     int prevFrameTime = 0;
      String fps;
-     int fpsCounter;
-     bool notifyImageReady;
-     bool frameFinished;
+     int fpsCounter = 0;
+     bool notifyImageReady = false;
+     bool frameFinished = false;
 
     // Constructor
      BufferView(NES nes, int width, int height) {
        canvas = document.getElementById("webGlCanvas");
        context = canvas.getContext('2d');
 
-        this.nes = nes;
-        this.width = width;
-        this.height = height;
-        this.scaleMode = -1;
-
+       this.nes = nes;
+       this.width = width;
+       this.height = height;
+       this.scaleMode = -1;
     }
 
      void setScaleMode(int newMode) {
@@ -44,25 +46,20 @@ class BufferView {
     }
 
      void init() {
-
         setScaleMode(SCALE_NONE);
-
     }
 
      void imageReady(bool skipFrame) {
        if (!Globals.focused) {
          Globals.focused = true;
-     }
+       }
 
-        // Skip image drawing if minimized or frameskipping:
-        if (!skipFrame) {
-
-            nes.ppu.requestRenderAll = false;
-            paint();
-
-        }
-
-        frameFinished = true;
+       // Skip image drawing if minimized or frameskipping:
+       if (!skipFrame) {
+           nes.ppu.requestRenderAll = false;
+           paint();
+       }
+       frameFinished = true;
     }
     
      void finishFrame() {
