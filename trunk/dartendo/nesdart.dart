@@ -40,6 +40,7 @@
 #source('NameTable.dart');
 #source('PaletteTable.dart');
 #source('memory.dart');
+#source('Tile.dart');
 
 class snes {
   var canvas;
