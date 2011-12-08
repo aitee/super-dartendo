@@ -1,5 +1,6 @@
 #import('dart:dom');
 #source('MapperDefault.dart');
+#source('ByteBuffer.dart');
 
 class snes {
   var canvas;
