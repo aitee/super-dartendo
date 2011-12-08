@@ -21,11 +21,12 @@ class PaletteTable {
 
     // Load the NTSC palette:
     bool loadNTSCPalette() {
-        return loadPalette("palettes/ntsc.txt");
+        return loadPalette("palettes/ntsc.json");
     }
 
     // Load the PAL palette:
     bool loadPALPalette() {
+      Expect.fail('PAL NOT SUPPORTED');
         return loadPalette("palettes/pal.txt");
     }
 
@@ -37,10 +38,10 @@ class PaletteTable {
         try {
 
             if (file.toLowerCase().endsWith("pal")) {
-              print("PAL NOT SUPPORTED");
+              Expect.fail("PAL NOT SUPPORTED");
             } else {
 
-              List<int> palette = [1,2,3]; //TODO: PUT PALETTE HERE
+              List<int> palette = FileLoader.loadFile(file);
               
               for (var i = 0; i<palette.length; i++) {
                 b = palette[i]%256;
