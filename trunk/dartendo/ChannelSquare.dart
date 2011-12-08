@@ -18,16 +18,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 class ChannelSquare implements PapuChannel {
 
     PAPU papu = null;
-    static List<int> dutyLookup = [
-                                   0, 1, 0, 0, 0, 0, 0, 0,
-                                   0, 1, 1, 0, 0, 0, 0, 0,
-                                   0, 1, 1, 1, 1, 0, 0, 0,
-                                   1, 0, 0, 1, 1, 1, 1, 1];
-    static List<int> impLookup = [
-                                  1, -1, 0, 0, 0, 0, 0, 0,
-                                  1, 0, -1, 0, 0, 0, 0, 0,
-                                  1, 0, 0, 0, -1, 0, 0, 0,
-                                  -1, 0, 1, 0, 0, 0, 0, 0];
+    static List<int> dutyLookup;
+    static List<int> impLookup;
     bool sqr1 = false;
     bool _isEnabled = false;
     bool lengthCounterEnable = false;
@@ -55,6 +47,16 @@ class ChannelSquare implements PapuChannel {
     int vol = 0;
 
     ChannelSquare(PAPU papu, bool square1) {
+      dutyLookup = [
+                                     0, 1, 0, 0, 0, 0, 0, 0,
+                                     0, 1, 1, 0, 0, 0, 0, 0,
+                                     0, 1, 1, 1, 1, 0, 0, 0,
+                                     1, 0, 0, 1, 1, 1, 1, 1];
+      impLookup = [
+                                    1, -1, 0, 0, 0, 0, 0, 0,
+                                    1, 0, -1, 0, 0, 0, 0, 0,
+                                    1, 0, 0, 0, -1, 0, 0, 0,
+                                    -1, 0, 1, 0, 0, 0, 0, 0];
 
         this.papu = papu;
         sqr1 = square1;

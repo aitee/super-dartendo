@@ -157,7 +157,7 @@ class ROM {
      void load(String fileName) {
 
         this.fileName = fileName;
-        FileLoader loader = new FileLoader();
+        //FileLoader loader = new FileLoader(); //TODO: uncomment when fileloader is in.
         List<int> b = loader.loadFile(fileName, nes.getGui());
 
         if (b == null || b.length == 0) {
@@ -175,7 +175,7 @@ class ROM {
         }
 
         // Check first four bytes:
-        String fcode = String.fromCharCodes(b[0],b[1],b[2]);
+        String fcode = new String.fromCharCodes([b[0],b[1],b[2]]);
         if (fcode != 'NES' || b[3] != 0x1A) {
             //System.out.println("Header is incorrect.");
             valid = false;

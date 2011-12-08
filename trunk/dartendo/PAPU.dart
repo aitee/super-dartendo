@@ -596,7 +596,7 @@ class PAPU {
 
         }
 
-        smpNoise = (int) ((noise.accValue << 4) / noise.accCount);
+        smpNoise = ((noise.accValue << 4) / noise.accCount);
         noise.accValue = smpNoise >> 4;
         noise.accCount = 1;
 

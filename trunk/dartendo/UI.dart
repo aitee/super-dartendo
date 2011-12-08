@@ -33,19 +33,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      BufferView getImgPalView();
 
-     HiResTimer getTimer();
+     void imageReady(bool skipFrame);
 
-     void imageReady(boolean skipFrame);
-
-     void init(boolean showGui);
+     void init(bool showGui);
 
      String getWindowCaption();
 
      void setWindowCaption(String s);
 
      void setTitle(String s);
-
-     Point getLocation();
 
      int getWidth();
 

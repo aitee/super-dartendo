@@ -5,10 +5,10 @@
     KbInputHandler kbJoy1;
     KbInputHandler kbJoy2;
     BufferView vScreen;
-    long t1, t2;
+    int t1, t2;
     int sleepTime;
 
-     AppletUI(vNESFrame applet) {
+     AppletUI(Controller applet) {
 
         this.applet = applet;
         nes = new NES(this);
@@ -18,11 +18,11 @@
 
         vScreen = new BufferView(nes, 256, 240);
         vScreen.init();
-        vScreen.setNotifyImageReady(true);
 
         kbJoy1 = new KbInputHandler(nes, 0);
         kbJoy2 = new KbInputHandler(nes, 1);
 
+        /*
         // Grab Controller Setting for Player 1:
         kbJoy1.mapKey(InputHandler.KEY_A, 88);
         kbJoy1.mapKey(InputHandler.KEY_B, 90);
@@ -44,6 +44,7 @@
         kbJoy2.mapKey(InputHandler.KEY_LEFT, 0);
         kbJoy2.mapKey(InputHandler.KEY_RIGHT, 0);
         vScreen.addKeyListener(kbJoy2);
+        */
     }
 
      void imageReady() {
@@ -81,9 +82,6 @@
         // Show ROM load progress:
         applet.showLoadProgress(percentComplete);
 
-        // Sleep a bit:
-        timer.sleepMicros(20 * 1000);
-
     }
 
      void destroy() {
@@ -103,20 +101,11 @@
         kbJoy1 = null;
         kbJoy2 = null;
         vScreen = null;
-        timer = null;
 
     }
 
      NES getNES() {
         return nes;
-    }
-
-     InputHandler getJoy1() {
-        return kbJoy1;
-    }
-
-     InputHandler getJoy2() {
-        return kbJoy2;
     }
 
      BufferView getScreenView() {
@@ -139,10 +128,6 @@
         return null;
     }
 
-     HiResTimer getTimer() {
-        return timer;
-    }
-
      String getWindowCaption() {
         return "";
     }
@@ -154,11 +139,11 @@
     }
 
      int getWidth() {
-        return applet.getWidth();
+        return 256;
     }
 
      int getHeight() {
-        return applet.getHeight();
+        return 240;
     }
 
      void println(String s) {

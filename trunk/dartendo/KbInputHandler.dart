@@ -20,6 +20,7 @@
         keyMapping[padKey] = kbKeycode;
     }
 
+     /*
      void keyPressed(KeyEvent ke) {
 
         int kc = ke.getKeyCode();
@@ -81,6 +82,7 @@
      void keyTyped(KeyEvent ke) {
         // Ignore.
     }
+    */
 
      void reset() {
         allKeysState = new List<int>(255);

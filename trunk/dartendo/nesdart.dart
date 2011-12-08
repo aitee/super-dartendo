@@ -46,6 +46,7 @@
 #source('Mapper182.dart');
 #source('MapperDefault.dart');
 #source('memory.dart');
+#source('NameTable.dart');
 #source('NES.dart');
 #source('PaletteTable.dart');
 #source('PAPU.dart');
@@ -80,6 +81,8 @@ class Controller {
   
   int lastTime;
   
+  int sleepTime;
+  
   
   snes() {
     Globals = new SGlobals();
@@ -99,6 +102,7 @@ class Controller {
      bgColor = new Color(0,0,0);
      started = false;
      lastTime = 0;
+     sleepTime=0;
   }
 
    void init() {
@@ -433,6 +437,10 @@ class Controller {
             nes.getCpu().finishRun();
     lastTime = time;
     window.webkitRequestAnimationFrame(animate, canvas);
+  }
+  
+  void addSleepTime(int timeToAdd) {
+    sleepTime += timeToAdd;    
   }
 }
 
