@@ -1,19 +1,12 @@
 #import('dart:dom');
-#import('dart:json');
+#import('dart:html', prefix:'html');
+#import('dart:htmlimpl');
 
-#source('AppletUI.dart');
-#source('BufferView.dart');
 #source('ByteBuffer.dart');
-#source('ChannelDM.dart');
-#source('ChannelNoise.dart');
-#source('ChannelSquare.dart');
-#source('ChannelTriangle.dart');
-#source('Color.dart');
+#source('Util.dart');
 #source('CPU.dart');
 #source('CpuInfo.dart');
-#source('FileLoader.dart');
-#source('Globals.dart');
-#source('KbInputHandler.dart');
+#source('MapperDefault.dart');
 #source('MemoryMapper.dart');
 #source('Mapper001.dart');
 #source('Mapper002.dart');
@@ -45,143 +38,21 @@
 #source('Mapper105.dart');
 #source('Mapper140.dart');
 #source('Mapper182.dart');
-#source('MapperDefault.dart');
-#source('misc.dart');
-#source('memory.dart');
-#source('NameTable.dart');
-#source('NES.dart');
-#source('PaletteTable.dart');
-#source('PAPU.dart');
-#source('PapuChannel.dart');
-#source('PPU.dart');
-#source('ROM.dart');
-#source('Tile.dart');
-#source('Scale.dart');
-#source('SourceDataLine.dart');
-#source('UI.dart');
-#source('Util.dart');
 
-class Controller {
+#source('misc.dart');
+#source('NameTable.dart');
+#source('input.dart');
+
+class snes {
   var canvas;
   var context;
+  var gl;
 
-  bool scale = false;
-  bool sound = false;
-  bool fps = false;
-  bool stereo = false;
-  bool timeemulation = false;
-  bool showsoundbuffer = false;
-  
-  int samplerate = 0;
-  int romSize = 0;
-  int progress = 0;
-  
-  AppletUI gui;
-  NES nes;
-  BufferView panelScreen;
-  String rom;
-  Color bgColor;
-  bool started;
-  
-  int lastTime = 0;
-  
-  int sleepTime = 0;
-  
-  Controller() {
-    Globals = new SGlobals();
-    Util = new CUtil();
-    Misc = new MiscClass();
+  snes() {
     canvas = document.getElementById("webGlCanvas");
     context = canvas.getContext('2d');
-     scale = false;
-     sound = false;
-     fps = false;
-     stereo = false;
-     timeemulation = false;
-     showsoundbuffer = false;
-     samplerate = 0;
-     romSize = 0;
-     progress = 0;
-     rom = "";
-     bgColor = new Color(0,0,0);
-     started = false;
-     lastTime = 0;
-     sleepTime=0;
-     init();
-  }
 
-   void init() {
-     print("CALLED INIT");
-     PaletteTable.init();
-    readParams();
-
-    gui = new AppletUI(this);
-    gui.init(false);
-
-    Globals.appletMode = true;
-    Globals.memoryFlushValue = 0x00; // make SMB1 hacked version work.
-
-    nes = gui.getNES();
-    nes.enableSound(sound);
-    nes.reset();
-    
-    print('NES: '+nes);
-
-}
-
- void addScreenView() {
-  print("ADD SCREEN VIEW");
-
-    panelScreen = gui.getScreenView();
-    panelScreen.setFPSEnabled(fps);
-
-    if (scale) {
-      print("SCALE NOT SUPPORTED");
-
-            panelScreen.setScaleMode(BufferView.SCALE_NORMAL);
-
-    } else {
-
-    }
-
-}
-
- void run() {
-
-    // Can start painting:
-    started = true;
-
-    // Load ROM file:
-    print("vNES 2.14 \u00A9 2006-2011 Jamie Sanders");
-    print("For updates, see www.thatsanderskid.com");
-    print("Use of this program subject to GNU GPL, Version 3.");
-
-    nes.loadRom(rom);
-
-    if (nes.rom.isValid()) {
-
-        // Add the screen buffer:
-        addScreenView();
-
-        // Set some properties:
-        Globals.timeEmulation = timeemulation;
-        nes.ppu.showSoundBuffer = showsoundbuffer;
-
-        // Start emulation:
-        //print("vNES is now starting the processor.");
-        nes.getCpu().beginExecution();
-
-    } else {
-
-        // ROM file was invalid.
-        print("vNES was unable to find (" + rom + ").");
-
-    }
-    
-    print("ROM LOADED");
-    nes.getCpu().initRun();
-    nes.getCpu().active = true;
-    
+    window.webkitRequestAnimationFrame(animate, canvas);
     
     //var ac = window.webkitAudioContext();
     //audioContext = new AudioContext();
@@ -214,34 +85,15 @@ class Controller {
       break;
     }
 
-    List<int> intList = Util.newIntList(5, 0);
+    List<int> intList = new List<int>(5);
     
     intList[3] = 2;
     print(intList);
-    
-    canvas.addEventListener('click', (Event e) {
-      print('GOT EVENT');
-    }, true);
-    canvas.addEventListener('click', (Event e) {
-      print('GOT EVENT');
-    }, true);
-    window.addEventListener('keydown', (Event e) {
-      Expect.isTrue(e is KeyboardEvent);
-      KeyboardEvent ke = e;
-      print('GOT KEY DOWN EVENT ' + ke.keyIdentifier);
-      gui.kbJoy1.keyPressed(ke);
-    }, true);
-    window.addEventListener('keyup', (Event e) {
-      Expect.isTrue(e is KeyboardEvent);
-      KeyboardEvent ke = e;
-      print('GOT KEY UP EVENT ' + ke.keyIdentifier);
-      gui.kbJoy1.keyReleased(ke);
-    }, true);
-    //element.on.keyUp.add( (EventListener event) { 
-      //print('KEY RELEASED'); }); 
+  }
 
-    window.webkitRequestAnimationFrame(animate, canvas);
-}
+  void run(Input input) {
+    print(input.fileBytes);
+  }
 
  void stop() {
    nes.getCpu().active = false;
@@ -332,23 +184,30 @@ class Controller {
     //print("test: " + time);
     //canvas.width = canvas.width;
     
+    //print('Getting imagedata');
+    var arr = context.getImageData(0,0,150,50);
+    var data = arr.data;
+    //print(data.length);
+    for (var i=0;i<150*50*4;) {
+      //print('Setting pixels');
+      data[i++] = 0; // r
+      data[i++] = 0; // g
+      data[i++] = 0; // b
+      data[i++] = 255; // a
+    }
+    //print('Blitting imagedata');
+    var a = 1;
+    var b = 2;
+    var c = a ~/ b;
+    //print(c);
+    context.putImageData(arr, 0, 0, 0,   0, 150, 50);
     
-    
-            if (nes.getCpu().stopRunning) {
-              return;
-            }
-
-            nes.getCpu().emulate();
-            nes.getCpu().finishRun();
-    lastTime = time;
     window.webkitRequestAnimationFrame(animate, canvas);
-  }
-  
-  void addSleepTime(int timeToAdd) {
-    sleepTime += timeToAdd;    
   }
 }
 
 void main() {
-  new Controller().run();
+  Input input = new Input();
+  input.init();
+  new snes().run(input);
 }
