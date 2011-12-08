@@ -68,7 +68,7 @@
 
   if (id == 0) {
     switch (ke.keyIdentifier) {
-    case KeyName.F5: {
+    case 'F5': {
       print('[KbInputHandler] Resetting game');
       // Reset game:
       if (nes.isRunning()) {
@@ -80,7 +80,7 @@
       break;
     }
     
-    case KeyName.F10: {
+    case 'F10': {
       print('[KbInputHandler] Closing ROM');
       // Just using this to display the battery RAM contents to user.
       if (nes.rom != null)
@@ -88,7 +88,7 @@
       break;
     }
     
-    case KeyName.F12:
+    case 'F12':
       // TODO
       // JOptionPane.showInputDialog("Save Code for Resuming Game.", "Test");
       break;
