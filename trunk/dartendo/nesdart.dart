@@ -88,9 +88,9 @@ class Controller {
   int sleepTime = 0;
   
   Controller() {
-    Misc = new MiscClass();
     Globals = new SGlobals();
     Util = new CUtil();
+    Misc = new MiscClass();
     canvas = document.getElementById("webGlCanvas");
     context = canvas.getContext('2d');
      scale = false;
