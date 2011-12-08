@@ -606,7 +606,7 @@ class MapperDefault implements MemoryMapper
         int offset = (bank8k % 2) * 8192;
 
         List<int> bank = rom.getRomBank(bank16k);
-        cpuMem.write(address, bank, offset, 8192);
+        cpuMem.writeListWithOffset(address, bank, offset, 8192);
     }
 
      void clockIrqCounter() {
