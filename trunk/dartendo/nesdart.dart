@@ -64,7 +64,6 @@ class Controller {
   var context;
 
   bool scale;
-  bool scanlines;
   bool sound;
   bool fps;
   bool stereo;
@@ -87,6 +86,7 @@ class Controller {
   
   snes() {
     Globals = new SGlobals();
+    Util = new CUtil();
     canvas = document.getElementById("webGlCanvas");
     context = canvas.getContext('2d');
      scale = false;
@@ -292,7 +292,7 @@ class Controller {
     }
 
     if (tmp == null || tmp.equals("")) {
-        sound = true;
+        sound = false; //TODO: Support sound
     } else {
         sound = tmp.equals("on");
     }

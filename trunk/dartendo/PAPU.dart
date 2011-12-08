@@ -3,7 +3,7 @@ class PAPU {
     NES nes;
     Memory cpuMem;
     //Mixer mixer;
-    SourceDataLine line;
+    //SourceDataLine line;
     ChannelSquare square1;
     ChannelSquare square2;
     ChannelTriangle triangle;

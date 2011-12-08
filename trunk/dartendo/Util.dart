@@ -8,6 +8,12 @@ class CUtil {
     dest.setRange(destPos, length, src, srcPos);
   }
   
+  void arrayTileCopy(List<Tile> src, int srcPos, List<Tile> dest, int destPos, int length)
+  {
+    // void setRange(int start, int length, List<E> from, [int startFrom])
+    dest.setRange(destPos, length, src, srcPos);
+  }
+
   List<int> newIntList(int size, int defaultValue)
   {
     List<int> r = new List<int>(size);
@@ -38,4 +44,4 @@ class CUtil {
   }
 }
 
-CUtil Util = new CUtil();
+CUtil Util = null;

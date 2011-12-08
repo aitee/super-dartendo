@@ -362,33 +362,33 @@ class MapperDefault implements MemoryMapper
     }
 
      int joy1Read() {
-        InputHandler input = nes.getGui().getJoy1();
+        KbInputHandler input = nes.getGui().getJoy1();
         int ret;
 
         switch (joy1StrobeState) {
             case 0:
-                ret = input.getKeyState(InputHandler.KEY_A);
+                ret = input.getKeyState(KbInputHandler.KEY_A);
                 break;
             case 1:
-                ret = input.getKeyState(InputHandler.KEY_B);
+                ret = input.getKeyState(KbInputHandler.KEY_B);
                 break;
             case 2:
-                ret = input.getKeyState(InputHandler.KEY_SELECT);
+                ret = input.getKeyState(KbInputHandler.KEY_SELECT);
                 break;
             case 3:
-                ret = input.getKeyState(InputHandler.KEY_START);
+                ret = input.getKeyState(KbInputHandler.KEY_START);
                 break;
             case 4:
-                ret = input.getKeyState(InputHandler.KEY_UP);
+                ret = input.getKeyState(KbInputHandler.KEY_UP);
                 break;
             case 5:
-                ret = input.getKeyState(InputHandler.KEY_DOWN);
+                ret = input.getKeyState(KbInputHandler.KEY_DOWN);
                 break;
             case 6:
-                ret = input.getKeyState(InputHandler.KEY_LEFT);
+                ret = input.getKeyState(KbInputHandler.KEY_LEFT);
                 break;
             case 7:
-                ret = input.getKeyState(InputHandler.KEY_RIGHT);
+                ret = input.getKeyState(KbInputHandler.KEY_RIGHT);
                 break;
             case 8:
             case 9:
@@ -420,7 +420,7 @@ class MapperDefault implements MemoryMapper
     }
 
      int joy2Read() {
-        InputHandler input = nes.getGui().getJoy2();
+        KbInputHandler input = nes.getGui().getJoy2();
         int st = joy2StrobeState;
 
         joy2StrobeState++;
@@ -429,21 +429,21 @@ class MapperDefault implements MemoryMapper
         }
 
         if (st == 0) {
-            return input.getKeyState(InputHandler.KEY_A);
+            return input.getKeyState(KbInputHandler.KEY_A);
         } else if (st == 1) {
-            return input.getKeyState(InputHandler.KEY_B);
+            return input.getKeyState(KbInputHandler.KEY_B);
         } else if (st == 2) {
-            return input.getKeyState(InputHandler.KEY_SELECT);
+            return input.getKeyState(KbInputHandler.KEY_SELECT);
         } else if (st == 3) {
-            return input.getKeyState(InputHandler.KEY_START);
+            return input.getKeyState(KbInputHandler.KEY_START);
         } else if (st == 4) {
-            return input.getKeyState(InputHandler.KEY_UP);
+            return input.getKeyState(KbInputHandler.KEY_UP);
         } else if (st == 5) {
-            return input.getKeyState(InputHandler.KEY_DOWN);
+            return input.getKeyState(KbInputHandler.KEY_DOWN);
         } else if (st == 6) {
-            return input.getKeyState(InputHandler.KEY_LEFT);
+            return input.getKeyState(KbInputHandler.KEY_LEFT);
         } else if (st == 7) {
-            return input.getKeyState(InputHandler.KEY_RIGHT);
+            return input.getKeyState(KbInputHandler.KEY_RIGHT);
         } else if (st == 16) {
             return  0;
         } else if (st == 17) {
@@ -546,7 +546,7 @@ class MapperDefault implements MemoryMapper
         Util.arraycopy(rom.getVromBank(bank % rom.getVromBankCount()), 0, nes.ppuMem.mem, address, 4096);
         
         List<Tile> vromTile = rom.getVromBankTiles(bank % rom.getVromBankCount());
-        Util.arraycopy(vromTile, 0, ppu.ptTile, address >> 4, 256);
+        Util.arrayTileCopy(vromTile, 0, ppu.ptTile, address >> 4, 256);
     }
 
     void load32kRomBank(int bank, int address) {

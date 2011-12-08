@@ -3,12 +3,12 @@ class BufferView {
   var canvas;
   var context;
     // Scale modes:
-      final int SCALE_NONE = 0;
-      final int SCALE_HW2X = 1;
-      final int SCALE_HW3X = 2;
-      final int SCALE_NORMAL = 3;
-      final int SCALE_SCANLINE = 4;
-      final int SCALE_RASTER = 5;
+      static final int SCALE_NONE = 0;
+      static final int SCALE_HW2X = 1;
+      static  final int SCALE_HW3X = 2;
+      static final int SCALE_NORMAL = 3;
+      static final int SCALE_SCANLINE = 4;
+      static final int SCALE_RASTER = 5;
      NES nes;
      bool usingMenu = false;
      int width;
@@ -18,9 +18,11 @@ class BufferView {
      int scaleMode;
     // FPS counter variables:
      bool showFPS = false;
-     long prevFrameTime;
+     int prevFrameTime;
      String fps;
      int fpsCounter;
+     bool notifyImageReady;
+     bool frameFinished;
 
     // Constructor
      BufferView(NES nes, int width, int height) {
@@ -35,21 +37,10 @@ class BufferView {
     }
 
      void setScaleMode(int newMode) {
-
-        if (newMode != scaleMode) {
-
-            // Check differences:
-            bool diffHW = useHWScaling(newMode) != useHWScaling(scaleMode);
-            bool diffSz = getScaleModeScale(newMode) != getScaleModeScale(scaleMode);
-
-            // Change scale mode:
-            this.scaleMode = newMode;
-
-            if (diffHW || diffSz) {
-            }
-
-        }
-
+       if (newMode != SCALE_NONE) {
+       print('SCALE NOT SUPPORTED, USING NO SCALE');
+       }
+       scaleMode = SCALE_NONE;
     }
 
      void init() {
@@ -60,30 +51,11 @@ class BufferView {
 
      void imageReady(bool skipFrame) {
        if (!Globals.focused) {
-         setFocusable(true);
-         requestFocus();
          Globals.focused = true;
      }
 
         // Skip image drawing if minimized or frameskipping:
         if (!skipFrame) {
-
-            if (scaleMode != SCALE_NONE) {
-
-                if (scaleMode == SCALE_NORMAL) {
-
-                    Scale.doNormalScaling(pix, pix_scaled, nes.ppu.scanlineChanged);
-
-                } else if (scaleMode == SCALE_SCANLINE) {
-
-                    Scale.doScanlineScaling(pix, pix_scaled, nes.ppu.scanlineChanged);
-
-                } else if (scaleMode == SCALE_RASTER) {
-
-                    Scale.doRasterScaling(pix, pix_scaled, nes.ppu.scanlineChanged);
-
-                }
-            }
 
             nes.ppu.requestRenderAll = false;
             paint();
@@ -164,14 +136,6 @@ class BufferView {
         usingMenu = val;
     }
 
-     bool useHWScaling() {
-        return useHWScaling(scaleMode);
-    }
-
-     bool useHWScalingWithMode(int mode) {
-        return false;
-    }
-
      int getScaleModeScale(int mode) {
         if (mode == -1) {
             return -1;
@@ -184,10 +148,4 @@ class BufferView {
         }
     }
 
-     void destroy() {
-
-        nes = null;
-        img = null;
-
-    }
 }

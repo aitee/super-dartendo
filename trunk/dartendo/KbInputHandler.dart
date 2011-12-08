@@ -1,5 +1,18 @@
  class KbInputHandler {
 
+   // Joypad keys:
+    static final int KEY_A = 0;
+    static final int KEY_B = 1;
+    static final int KEY_START = 2;
+    static final int KEY_SELECT = 3;
+    static final int KEY_UP = 4;
+    static final int KEY_DOWN = 5;
+    static final int KEY_LEFT = 6;
+    static final int KEY_RIGHT = 7;
+   
+   // Key count:
+    static final int NUM_KEYS = 8;
+   
     List<int> allKeysState;
     List<int> keyMapping;
     int id;

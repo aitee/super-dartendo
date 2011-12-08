@@ -19,9 +19,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      NES getNES();
 
-     InputHandler getJoy1();
+     KbInputHandler getJoy1();
 
-     InputHandler getJoy2();
+     KbInputHandler getJoy2();
 
      BufferView getScreenView();
 

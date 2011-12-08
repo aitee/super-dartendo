@@ -53,13 +53,14 @@
         int tmp = nes.getPapu().bufferIndex;
         if (Globals.enableSound && Globals.timeEmulation && tmp > 0) {
 
-            int min_avail = nes.getPapu().line.getBufferSize() - 4 * tmp;
+            //int min_avail = nes.getPapu().line.getBufferSize() - 4 * tmp;
 
-            int timeToSleep = nes.papu.getMillisToAvailableAbove(min_avail);
-            applet.addSleepTime(timeToSleep);
+            //int timeToSleep = nes.papu.getMillisToAvailableAbove(min_avail);
+            //applet.addSleepTime(timeToSleep);
 
-            nes.getPapu().writeBuffer();
+            //nes.getPapu().writeBuffer();
 
+          //TODO: Support sound
         }
 
         // Sleep a bit if sound is disabled:
@@ -86,16 +87,6 @@
 
      void destroy() {
 
-        if (vScreen != null) {
-            vScreen.destroy();
-        }
-        if (kbJoy1 != null) {
-            kbJoy1.destroy();
-        }
-        if (kbJoy2 != null) {
-            kbJoy2.destroy();
-        }
-
         nes = null;
         applet = null;
         kbJoy1 = null;
@@ -108,6 +99,14 @@
         return nes;
     }
 
+     KbInputHandler getJoy1() {
+       return kbJoy1;
+   }
+
+   KbInputHandler getJoy2() {
+       return kbJoy2;
+   }
+   
      BufferView getScreenView() {
         return vScreen;
     }
@@ -150,6 +149,6 @@
     }
 
      void showErrorMsg(String msg) {
-        System.out.println(msg);
+        print(msg);
     }
 }

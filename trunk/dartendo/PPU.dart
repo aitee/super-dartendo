@@ -101,9 +101,9 @@ class PPU {
   int _address, _b1, _b2;
     
   // Variables used when rendering:
-  List<int> _buffer;
+  List<int> buffer;
   List<int> _tpix;
-  bool _requestRenderAll = false;
+  bool requestRenderAll = false;
   bool _validTileData;
   int _att;
   List<Tile> _scantile;
@@ -127,7 +127,7 @@ class PPU {
   int _baseTile;
   int _tscanoffset;
   int _srcy1, _srcy2;
-  int _bufferSize, _available, _scale;
+  int bufferSize, _available, _scale;
   int cycles = 0;
 
   PPU(this.nes) {

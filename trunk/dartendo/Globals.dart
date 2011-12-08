@@ -16,7 +16,7 @@
       bool disableSprites = false;
       bool timeEmulation = true;
       bool palEmulation;
-      bool enableSound = true;
+      bool enableSound = false; //TODO: Support sound
       bool focused = false;
 
       NES nes;

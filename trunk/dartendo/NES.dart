@@ -284,7 +284,7 @@ class NES {
         palTable.reset();
         papu.reset();
 
-        InputHandler joy1 = gui.getJoy1();
+        KbInputHandler joy1 = gui.getJoy1();
         if (joy1 != null) {
             joy1.reset();
         }
@@ -317,7 +317,7 @@ class NES {
      void setFramerate(int rate) {
 
         Globals.preferredFrameRate = rate;
-        Globals.frameTime = 1000000 / rate;
+        Globals.frameTime = (1000000 / rate).toInt();
         papu.setSampleRate(papu.getSampleRate(), false);
 
     }
