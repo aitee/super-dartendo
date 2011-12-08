@@ -28,35 +28,34 @@ class PaletteTable {
 
     // Load a palette file:
     bool loadPalette(String file) {
-        bool debugMe = false;
-                
-        if (debugMe) print("Entering PaletteTable.loadPalette try block.");        
-        try {
-            origTable = FileLoader.loadFile(file);
-            
-            if (debugMe) print("PaletteTable.loadPalette: Finished loading palette.");            
-
-            setEmphasis(0);
-            makeTables();
-            updatePalette();
-            
-            if (debugMe) print("PaletteTable.loadPalette success!");
-            return true;
-
-        } catch (Exception e) {
-
-            // Unable to load palette.
-            print("PaletteTable: Internal Palette Loaded.");
-            loadDefaultPalette();
-            return false;
-
-        }
-
+      bool debugMe = false;
+              
+      if (debugMe) print("Entering PaletteTable.loadPalette try block.");        
+      try {
+          origTable = FileLoader.loadFile(file);
+          
+          if (debugMe) print("PaletteTable.loadPalette: Finished loading palette.");            
+  
+          setEmphasis(0);
+          makeTables();
+          updatePalette();
+          
+          if (debugMe) print("PaletteTable.loadPalette success!");
+          return true;
+  
+      } catch (Exception e) {
+  
+          // Unable to load palette.
+          print("PaletteTable: Internal Palette Loaded.");
+          loadDefaultPalette();
+          return false;
+  
+      }
     }
 
     void makeTables() {
 
-        int r, g, b, col;
+        int r = 0, g = 0, b = 0, col = 0;
 
         // Calculate a table for each possible emphasis setting:
         for (int emph = 0; emph < 8; emph++) {
@@ -147,9 +146,9 @@ class PaletteTable {
     }
        
     int HSBtoRGB(double hue, double saturation, double brightness) {
-      double r, g, b = 0.0;
+      double r = 0.0, g = 0.0, b = 0.0;
       int i = 0;
-      double f, p, q, t = 0.0;
+      double f = 0.0, p = 0.0, q = 0.0, t = 0.0;
 
       if (saturation == 0) {
         r = g = b = brightness;
@@ -222,7 +221,7 @@ class PaletteTable {
 
     // iainmcgin: formerly HSLtoRGB
     int packedHSLtoRGB(int hsl) {
-        double h, s, l;
+        double h = 0.0, s = 0.0, l = 0.0;
         h = (((hsl >> 16) & 0xFF) / 255).toDouble();
         s = (((hsl >> 8) & 0xFF) / 255).toDouble();
         l = (((hsl) & 0xFF) / 255).toDouble();
@@ -266,9 +265,9 @@ class PaletteTable {
     // iainmcgin: formerly updatePalette
     void updatePaletteWith(int hueAdd, int saturationAdd, int lightnessAdd, int contrastAdd) {
 
-        int hsl, rgb;
-        int h, s, l;
-        int r, g, b;
+        int hsl = 0, rgb = 0;
+        int h = 0, s = 0, l = 0;
+        int r = 0, g = 0, b = 0;
 
         if (contrastAdd > 0) {
             contrastAdd *= 4;
