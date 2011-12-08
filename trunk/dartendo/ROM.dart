@@ -35,7 +35,7 @@ class ROM {
         valid = false;
 
         mapperName = new List<String>(255);
-        mapperSupported = new List<bool>(255);
+        mapperSupported = Util.newBoolList(255, false);
         for (int i = 0; i < 255; i++) {
             mapperName[i] = "Unknown Mapper";
         }
@@ -119,13 +119,13 @@ class ROM {
         mapperName[232] = "Camerica (Quattro series)";
 
         // The mappers supported:
-        mapperSupported[ 0] = true; // No Mapper
-        mapperSupported[ 1] = true; // MMC1
-        mapperSupported[ 2] = true; // UNROM
-        mapperSupported[ 3] = true; // CNROM
-        mapperSupported[ 4] = true; // MMC3
-        mapperSupported[ 7] = true; // AOROM
-        mapperSupported[ 9] = true; // MMC2
+        mapperSupported[0] = true; // No Mapper
+        mapperSupported[1] = true; // MMC1
+        mapperSupported[2] = true; // UNROM
+        mapperSupported[3] = true; // CNROM
+        mapperSupported[4] = true; // MMC3
+        mapperSupported[7] = true; // AOROM
+        mapperSupported[9] = true; // MMC2
         mapperSupported[10] = true; // MMC4
         mapperSupported[11] = true; // ColorDreams
         mapperSupported[15] = true;
@@ -156,8 +156,8 @@ class ROM {
      void load(String fileName) {
 
         this.fileName = fileName;
-        //FileLoader loader = new FileLoader(); //TODO: uncomment when fileloader is in.
-        List<int> b = loader.loadFile(fileName, nes.getGui());
+        
+        List<int> b = FileLoader.loadFile(fileName);
 
         if (b == null || b.length == 0) {
 
@@ -359,7 +359,7 @@ class ROM {
 
      MemoryMapper createMapper() {
 
-        if (mapperSupported()) {
+        if (isMapperSupported()) {
             switch (mapperType) {
 
                 case 0: {
@@ -479,41 +479,43 @@ class ROM {
     }
 
      void loadBatteryRam() {
-        if (batteryRam) {
-            try {
-                saveRam = Util.newIntList(0x2000);
-                saveRamUpToDate = true;
-
-                // Get hex-encoded memory string from user:
-                String encodedData = JOptionPane.showInputDialog("Returning players insert Save Code here.");
-                if (encodedData == null) {
-                    // User cancelled the dialog.
-                    return;
-                }
-
-                // Remove all garbage from encodedData:
-                encodedData = encodedData.replaceAll("[^\\p{XDigit}]", "");
-                if (encodedData.length() != saveRam.length * 2) {
-                    // Either too few or too many digits.
-                    return;
-                }
-
-                // Convert hex-encoded memory string to bytes:
-                for (int i = 0; i < saveRam.length; i++) {
-                    String hexByte = encodedData.substring(i * 2, i * 2 + 2);
-                    saveRam[i] = Integer.parseInt(hexByte, 16);
-                }
-
-                //System.out.println("Battery RAM loaded.");
-                if (nes.getMemoryMapper() != null) {
-                    nes.getMemoryMapper().loadBatteryRam();
-                }
-
-            } catch (Exception e) {
-                //System.out.println("Unable to get battery RAM from user.");
-                failedSaveFile = true;
-            }
-        }
+       return; //just return for now since we don't need this function
+//        if (batteryRam) {
+//            try {
+//                saveRam = Util.newIntList(0x2000, 0);
+//                saveRamUpToDate = true;
+//
+//                // Get hex-encoded memory string from user:
+//                String encodedData = JOptionPane.showInputDialog("Returning players insert Save Code here.");
+//                if (encodedData == null) {
+//                    // User cancelled the dialog.
+//                    return;
+//                }
+//
+//                // Remove all garbage from encodedData:
+//                encodedData = encodedData.replaceAll("[^\\p{XDigit}]", "");
+//                if (encodedData.length != saveRam.length * 2) {
+//                    // Either too few or too many digits.
+//                    return;
+//                }
+//
+//                // Convert hex-encoded memory string to bytes:
+//                for (int i = 0; i < saveRam.length; i++) {
+//                    String hexByte = encodedData.substring(i * 2, i * 2 + 2);
+//                    saveRam[i] = Integer.parseInt(hexByte, 16);
+//                    
+//                }
+//
+//                //System.out.println("Battery RAM loaded.");
+//                if (nes.getMemoryMapper() != null) {
+//                    nes.getMemoryMapper().loadBatteryRam();
+//                }
+//
+//            } catch (Exception e) {
+//                //System.out.println("Unable to get battery RAM from user.");
+//                failedSaveFile = true;
+//            }
+//        }
     }
 
      void writeBatteryRam(int address, int value) {
