@@ -27,7 +27,7 @@ class Mapper182 extends MapperDefault {
     }
 
     void reset() {
-      regs = Util.newIntList(1);
+      regs = Util.newIntList(1, 0);
       irq_enabled = false;
       irq_counter = 0;
     }

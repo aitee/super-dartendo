@@ -210,7 +210,7 @@ class Mapper064 extends MapperDefault {
         //System.out.println("Loading ROM.");
 
         if (!rom.isValid()) {
-            println("Mapper064.loadROM: MMC3: Invalid ROM! Unable to load.");
+            print("Mapper064.loadROM: MMC3: Invalid ROM! Unable to load.");
             return;
         }
 

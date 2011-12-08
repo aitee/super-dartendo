@@ -137,7 +137,7 @@ class Mapper010 extends MapperDefault {
         // Important: Only invoke if address < 0x2000
 
         //System.out.println("latch addr="+Misc.hex16(address));
-        boolean lo = address < 0x2000;
+        bool lo = (address < 0x2000);
         address &= 0x0FF0;
 
         if (lo) {

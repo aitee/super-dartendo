@@ -29,7 +29,7 @@ class Mapper079 extends MapperDefault {
             super.writelow(address, value);
         }
 
-        if (address < 0x6000 & address >= 0x4100) {
+        if (address < 0x6000 && address >= 0x4100) {
             int prg_bank = (value & 0x08) >> 3;
             int chr_bank = value & 0x07;
 
@@ -42,7 +42,7 @@ class Mapper079 extends MapperDefault {
     void loadROM(ROM rom) {
 
         if (!rom.isValid()) {
-            //System.out.println("Invalid ROM! Unable to load.");
+            print("Mapper079.loadROM: Invalid ROM! Unable to load.");
             return;
         }
 

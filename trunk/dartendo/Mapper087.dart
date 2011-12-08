@@ -35,7 +35,7 @@ class Mapper087 extends MapperDefault {
     void loadROM(ROM rom) {
 
         if (!rom.isValid()) {
-            System.out.println("Invalid ROM! Unable to load.");
+            print("Mapper087.loadROM: Invalid ROM! Unable to load.");
             return;
         }
 

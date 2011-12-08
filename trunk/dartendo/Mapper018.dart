@@ -290,7 +290,7 @@ class Mapper018 extends MapperDefault {
     void loadROM(ROM rom) {
 
         if (!rom.isValid()) {
-            println("Mapper018.loadRom: VRC2: Invalid ROM! Unable to load.");
+            print("Mapper018.loadRom: VRC2: Invalid ROM! Unable to load.");
             return;
         }
 
