@@ -11,4 +11,6 @@ class SourceDataLine {
   void close() {}
   
   int available() => 0;
+  
+  int getBufferSize() => 0;
 }
