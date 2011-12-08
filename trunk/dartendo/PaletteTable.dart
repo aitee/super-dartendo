@@ -1,17 +1,14 @@
-class PaletteTableStatics {
-    List<int> curTable;
-    List<int> origTable;
-    List<List<int>> emphTable;
-    
-    PaletteTableStatics() {
+class PaletteTable {
+    static List<int> curTable;
+    static List<int> origTable;
+    static List<List<int>> emphTable;
+
+    static void init() {
       curTable = Util.newIntList(64, 0);
       origTable = Util.newIntList(64, 0);
       emphTable = Util.newIntList2d(8,64,0);
     }
-}
-
-class PaletteTable {
-
+    
     int currentEmph = -1;
     int currentHue, currentSaturation, currentLightness, currentContrast;
 
@@ -51,7 +48,7 @@ class PaletteTable {
         } catch (Exception e) {
 
             // Unable to load palette.
-            System.out.println("PaletteTable: Internal Palette Loaded.");
+            print("PaletteTable: Internal Palette Loaded.");
             loadDefaultPalette();
             return false;
 
@@ -109,11 +106,102 @@ class PaletteTable {
     int getEntry(int yiq) {
         return curTable[yiq];
     }
+    
+    // Original function at http://delphi.about.com/od/adptips2006/qt/RgbToHsb.htm
+    // used Byte for RGB values--that may have screwed up the port of it.
+    List<double> RGBtoHSB(int r, int g, int b) {
+       int minRGB = Math.min(Math.min(r, g), b);
+       int maxRGB = Math.max(Math.max(r, g), b);
+       int delta = (maxRGB - minRGB);
+       double brightness = maxRGB.toDouble();
+       
+       double saturation = 0.0;
+       if (maxRGB != 0.0) {
+         saturation = 255.0 * delta / maxRGB;
+       }
+
+       double hue = -1.0;
+       if (saturation != 0.0) {
+         if (r == maxRGB)
+           hue = (g - b) / delta;
+         else {
+           if (g == maxRGB) {
+             hue = 2.0 + (b - r) / delta;
+           } else {
+             if (b == maxRGB) {
+               hue = 4.0 + (r - g) / delta;
+             }
+           }
+         }
+       }
+
+       hue *= 60;
+       if (hue < 0.0) {
+         hue += 360.0;
+       }
+       
+       List<double> hsb = Util.newDoubleList(3, 0.0);
+       hsb[0] = hue;
+       hsb[1] = saturation;
+       hsb[2] = brightness;
+    }
+       
+    int HSBtoRGB(double hue, double saturation, double brightness) {
+      double r, g, b = 0.0;
+      int i = 0;
+      double f, p, q, t = 0.0;
+
+      if (saturation == 0) {
+        r = g = b = brightness;
+        return (r * 255).round().toInt() << 16 | (g * 255).round().toInt() << 8 | (b * 255).round().toInt();
+      }
+
+      hue /= 60;
+      i = hue.floor().toInt();
+      f = hue - i;
+      p = brightness * (1 - saturation);
+      q = brightness * (1 - saturation * f);
+      t = brightness * (1 - saturation * (1 - f));
+
+      switch (i) {
+        case 0:
+          r = brightness;
+          g = t;
+          b = p;
+          break;
+        case 1:
+          r = q;
+          g = brightness;
+          b = p;
+          break;
+        case 2:
+          r = p;
+          g = brightness;
+          b = t;
+          break;
+        case 3:
+          r = p;
+          g = q;
+          b = brightness;
+          break;
+        case 4:
+          r = t;
+          g = p;
+          b = brightness;
+          break;
+        default:
+          r = brightness;
+          g = p;
+          b = q;
+          break;
+      }
+      
+      return (r * 255).round().toInt() << 16 | (g * 255).round().toInt() << 8 | (b * 255).round().toInt();
+    }
 
     int RGBtoHSL(int r, int g, int b) {
-        List<double> hsbvals = Util.newDoubleList(3, 0);
-        //hsbvals = Color.RGBtoHSB(b, g, r, hsbvals);  //TODO: WRITE RGB TO HSL
-        hsbvals[0] -= floor(hsbvals[0]);
+        List<double> hsbvals = RGBtoHSB(r, g, b);
+        hsbvals[0] -= hsbvals[0].floor().toInt();
 
         int ret = 0;
         ret |= (((hsbvals[0] * 255).toInt()) << 16);
@@ -129,18 +217,16 @@ class PaletteTable {
     }
 
     int HSLtoRGB(int h, int s, int l) {
-      //TODO: WRITE RGB TO HSL
-        //return Color.HSBtoRGB(h / 255.0, s / 255.0, l / 255.0);
+        return HSBtoRGB(h / 255.0, s / 255.0, l / 255.0);
     }
 
     // iainmcgin: formerly HSLtoRGB
     int packedHSLtoRGB(int hsl) {
         double h, s, l;
-        h = (float) (((hsl >> 16) & 0xFF) / 255);
-        s = (float) (((hsl >> 8) & 0xFF) / 255);
-        l = (float) (((hsl) & 0xFF) / 255);
-//TODO: WRITE RGB TO HSL
-        //return Color.HSBtoRGB(h, s, l);
+        h = (((hsl >> 16) & 0xFF) / 255).toDouble();
+        s = (((hsl >> 8) & 0xFF) / 255).toDouble();
+        l = (((hsl) & 0xFF) / 255).toDouble();
+        return HSBtoRGB(h, s, l);
     }
 
     int getHue(int hsl) {
@@ -172,7 +258,7 @@ class PaletteTable {
     }
 
     void updatePalette() {
-        updatePalette(currentHue, currentSaturation, currentLightness, currentContrast);
+        updatePaletteWith(currentHue, currentSaturation, currentLightness, currentContrast);
     }
 
     // Change palette colors.
@@ -189,7 +275,7 @@ class PaletteTable {
         }
         for (int i = 0; i < 64; i++) {
 
-            hsl = RGBtoHSL(emphTable[currentEmph][i]);
+            hsl = packedRGBtoHSL(emphTable[currentEmph][i]);
             h = getHue(hsl) + hueAdd;
             s = (getSaturation(hsl) * (1.0 + saturationAdd / 256)).toInt();
             l = getLightness(hsl);

@@ -112,6 +112,7 @@ class Controller {
 
    void init() {
      print("CALLED INIT");
+     PaletteTable.init();
     readParams();
 
     gui = new AppletUI(this);
