@@ -1,5 +1,3 @@
-package vnes;
-
 // Holds info on the cpu. Mostly constants that are placed here
 // to keep the CPU code clean.
 class CpuInfo {
