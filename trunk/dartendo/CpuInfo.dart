@@ -129,7 +129,7 @@ class CpuInfo {
     static void initOpData() {
 
         // Create array:
-        opdata = new List<int>(256);
+        opdata = Util.newIntList(256, 0);
 
         // Set all to invalid instruction (to detect crashes):
         for (int i = 0; i < 256; i++) {

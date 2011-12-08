@@ -4,12 +4,9 @@ class PaletteTableStatics {
     List<List<int>> emphTable;
     
     PaletteTableStatics() {
-      curTable = Util.newIntList(64);
-      origTable = Util.newIntList(64);
+      curTable = Util.newIntList(64, 0);
+      origTable = Util.newIntList(64, 0);
       emphTable = Util.newIntList2d(8,64,0);
-      for(int i = 0; i < emphTable.length; i++) {
-        emphTable[i] = new List<int>(64);
-      }
     }
 }
 
@@ -114,7 +111,7 @@ class PaletteTable {
     }
 
     int RGBtoHSL(int r, int g, int b) {
-        List<double> hsbvals = new List<double>(3);
+        List<double> hsbvals = Util.newDoubleList(3, 0);
         //hsbvals = Color.RGBtoHSB(b, g, r, hsbvals);  //TODO: WRITE RGB TO HSL
         hsbvals[0] -= floor(hsbvals[0]);
 
@@ -236,7 +233,7 @@ class PaletteTable {
 
     void loadDefaultPalette() {
         if (origTable == null) {
-            origTable = new List<int>(64);
+            origTable = Util.newIntList(64, 0);
         }
 
         origTable[ 0] = getRgb(124, 124, 124);

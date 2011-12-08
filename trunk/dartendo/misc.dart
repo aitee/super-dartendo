@@ -1,11 +1,12 @@
 class MiscClass {
-    bool debug = Globals.debug;
+    bool debug = false;
     List<double> rnd;
     int nextRnd = 0;
     double rndret;
 
     MiscClass() {
-      rnd = new List<double>(10000);
+      debug = Globals.debug;
+      rnd = Util.newDoubleList(10000, 0.0);
       for (int i = 0; i < rnd.length; i++) {
         rnd[i] = Math.random();
       }

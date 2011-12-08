@@ -21,6 +21,14 @@ class CUtil {
     
     return r;
   }
+  
+  List<double> newDoubleList(int size, double defaultValue)
+  {
+    List<double> r = new List<double>(size);
+    for(int i = 0; i < size; ++i) r[i] = defaultValue;
+    
+    return r;
+  }
 
   List<bool> newBoolList(int size, bool defaultValue)
   {

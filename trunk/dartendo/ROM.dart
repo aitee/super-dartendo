@@ -168,7 +168,7 @@ class ROM {
         }
 
         // Read header:
-        header = new List<int>(16);
+        header = Util.newIntList(16, 0);
         for (int i = 0; i < 16; i++) {
             header[i] = b[i];
         }

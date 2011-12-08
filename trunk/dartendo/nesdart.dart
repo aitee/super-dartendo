@@ -46,6 +46,7 @@
 #source('Mapper140.dart');
 #source('Mapper182.dart');
 #source('MapperDefault.dart');
+#source('misc.dart');
 #source('memory.dart');
 #source('NameTable.dart');
 #source('NES.dart');
@@ -210,7 +211,7 @@ class Controller {
       break;
     }
 
-    List<int> intList = new List<int>(5);
+    List<int> intList = Util.newIntList(5, 0);
     
     intList[3] = 2;
     print(intList);

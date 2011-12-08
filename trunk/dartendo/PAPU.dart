@@ -961,7 +961,7 @@ class PAPU {
 
      void initDmcFrequencyLookup() {
 
-        dmcFreqLookup = new List<int>(16);
+        dmcFreqLookup = Util.newIntList(16, 0);
 
         dmcFreqLookup[0x0] = 0xD60;
         dmcFreqLookup[0x1] = 0xBE0;
@@ -985,7 +985,7 @@ class PAPU {
 
      void initNoiseWavelengthLookup() {
 
-        noiseWavelengthLookup = new List<int>(16);
+        noiseWavelengthLookup = Util.newIntList(16, 0);
 
         noiseWavelengthLookup[0x0] = 0x004;
         noiseWavelengthLookup[0x1] = 0x008;
@@ -1008,8 +1008,8 @@ class PAPU {
 
      void initDACtables() {
 
-        square_table = new List<int>(32 * 16);
-        tnd_table = new List<int>(204 * 16);
+        square_table = Util.newIntList(32 * 16, 0);
+        tnd_table = Util.newIntList(204 * 16, 0);
         double value;
 
         int ival;

@@ -22,7 +22,7 @@
         this.nes = nes;
         this.id = id;
         allKeysState = Util.newBoolList(255,false);
-        keyMapping = new List<int>(KbInputHandler.NUM_KEYS);
+        keyMapping = Util.newIntList(KbInputHandler.NUM_KEYS, 0);
     }
 
      int getKeyState(int padKey) {

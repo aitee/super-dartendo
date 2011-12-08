@@ -166,13 +166,13 @@ class PPU {
     scanline = 0;
     
     // Create sprite arrays:
-    sprX = new List<int>(64);
-    sprY = new List<int>(64);
-    sprTile = new List<int>(64);
-    sprCol = new List<int>(64);
-    vertFlip = new List<bool>(64);
-    horiFlip = new List<bool>(64);
-    bgPriority = new List<bool>(64);
+    sprX = Util.newIntList(64, 0);
+    sprY = Util.newIntList(64, 0);
+    sprTile = Util.newIntList(64, 0);
+    sprCol = Util.newIntList(64, 0);
+    vertFlip = Util.newBoolList(64, false);
+    horiFlip = Util.newBoolList(64, false);
+    bgPriority = Util.newBoolList(64, false);
 
     // Create pattern table tile buffers:
     if (ptTile == null) {
@@ -214,7 +214,7 @@ class PPU {
 
     // Remove mirroring:
     if (_vramMirrorTable == null) {
-      _vramMirrorTable = new List<int>(0x8000);
+      _vramMirrorTable = Util.newIntList(0x8000, 0);
     }
     for (int i = 0; i < 0x8000; i++) {
       _vramMirrorTable[i] = i;
