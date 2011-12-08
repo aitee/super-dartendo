@@ -1,36 +1,35 @@
-package vnes;
 /*
 vNES
 Copyright © 2006-2011 Jamie Sanders
 
 This program is free software: you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
+the terms of the GNU General License as published by the Free Software
 Foundation, either version 3 of the License, or (at your option) any later
 version.
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY
 WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+PARTICULAR PURPOSE.  See the GNU General License for more details.
 
-You should have received a copy of the GNU General Public License along with
+You should have received a copy of the GNU General License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Mapper105 extends MapperDefault {
+class Mapper105 extends MapperDefault {
 
-    public int irq_counter = 0;
-    public boolean irq_enabled = false;
-    public int init_state = 0;
-    public int[] regs = new int[4];
+    int irq_counter = 0;
+    boolean irq_enabled = false;
+    int init_state = 0;
+    List<int> regs = new List<int>(4);
     int bits = 0;
     int write_count = 0;
 
-    public void init(NES nes) {
+    void init(NES nes) {
         super.init(nes);
         reset();
     }
 
-    public void mapperInternalStateLoad(ByteBuffer buf) {
+    void mapperInternalStateLoad(ByteBuffer buf) {
         super.mapperInternalStateLoad(buf);
 
         if (buf.readByte() == 1) {
@@ -40,7 +39,7 @@ public class Mapper105 extends MapperDefault {
         }
     }
 
-    public void mapperInternalStateSave(ByteBuffer buf) {
+    void mapperInternalStateSave(ByteBuffer buf) {
         super.mapperInternalStateSave(buf);
 
         // Version:
@@ -53,7 +52,7 @@ public class Mapper105 extends MapperDefault {
 
     }
 
-    public void write(int address, int value) {
+    void write(int address, int value) {
 
         int reg_num = (address & 0x7FFF) >> 13;
 
@@ -135,7 +134,7 @@ public class Mapper105 extends MapperDefault {
         }
     }
 
-    public int syncH(int scanline) {
+    int syncH(int scanline) {
 
         if (scanline == 0) {
             if (irq_enabled) {
@@ -150,7 +149,7 @@ public class Mapper105 extends MapperDefault {
 
     }
 
-    public void loadROM(ROM rom) {
+    void loadROM(ROM rom) {
 
         if (!rom.isValid()) {
             //System.out.println("Invalid ROM! Unable to load.");
@@ -170,7 +169,7 @@ public class Mapper105 extends MapperDefault {
 
     }
 
-    public void reset() {
+    void reset() {
 
         regs[0] = 0x0C;
         regs[1] = 0x00;
