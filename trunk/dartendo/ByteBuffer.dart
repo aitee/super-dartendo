@@ -160,7 +160,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     int inRange(int pos) {
+     bool inRange(int pos) {
         if (pos >= 0 && pos < size) {
             return true;
         } else {
@@ -173,7 +173,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     int inRangeWithLength(int pos, int length) {
+     bool inRangeWithLength(int pos, int length) {
         if (pos >= 0 && pos + (length - 1) < size) {
             return true;
         } else {
@@ -186,17 +186,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     int putint(int b) {
-        int ret = putint(b, curPos);
+     int putBoolean(bool b) {
+        int ret = putBooleanWithPosition(b, curPos);
         move(1);
         return ret;
     }
 
-     int putintWithPosition(int b, int pos) {
+     int putBooleanWithPosition(int b, int pos) {
         if (b) {
-            return putByte(1, pos);
+            return putByteWithPos(1, pos);
         } else {
-            return putByte(0, pos);
+            return putByteWithPos(0, pos);
         }
     }
 

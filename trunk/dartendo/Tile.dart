@@ -12,10 +12,11 @@ class Tile {
     int tpri;
     int c;
     bool initialized = false;
-    List<bool> opaque = new List<bool>(8);
+    List<bool> opaque;
 
     Tile() {
-        pix = new List<int>(64);
+        pix = Util.newIntList(64);
+        List<bool> opaque = Util.newBoolList(8,false);
     }
 
     void setBuffer(List<int> scanline) {
@@ -201,29 +202,6 @@ class Tile {
 
     bool isTransparent(int x, int y) {
         return (pix[(y << 3) + x] == 0);
-    }
-
-    void dumpData(String file) {
-
-        try {
-
-            File f = new File(file);
-            FileWriter fWriter = new FileWriter(f);
-
-            for (int y = 0; y < 8; y++) {
-                for (int x = 0; x < 8; x++) {
-                    fWriter.write(Misc.hex8(pix[(y << 3) + x]).substring(1));
-                }
-                fWriter.write("\r\n");
-            }
-
-            fWriter.close();
-        //System.out.println("Tile data dumped to file "+file);
-
-        } catch (Exception e) {
-            //System.out.println("Unable to dump tile to file.");
-            e.printStackTrace();
-        }
     }
 
     void stateSave(ByteBuffer buf) {

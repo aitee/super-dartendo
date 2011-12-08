@@ -16,6 +16,14 @@ class CUtil {
     return r;
   }
 
+  List<bool> newBoolList(int size, bool defaultValue)
+  {
+    List<int> r = new List<bool>(size);
+    for(int i = 0; i < size; ++i) r[i] = defaultvalue;
+    
+    return r;
+  }
+
   List<List<int>> newIntList2d(int size1, int size2, int defaultValue)
   {
     List<List<int>> r = new List<List<int>>(size1);

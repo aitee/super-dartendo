@@ -81,13 +81,13 @@ class PPU {
   List<Tile> ptTile;
   
   // Name table data:
-  List<int> _ntable1 = new List<int>(4);
+  List<int> _ntable1;
   List<NameTable> _nameTable;
   int _currentMirroring = -1;
 
   // Palette data:
-  List<int> _sprPalette = new List<int>(16);
-  List<int> _imgPalette = new List<int>(16);
+  List<int> _sprPalette;
+  List<int> _imgPalette;
     
   // Misc:
   bool _scanlineAlreadyRendered;
@@ -101,19 +101,19 @@ class PPU {
   int _address, _b1, _b2;
     
   // Variables used when rendering:
-  List<int> _attrib = new List<int>(32);
-  List<int> _bgbuffer = new List<int>(256 * 240);
-  List<int> _pixrendered = new List<int>(256 * 240);
-  List<int> _spr0dummybuffer = new List<int>(256 * 240);
-  List<int> _dummyPixPriTable = new List<int>(256 * 240);
-  List<int> _oldFrame = new List<int>(256 * 240);
   List<int> _buffer;
   List<int> _tpix;
-  List<bool> _scanlineChanged = new List<bool>(240);
   bool _requestRenderAll = false;
   bool _validTileData;
   int _att;
-  List<Tile> _scantile = new List<Tile>(32);
+  List<Tile> _scantile;
+  List<int> _attrib;
+  List<int> _bgbuffer;
+  List<int> _pixrendered;
+  List<int> _spr0dummybuffer;
+  List<int> _dummyPixPriTable;
+  List<int> _oldFrame;
+  List<bool> _scanlineChanged;
   Tile _t;
     
   // These are temporary variables used in rendering and sound procedures.
@@ -130,7 +130,21 @@ class PPU {
   int _bufferSize, _available, _scale;
   int cycles = 0;
 
-  PPU(this.nes);
+  PPU(this.nes) {
+    _ntable1 = Util.newIntList(4,0);
+    
+    _sprPalette = Util.newIntList(16,0);
+    _imgPalette = Util.newIntList(16,0);
+    
+    _scantile = new List<Tile>(32);
+    _attrib = Util.newIntList(32,0);
+    _bgbuffer = Util.newIntList(256 * 240,0);
+    _pixrendered = Util.newIntList(256 * 240,0);
+    _spr0dummybuffer = Util.newIntList(256 * 240,0);
+    _dummyPixPriTable = Util.newIntList(256 * 240,0);
+    _oldFrame = Util.newIntList(256 * 240,0);
+    _scanlineChanged = Util.newBoolList(240,false);
+  }
 
   void init() {
     // Get the memory:

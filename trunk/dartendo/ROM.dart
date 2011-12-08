@@ -25,7 +25,6 @@ class ROM {
     bool fourScreen;
     int mapperType;
     String fileName;
-    RandomAccessFile raFile;
     bool enableSave = true;
     bool valid;
      List<String> mapperName;
@@ -351,11 +350,6 @@ class ROM {
         return trainer;
     }
 
-     String getFileName() {
-        File f = new File(fileName);
-        return f.getName();
-    }
-
      bool isMapperSupported() {
         if (mapperType < mapperSupported.length && mapperType >= 0) {
             return mapperSupported[mapperType];
@@ -538,6 +532,7 @@ class ROM {
 
      void closeRom() {
 
+       /* TODO: SAVE SRAM
         if (batteryRam && !saveRamUpToDate) {
             try {
 
@@ -566,6 +561,7 @@ class ROM {
 
             }
         }
+        */
 
     }
 
