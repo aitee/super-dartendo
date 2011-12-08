@@ -1,6 +1,6 @@
 class PPU {
   NES nes;
-  HiResTimer timer;
+  HiResTimer timer;  // TODO: unused?
   Memory ppuMem;
   Memory sprMem;
   
@@ -1339,28 +1339,29 @@ class PPU {
 
   // Updates the internal pattern
   // table buffers with this new byte.
-  void patternWrite(int address, int value) {
-    int tileIndex = address / 16;
-    int leftOver = address % 16;
-    if (leftOver < 8) {
-      ptTile[tileIndex].setScanline(leftOver, value, ppuMem.load(address + 8));
-    } else {
-      ptTile[tileIndex].setScanline(leftOver - 8, ppuMem.load(address - 8), value);
-    }
-  }
-
-  void patternWrite(int address, List<int> value, int offset, int length) {
-    int tileIndex;
-    int leftOver;
-
-    for (int i = 0; i < length; i++) {
-      tileIndex = (address + i) >> 4;
-      leftOver = (address + i) % 16;
-
+  void patternWrite(int address, Object value, [int offset, int length]) {
+    if (value is int) {
+      int tileIndex = address / 16;
+      int leftOver = address % 16;
       if (leftOver < 8) {
-          ptTile[tileIndex].setScanline(leftOver, value[offset + i], ppuMem.load(address + 8 + i));
+        ptTile[tileIndex].setScanline(leftOver, value, ppuMem.load(address + 8));
       } else {
-          ptTile[tileIndex].setScanline(leftOver - 8, ppuMem.load(address - 8 + i), value[offset + i]);
+        ptTile[tileIndex].setScanline(leftOver - 8, ppuMem.load(address - 8), value);
+      }      
+    } else {
+      Expect.isTrue(value is List<int>);
+      Expect.isTrue(offset !== null);
+      Expect.isTrue(length !== null);
+      
+      for (int i = 0; i < length; i++) {
+        int tileIndex = (address + i) >> 4;
+        int leftOver = (address + i) % 16;
+
+        if (leftOver < 8) {
+            ptTile[tileIndex].setScanline(leftOver, value[offset + i], ppuMem.load(address + 8 + i));
+        } else {
+            ptTile[tileIndex].setScanline(leftOver - 8, ppuMem.load(address - 8 + i), value[offset + i]);
+        }
       }
     }
   }
