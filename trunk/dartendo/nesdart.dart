@@ -1,4 +1,5 @@
 #import('dart:dom');
+#import('dart:json');
 
 #source('AppletUI.dart');
 #source('BufferView.dart');
@@ -10,9 +11,9 @@
 #source('Color.dart');
 #source('CPU.dart');
 #source('CpuInfo.dart');
+#source('FileLoader.dart');
 #source('Globals.dart');
 #source('KbInputHandler.dart');
-#source('MapperDefault.dart');
 #source('MemoryMapper.dart');
 #source('Mapper001.dart');
 #source('Mapper002.dart');
