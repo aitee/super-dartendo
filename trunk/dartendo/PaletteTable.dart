@@ -39,8 +39,9 @@ class PaletteTable {
               //b = palette[i] & 0xFF;
               //g = (palette[i] >> 8) & 0xFF;
               //r = (palette[i] >> 16) & 0xFF;
+              //origTable[i] = r | (g<<8) | (b<<16);
               
-              origTable[i] = r | (g<<8) | (b<<16);
+              origTable[i] = palette[i];
             }
 
             setEmphasis(0);
