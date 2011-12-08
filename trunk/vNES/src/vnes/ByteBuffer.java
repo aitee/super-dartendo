@@ -36,7 +36,7 @@ public class ByteBuffer {
         try {
             buf = new int[content.length];
             for (int i = 0; i < content.length; i++) {
-                buf[i] = (int) (content[i] & 255);
+                buf[i] =  (content[i] & 255);
             }
             size = content.length;
             this.byteOrder = byteOrdering;
@@ -187,9 +187,9 @@ public class ByteBuffer {
 
     public boolean putBoolean(boolean b, int pos) {
         if (b) {
-            return putByte((int) 1, pos);
+            return putByte( 1, pos);
         } else {
-            return putByte((int) 0, pos);
+            return putByte( 0, pos);
         }
     }
 
@@ -225,11 +225,11 @@ public class ByteBuffer {
     public boolean putShort(int var, int pos) {
         if (inRange(pos, 2)) {
             if (this.byteOrder == BO_BIG_ENDIAN) {
-                buf[pos + 0] = (int) ((var >> 8) & 255);
-                buf[pos + 1] = (int) ((var) & 255);
+                buf[pos + 0] =  ((var >> 8) & 255);
+                buf[pos + 1] =  ((var) & 255);
             } else {
-                buf[pos + 1] = (int) ((var >> 8) & 255);
-                buf[pos + 0] = (int) ((var) & 255);
+                buf[pos + 1] =  ((var >> 8) & 255);
+                buf[pos + 0] =  ((var) & 255);
             }
             return true;
         } else {
@@ -249,15 +249,15 @@ public class ByteBuffer {
     public boolean putInt(int var, int pos) {
         if (inRange(pos, 4)) {
             if (this.byteOrder == BO_BIG_ENDIAN) {
-                buf[pos + 0] = (int) ((var >> 24) & 255);
-                buf[pos + 1] = (int) ((var >> 16) & 255);
-                buf[pos + 2] = (int) ((var >> 8) & 255);
-                buf[pos + 3] = (int) ((var) & 255);
+                buf[pos + 0] =  ((var >> 24) & 255);
+                buf[pos + 1] =  ((var >> 16) & 255);
+                buf[pos + 2] =  ((var >> 8) & 255);
+                buf[pos + 3] =  ((var) & 255);
             } else {
-                buf[pos + 3] = (int) ((var >> 24) & 255);
-                buf[pos + 2] = (int) ((var >> 16) & 255);
-                buf[pos + 1] = (int) ((var >> 8) & 255);
-                buf[pos + 0] = (int) ((var) & 255);
+                buf[pos + 3] =  ((var >> 24) & 255);
+                buf[pos + 2] =  ((var >> 16) & 255);
+                buf[pos + 1] =  ((var >> 8) & 255);
+                buf[pos + 0] =  ((var) & 255);
             }
             return true;
         } else {
@@ -279,9 +279,9 @@ public class ByteBuffer {
         int theChar;
         if (inRange(pos, var.length() * 2)) {
             for (int i = 0; i < var.length(); i++) {
-                theChar = (int) (charArr[i]);
-                buf[pos + 0] = (int) ((theChar >> 8) & 255);
-                buf[pos + 1] = (int) ((theChar) & 255);
+                theChar =  (charArr[i]);
+                buf[pos + 0] =  ((theChar >> 8) & 255);
+                buf[pos + 1] =  ((theChar) & 255);
                 pos += 2;
             }
             return true;
@@ -303,11 +303,11 @@ public class ByteBuffer {
         int tmp = var;
         if (inRange(pos, 2)) {
             if (byteOrder == BO_BIG_ENDIAN) {
-                buf[pos + 0] = (int) ((tmp >> 8) & 255);
-                buf[pos + 1] = (int) ((tmp) & 255);
+                buf[pos + 0] =  ((tmp >> 8) & 255);
+                buf[pos + 1] =  ((tmp) & 255);
             } else {
-                buf[pos + 1] = (int) ((tmp >> 8) & 255);
-                buf[pos + 0] = (int) ((tmp) & 255);
+                buf[pos + 1] =  ((tmp >> 8) & 255);
+                buf[pos + 0] =  ((tmp) & 255);
             }
             return true;
         } else {
@@ -326,7 +326,7 @@ public class ByteBuffer {
 
     public boolean putCharAscii(char var, int pos) {
         if (inRange(pos)) {
-            buf[pos] = (int) var;
+            buf[pos] =  var;
             return true;
         } else {
             error();
@@ -346,7 +346,7 @@ public class ByteBuffer {
         char[] charArr = var.toCharArray();
         if (inRange(pos, var.length())) {
             for (int i = 0; i < var.length(); i++) {
-                buf[pos] = (int) charArr[i];
+                buf[pos] =  charArr[i];
                 pos++;
             }
             return true;
@@ -378,7 +378,7 @@ public class ByteBuffer {
             return false;
         }
         for (int i = 0; i < arr.length; i++) {
-            arr[i] = (int) (buf[curPos + i] & 0xFF);
+            arr[i] =  (buf[curPos + i] & 0xFF);
         }
         curPos += arr.length;
         return true;
@@ -393,14 +393,14 @@ public class ByteBuffer {
         }
         if (byteOrder == BO_BIG_ENDIAN) {
             for (int i = 0; i < arr.length; i++) {
-                buf[curPos + 0] = (int) ((arr[i] >> 8) & 255);
-                buf[curPos + 1] = (int) ((arr[i]) & 255);
+                buf[curPos + 0] =  ((arr[i] >> 8) & 255);
+                buf[curPos + 1] =  ((arr[i]) & 255);
                 curPos += 2;
             }
         } else {
             for (int i = 0; i < arr.length; i++) {
-                buf[curPos + 1] = (int) ((arr[i] >> 8) & 255);
-                buf[curPos + 0] = (int) ((arr[i]) & 255);
+                buf[curPos + 1] =  ((arr[i] >> 8) & 255);
+                buf[curPos + 0] =  ((arr[i]) & 255);
                 curPos += 2;
             }
         }
@@ -411,7 +411,7 @@ public class ByteBuffer {
         StringBuffer strBuf = new StringBuffer();
         int tmp;
         for (int i = 0; i < (size - 1); i += 2) {
-            tmp = (int) ((buf[i] << 8) | (buf[i + 1]));
+            tmp =  ((buf[i] << 8) | (buf[i + 1]));
             strBuf.append((char) (tmp));
         }
         return strBuf.toString();
@@ -459,9 +459,9 @@ public class ByteBuffer {
     public int readShortWithPosition(int pos) throws ArrayIndexOutOfBoundsException {
         if (inRange(pos, 2)) {
             if (this.byteOrder == BO_BIG_ENDIAN) {
-                return (int) ((buf[pos] << 8) | (buf[pos + 1]));
+                return  ((buf[pos] << 8) | (buf[pos + 1]));
             } else {
-                return (int) ((buf[pos + 1] << 8) | (buf[pos]));
+                return  ((buf[pos + 1] << 8) | (buf[pos]));
             }
         } else {
             error();

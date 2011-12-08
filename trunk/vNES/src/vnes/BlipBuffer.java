@@ -55,7 +55,7 @@ public class BlipBuffer {
             double sum = 0;
             for (int i = 0; i < win_size; i++) {
                 sum += 32768.0 * buf[i * smp_period + off];
-                imp[smp_period - 1 - off][i] = (int) sum;
+                imp[smp_period - 1 - off][i] =  (int)sum;
             }
         }
 

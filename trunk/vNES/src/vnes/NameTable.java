@@ -51,7 +51,7 @@ public class NameTable {
 
     public void writeTileIndex(int index, int value) {
 
-        tile[index] = (int) value;
+        tile[index] =  value;
 
     }
 
@@ -74,7 +74,7 @@ public class NameTable {
                         tx = basex + sqx * 2 + x;
                         ty = basey + sqy * 2 + y;
                         attindex = ty * width + tx;
-                        attrib[ty * width + tx] = (int) ((add << 2) & 12);
+                        attrib[ty * width + tx] =  ((add << 2) & 12);
                     ////System.out.println("x="+tx+" y="+ty+" value="+attrib[ty*width+tx]+" index="+attindex);
                     }
                 }

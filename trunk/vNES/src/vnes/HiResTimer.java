@@ -34,7 +34,7 @@ public class HiResTimer {
             if (nanos > 999999) {
                 nanos = 999999;
             }
-            Thread.sleep(time / 1000, (int) nanos);
+            Thread.sleep(time / 1000,  (int)nanos);
 
         } catch (Exception e) {
 

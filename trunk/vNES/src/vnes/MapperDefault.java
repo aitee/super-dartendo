@@ -70,7 +70,7 @@ public class MapperDefault implements MemoryMapper {
     public void stateSave(ByteBuffer buf) {
 
         // Version:
-        buf.putByte((int) 1);
+        buf.putByte( 1);
 
         // Joypad stuff:
         buf.putInt(joy1StrobeState);
@@ -84,9 +84,9 @@ public class MapperDefault implements MemoryMapper {
 
     public void mapperInternalStateLoad(ByteBuffer buf) {
 
-        buf.putByte((int) joy1StrobeState);
-        buf.putByte((int) joy2StrobeState);
-        buf.putByte((int) joypadLastWrite);
+        buf.putByte( joy1StrobeState);
+        buf.putByte( joy2StrobeState);
+        buf.putByte( joypadLastWrite);
 
     }
 
@@ -302,7 +302,7 @@ public class MapperDefault implements MemoryMapper {
                             }
 
                             w |= (mousePressed ? (0x1 << 4) : 0);
-                            return (int) (joy2Read() | w);
+                            return  (joy2Read() | w);
 
                         } else {
                             return joy2Read();
@@ -464,10 +464,10 @@ public class MapperDefault implements MemoryMapper {
             case 16:
             case 17:
             case 18:
-                ret = (int) 0;
+                ret =  0;
                 break;
             case 19:
-                ret = (int) 1;
+                ret =  1;
                 break;
             default:
                 ret = 0;
@@ -508,13 +508,13 @@ public class MapperDefault implements MemoryMapper {
         } else if (st == 7) {
             return in.getKeyState(InputHandler.KEY_RIGHT);
         } else if (st == 16) {
-            return (int) 0;
+            return  0;
         } else if (st == 17) {
-            return (int) 0;
+            return  0;
         } else if (st == 18) {
-            return (int) 1;
+            return  1;
         } else if (st == 19) {
-            return (int) 0;
+            return  0;
         } else {
             return 0;
         }

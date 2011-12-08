@@ -52,19 +52,19 @@ public class FileLoader {
             if (!(in instanceof FileInputStream)) {
 
 
-                long total = -1;
+                int total = -1;
 
                 if (fileName.endsWith(".zip")) {
                     zis = new ZipInputStream(in);
                     ZipEntry entry = zis.getNextEntry();
-                    total = entry.getSize();
+                    total = (int)entry.getSize();
                     zip = true;
                 } else if (Globals.appletMode && ui != null) {
                     // Can't get the file size, so use the applet parameter
                     total = ui.getRomFileSize();
                 }
 
-                long progress = -1;
+                int progress = -1;
                 while (readbyte != -1) {
                     readbyte = zip ? zis.read(tmp, pos, tmp.length - pos) : in.read(tmp, pos, tmp.length - pos);
                     if (readbyte != -1) {
@@ -81,7 +81,7 @@ public class FileLoader {
                     if (total > 0 && ((pos * 100) / total) > progress) {
                         progress = (pos * 100) / total;
                         if (ui != null) {
-                            ui.showLoadProgress((int) progress);
+                            ui.showLoadProgress( progress);
                         }
                     }
 
@@ -93,7 +93,7 @@ public class FileLoader {
                 // in the local file system.
                 File f = new File(fileName);
                 int count = 0;
-                int total = (int) (f.length());
+                int total =  (int)(f.length());
                 tmp = new byte[total];
                 while (count < total) {
                     count += in.read(tmp, count, total - count);
@@ -122,7 +122,7 @@ public class FileLoader {
 
         int[] ret = new int[flen];
         for (int i = 0; i < flen; i++) {
-            ret[i] = (int) (tmp[i] & 255);
+            ret[i] =  (tmp[i] & 255);
         }
         return ret;
 

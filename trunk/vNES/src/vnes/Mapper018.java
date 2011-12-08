@@ -46,7 +46,7 @@ public class Mapper018 extends MapperDefault {
         super.mapperInternalStateLoad(buf);
 
         // Version:
-        buf.putByte((int) 1);
+        buf.putByte( 1);
 
         buf.putInt(irq_counter);
         buf.putInt(irq_latch);

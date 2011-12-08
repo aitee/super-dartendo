@@ -78,7 +78,7 @@ public class Mapper001 extends MapperDefault {
     public void mapperInternalStateSave(ByteBuffer buf) {
 
         // Version:
-        buf.putByte((int) 1);
+        buf.putByte( 1);
 
         // Reg 0:
         buf.putInt(mirroring);

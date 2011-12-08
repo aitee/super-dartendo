@@ -648,7 +648,7 @@ public class PPU {
         int n = 1 << flag;
         int memValue = nes.getCpuMemory().load(0x2002);
         memValue = ((memValue & (255 - n)) | (value ? n : 0));
-        nes.getCpuMemory().write(0x2002, (int) memValue);
+        nes.getCpuMemory().write(0x2002,  memValue);
 
     }
 
@@ -1739,7 +1739,7 @@ public class PPU {
 
 
             // VRAM I/O:
-            vramBufferedReadValue = (int) buf.readInt();
+            vramBufferedReadValue =  buf.readInt();
             firstWrite = buf.readBoolean();
             //System.out.println("firstWrite: "+firstWrite);
 
@@ -1753,7 +1753,7 @@ public class PPU {
 
 
             // SPR-RAM I/O:
-            sramAddress = (int) buf.readInt();
+            sramAddress =  buf.readInt();
 
             // Rendering progression:
             curX = buf.readInt();
@@ -1766,7 +1766,7 @@ public class PPU {
             nmiOk = buf.readBoolean();
             dummyCycleToggle = buf.readBoolean();
             nmiCounter = buf.readInt();
-            tmp = (int) buf.readInt();
+            tmp =  buf.readInt();
 
 
             // Stuff used during rendering:
@@ -1810,7 +1810,7 @@ public class PPU {
 
 
         // Version:
-        buf.putByte((int) 1);
+        buf.putByte( 1);
 
 
         // Counters:
@@ -1872,15 +1872,15 @@ public class PPU {
 
         // Stuff used during rendering:
         for (int i = 0; i < bgbuffer.length; i++) {
-            buf.putByte((int) bgbuffer[i]);
+            buf.putByte( bgbuffer[i]);
         }
         for (int i = 0; i < pixrendered.length; i++) {
-            buf.putByte((int) pixrendered[i]);
+            buf.putByte( pixrendered[i]);
         }
 
         // Name tables:
         for (int i = 0; i < 4; i++) {
-            buf.putByte((int) ntable1[i]);
+            buf.putByte( ntable1[i]);
             nameTable[i].stateSave(buf);
         }
 

@@ -106,10 +106,10 @@ public class Mapper007 extends MapperDefault {
         super.mapperInternalStateSave(buf);
 
         // Version:
-        buf.putByte((int) 1);
+        buf.putByte( 1);
 
         // State:
-        buf.putByte((int) currentMirroring);
+        buf.putByte( currentMirroring);
         buf.putInt(currentOffset);
 
     }

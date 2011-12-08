@@ -217,7 +217,7 @@ public class Mapper010 extends MapperDefault {
         super.mapperInternalStateSave(buf);
 
         // Version:
-        buf.putByte((int) 1);
+        buf.putByte( 1);
 
         // State:
         buf.putByte((byte) latchLo);
