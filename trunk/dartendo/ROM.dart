@@ -210,7 +210,7 @@ class ROM {
 
         rom = Util.newIntList2d(romCount,16384,0);
         vrom = Util.newIntList2d(vromCount,4096,0);
-        List<List<Tile>> vromTile = new List<List<Tile>>(vromCount);
+        vromTile = new List<List<Tile>>(vromCount);
         for(int i = 0; i < vromCount; ++i) {
           vromTile[i] = new List<Tile>(256);
         }

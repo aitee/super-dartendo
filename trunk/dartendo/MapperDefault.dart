@@ -161,9 +161,7 @@ class MapperDefault implements MemoryMapper
             case 1: {
                 break;
             }
-            case 2: {
-                // Fall through to case 3
-            }
+            case 2:
             case 3: {
                 // PPU Registers
                 switch (address & 0x7) {
