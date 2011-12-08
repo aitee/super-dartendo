@@ -35,8 +35,7 @@ class PaletteTable {
         try {
             List<int> palette = FileLoader.loadFile(file);
             
-            if (debugMe) print("PaletteTable.loadPalette: Finished loading palette.");
-            
+            if (debugMe) print("PaletteTable.loadPalette: Finished loading palette.");            
             for (var i = 0; i < palette.length; ++i) {
               //int r, g, b;
               //b = palette[i] & 0xFF;
