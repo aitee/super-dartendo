@@ -152,6 +152,8 @@ class PaletteTable {
        hsb[0] = hue;
        hsb[1] = saturation;
        hsb[2] = brightness;
+       
+       return hsb;
     }
        
     int HSBtoRGB(double hue, double saturation, double brightness) {
