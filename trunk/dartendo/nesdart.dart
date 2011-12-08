@@ -59,6 +59,7 @@
 #source('PaletteTable.dart');
 #source('ROM.dart');
 #source('Tile.dart');
+#source('Scale.dart');
 #source('UI.dart');
 #source('PapuChannel.dart');
 
