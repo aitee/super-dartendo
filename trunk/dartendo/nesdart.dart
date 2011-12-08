@@ -85,7 +85,7 @@ class Controller {
   int sleepTime;
   
   
-  snes() {
+  Controller() {
     Globals = new SGlobals();
     Util = new CUtil();
     canvas = document.getElementById("webGlCanvas");
@@ -104,9 +104,11 @@ class Controller {
      started = false;
      lastTime = 0;
      sleepTime=0;
+     init();
   }
 
    void init() {
+     print("CALLED INIT");
     readParams();
 
     gui = new AppletUI(this);
@@ -118,6 +120,8 @@ class Controller {
     nes = gui.getNES();
     nes.enableSound(sound);
     nes.reset();
+    
+    print('NES: '+nes);
 
 }
 

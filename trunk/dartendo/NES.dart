@@ -29,8 +29,8 @@ class NES {
         // Create system units:
         cpu = new CPU(this);
         palTable = new PaletteTable();
-        //ppu = new PPU(this);
-        //papu = new PAPU(this);
+        ppu = new PPU(this);
+        papu = new PAPU(this);
 
         // Init sound registers:
         for (int i = 0; i < 0x14; i++) {
