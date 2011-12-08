@@ -18,10 +18,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 public class Mapper023 extends MapperDefault {
 
-    private int irq_counter = 0;
-    private int irq_latch = 0;
-    private int irq_enabled = 0;
-    private int regs[] = new int[9];
+    public int irq_counter = 0;
+    public int irq_latch = 0;
+    public int irq_enabled = 0;
+    public int regs[] = new int[9];
     int patch = 0xFFFF;
 
     public void init(NES nes) {

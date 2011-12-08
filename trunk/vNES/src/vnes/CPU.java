@@ -29,9 +29,9 @@ public final class CPU implements Runnable{
 	Thread myThread;
 
 	// References to other parts of NES :
-	private NES nes;
-	private MemoryMapper mmap;
-	private int[] mem;
+	public NES nes;
+	public MemoryMapper mmap;
+	public int[] mem;
 
 	// CPU Registers:
 	public int REG_ACC_NEW;
@@ -42,14 +42,14 @@ public final class CPU implements Runnable{
 	public int REG_SP;
 
 	// Status flags:
-	private int F_CARRY_NEW;
-	private int F_ZERO_NEW;
-	private int F_INTERRUPT_NEW;
-	private int F_DECIMAL_NEW;
-	private int F_BRK_NEW;
-	private int F_NOTUSED_NEW;
-	private int F_OVERFLOW_NEW;
-	private int F_SIGN_NEW;
+	public int F_CARRY_NEW;
+	public int F_ZERO_NEW;
+	public int F_INTERRUPT_NEW;
+	public int F_DECIMAL_NEW;
+	public int F_BRK_NEW;
+	public int F_NOTUSED_NEW;
+	public int F_OVERFLOW_NEW;
+	public int F_SIGN_NEW;
 
 	// IRQ Types:
 	public static final int IRQ_NORMAL = 0;
@@ -58,10 +58,10 @@ public final class CPU implements Runnable{
 
 	// Interrupt notification:
 	public boolean irqRequested;
-	private int irqType;
+	public int irqType;
 
 	// Op/Inst Data:
-	private int[] opdata;
+	public int[] opdata;
 
 	// Misc vars:
 	public int cyclesToHalt;
@@ -1309,11 +1309,11 @@ public final class CPU implements Runnable{
 
 	}
 
-	private int load(int addr){
+	public int load(int addr){
 		return addr<0x2000 ? mem[addr&0x7FF] : mmap.load(addr);
 	}
 	
-	private int load16bit(int addr){
+	public int load16bit(int addr){
 		return addr<0x1FFF ?
 			mem[addr&0x7FF] | (mem[(addr+1)&0x7FF]<<8)
 			:
@@ -1321,7 +1321,7 @@ public final class CPU implements Runnable{
 			;
 	}
 	
-	private void write(int addr, int val){
+	public void write(int addr, int val){
 		if(addr < 0x2000){
 			mem[addr&0x7FF] = val;
 		}else{
@@ -1364,7 +1364,7 @@ public final class CPU implements Runnable{
 		cyclesToHalt += cycles;
 	}
 
-	private void doNonMaskableInterrupt(int status){
+	public void doNonMaskableInterrupt(int status){
 
 		int temp = mmap.load(0x2000); // Read PPU status.
 		if((temp&128)!=0){ // Check whether VBlank Interrupts are enabled
@@ -1383,14 +1383,14 @@ public final class CPU implements Runnable{
 
 	}
 
-	private void doResetInterrupt(){
+	public void doResetInterrupt(){
 
 		REG_PC_NEW = mmap.load(0xFFFC) | (mmap.load(0xFFFD) << 8);
 		REG_PC_NEW--;
 
 	}
 
-	private void doIrq(int status){
+	public void doIrq(int status){
 
 		REG_PC_NEW++;
 		push((REG_PC_NEW>>8)&0xFF);
@@ -1404,11 +1404,11 @@ public final class CPU implements Runnable{
 
 	}
 
-	private int getStatus(){
+	public int getStatus(){
 		return (F_CARRY_NEW)|(F_ZERO_NEW<<1)|(F_INTERRUPT_NEW<<2)|(F_DECIMAL_NEW<<3)|(F_BRK_NEW<<4)|(F_NOTUSED_NEW<<5)|(F_OVERFLOW_NEW<<6)|(F_SIGN_NEW<<7);
 	}
 
-	private void setStatus(int st){
+	public void setStatus(int st){
 		F_CARRY_NEW     = (st   )&1;
 		F_ZERO_NEW      = (st>>1)&1;
 		F_INTERRUPT_NEW = (st>>2)&1;

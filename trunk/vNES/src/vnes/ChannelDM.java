@@ -89,7 +89,7 @@ public class ChannelDM implements PapuChannel {
 
     }
 
-    private void endOfSample() {
+    public void endOfSample() {
 
 
         if (playLengthCounter == 0 && playMode == MODE_LOOP) {
@@ -121,7 +121,7 @@ public class ChannelDM implements PapuChannel {
 
     }
 
-    private void nextSample() {
+    public void nextSample() {
 
         // Fetch byte:
         data = papu.getNes().getMemoryMapper().load(playAddress);

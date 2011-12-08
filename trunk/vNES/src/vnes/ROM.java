@@ -506,7 +506,7 @@ public class ROM {
 
     }
 
-    private void loadBatteryRam() {
+    public void loadBatteryRam() {
         if (batteryRam) {
             try {
                 saveRam = new int[0x2000];

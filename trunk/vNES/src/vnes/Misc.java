@@ -20,9 +20,9 @@ package vnes;
 public class Misc {
 
     public static boolean debug = Globals.debug;
-    private static float[] rnd = new float[100000];
-    private static int nextRnd = 0;
-    private static float rndret;
+    public static float[] rnd = new float[100000];
+    public static int nextRnd = 0;
+    public static float rndret;
 
 
     static {

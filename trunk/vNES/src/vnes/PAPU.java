@@ -52,10 +52,10 @@ public final class PAPU {
     boolean recordOutput = false;
     boolean stereo = true;
     boolean initingHardware = false;
-    private boolean userEnableSquare1 = true;
-    private boolean userEnableSquare2 = true;
-    private boolean userEnableTriangle = true;
-    private boolean userEnableNoise = true;
+    public boolean userEnableSquare1 = true;
+    public boolean userEnableSquare2 = true;
+    public boolean userEnableTriangle = true;
+    public boolean userEnableNoise = true;
     public boolean userEnableDmc = true;
     int masterFrameCounter;
     int derivedFrameCounter;
@@ -496,7 +496,7 @@ public final class PAPU {
 
     }
 
-    private void accSample(int cycles) {
+    public void accSample(int cycles) {
 
         // Special treatment for triangle channel - need to interpolate.
         if (triangle.sampleCondition) {

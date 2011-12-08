@@ -30,22 +30,22 @@ public class BufferView extends JPanel {
     public static final int SCALE_SCANLINE = 4;
     public static final int SCALE_RASTER = 5;
     protected NES nes;
-    private BufferedImage img;
-    private VolatileImage vimg;
-    private boolean usingMenu = false;
-    private Graphics gfx;
-    private int width;
-    private int height;
-    private int[] pix;
-    private int[] pix_scaled;
-    private int scaleMode;
+    public BufferedImage img;
+    public VolatileImage vimg;
+    public boolean usingMenu = false;
+    public Graphics gfx;
+    public int width;
+    public int height;
+    public int[] pix;
+    public int[] pix_scaled;
+    public int scaleMode;
     // FPS counter variables:
-    private boolean showFPS = false;
-    private long prevFrameTime;
-    private String fps;
-    private int fpsCounter;
-    private Font fpsFont = new Font("Verdana", Font.BOLD, 10);
-    private int bgColor = Color.white.darker().getRGB();
+    public boolean showFPS = false;
+    public long prevFrameTime;
+    public String fps;
+    public int fpsCounter;
+    public Font fpsFont = new Font("Verdana", Font.BOLD, 10);
+    public int bgColor = Color.white.darker().getRGB();
 
     // Constructor
     public BufferView(NES nes, int width, int height) {
@@ -90,7 +90,7 @@ public class BufferView extends JPanel {
 
     }
 
-    private void createView() {
+    public void createView() {
 
         int scale = getScaleModeScale(scaleMode);
 

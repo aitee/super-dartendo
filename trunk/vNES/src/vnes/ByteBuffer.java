@@ -24,13 +24,13 @@ public class ByteBuffer {
     public static final boolean DEBUG = false;
     public static final int BO_BIG_ENDIAN = 0;
     public static final int BO_LITTLE_ENDIAN = 1;
-    private int byteOrder = BO_BIG_ENDIAN;
-    private int[] buf;
-    private int size;
-    private int curPos;
-    private boolean hasBeenErrors;
-    private boolean expandable = true;
-    private int expandBy = 4096;
+    public int byteOrder = BO_BIG_ENDIAN;
+    public int[] buf;
+    public int size;
+    public int curPos;
+    public boolean hasBeenErrors;
+    public boolean expandable = true;
+    public int expandBy = 4096;
 
     public ByteBuffer(int size, int byteOrdering) {
         if (size < 1) {
@@ -94,7 +94,7 @@ public class ByteBuffer {
         return curPos;
     }
 
-    private void error() {
+    public void error() {
         hasBeenErrors = true;
     //System.out.println("Not in range!");
     }
@@ -437,22 +437,22 @@ public class ByteBuffer {
     }
 
     public boolean readBoolean() {
-        boolean ret = readBoolean(curPos);
+        boolean ret = readBooleanWithPosition(curPos);
         move(1);
         return ret;
     }
 
-    public boolean readBoolean(int pos) {
-        return readByte(pos) == 1;
+    public boolean readBooleanWithPosition(int pos) {
+        return readByteWithPosition(pos) == 1;
     }
 
     public int readByte() throws ArrayIndexOutOfBoundsException {
-        int ret = readByte(curPos);
+        int ret = readByteWithPosition(curPos);
         move(1);
         return ret;
     }
 
-    public int readByte(int pos) throws ArrayIndexOutOfBoundsException {
+    public int readByteWithPosition(int pos) throws ArrayIndexOutOfBoundsException {
         if (inRange(pos)) {
             return buf[pos];
         } else {
@@ -462,12 +462,12 @@ public class ByteBuffer {
     }
 
     public int readShort() throws ArrayIndexOutOfBoundsException {
-        int ret = readShort(curPos);
+        int ret = readShortWithPosition(curPos);
         move(2);
         return ret;
     }
 
-    public int readShort(int pos) throws ArrayIndexOutOfBoundsException {
+    public int readShortWithPosition(int pos) throws ArrayIndexOutOfBoundsException {
         if (inRange(pos, 2)) {
             if (this.byteOrder == BO_BIG_ENDIAN) {
                 return (int) ((buf[pos] << 8) | (buf[pos + 1]));
@@ -481,12 +481,12 @@ public class ByteBuffer {
     }
 
     public int readInt() throws ArrayIndexOutOfBoundsException {
-        int ret = readInt(curPos);
+        int ret = readIntWithPosition(curPos);
         move(4);
         return ret;
     }
 
-    public int readInt(int pos) throws ArrayIndexOutOfBoundsException {
+    public int readIntWithPosition(int pos) throws ArrayIndexOutOfBoundsException {
         int ret = 0;
         if (inRange(pos, 4)) {
             if (this.byteOrder == BO_BIG_ENDIAN) {
@@ -508,14 +508,14 @@ public class ByteBuffer {
     }
 
     public char readChar() throws ArrayIndexOutOfBoundsException {
-        char ret = readChar(curPos);
+        char ret = readCharWithPosition(curPos);
         move(2);
         return ret;
     }
 
-    public char readChar(int pos) throws ArrayIndexOutOfBoundsException {
+    public char readCharWithPosition(int pos) throws ArrayIndexOutOfBoundsException {
         if (inRange(pos, 2)) {
-            return (char) (readShort(pos));
+            return (char) (readShortWithPosition(pos));
         } else {
             error();
             throw new ArrayIndexOutOfBoundsException();
@@ -523,14 +523,14 @@ public class ByteBuffer {
     }
 
     public char readCharAscii() throws ArrayIndexOutOfBoundsException {
-        char ret = readCharAscii(curPos);
+        char ret = readCharAsciiWithPosition(curPos);
         move(1);
         return ret;
     }
 
-    public char readCharAscii(int pos) throws ArrayIndexOutOfBoundsException {
+    public char readCharAsciiWithPosition(int pos) throws ArrayIndexOutOfBoundsException {
         if (inRange(pos, 1)) {
-            return (char) (readByte(pos) & 255);
+            return (char) (readByteWithPosition(pos) & 255);
         } else {
             error();
             throw new ArrayIndexOutOfBoundsException();
@@ -539,7 +539,7 @@ public class ByteBuffer {
 
     public String readString(int length) throws ArrayIndexOutOfBoundsException {
         if (length > 0) {
-            String ret = readString(curPos, length);
+            String ret = readStringWithPosition(curPos, length);
             move(ret.length() * 2);
             return ret;
         } else {
@@ -547,12 +547,12 @@ public class ByteBuffer {
         }
     }
 
-    public String readString(int pos, int length) throws ArrayIndexOutOfBoundsException {
+    public String readStringWithPosition(int pos, int length) throws ArrayIndexOutOfBoundsException {
         char[] tmp;
         if (inRange(pos, length * 2) && length > 0) {
             tmp = new char[length];
             for (int i = 0; i < length; i++) {
-                tmp[i] = readChar(pos + i * 2);
+                tmp[i] = readCharWithPosition(pos + i * 2);
             }
             return new String(tmp);
         } else {
@@ -561,17 +561,17 @@ public class ByteBuffer {
     }
 
     public String readStringWithShortLength() throws ArrayIndexOutOfBoundsException {
-        String ret = readStringWithShortLength(curPos);
+        String ret = readStringWithShortLengthAndPosition(curPos);
         move(ret.length() * 2 + 2);
         return ret;
     }
 
-    public String readStringWithShortLength(int pos) throws ArrayIndexOutOfBoundsException {
+    public String readStringWithShortLengthAndPosition(int pos) throws ArrayIndexOutOfBoundsException {
         int len;
         if (inRange(pos, 2)) {
-            len = readShort(pos);
+            len = readShortWithPosition(pos);
             if (len > 0) {
-                return readString(pos + 2, len);
+                return readStringWithPosition(pos + 2, len);
             } else {
                 return new String("");
             }
@@ -581,17 +581,17 @@ public class ByteBuffer {
     }
 
     public String readStringAscii(int length) throws ArrayIndexOutOfBoundsException {
-        String ret = readStringAscii(curPos, length);
+        String ret = readStringAsciiWithPosition(curPos, length);
         move(ret.length());
         return ret;
     }
 
-    public String readStringAscii(int pos, int length) throws ArrayIndexOutOfBoundsException {
+    public String readStringAsciiWithPosition(int pos, int length) throws ArrayIndexOutOfBoundsException {
         char[] tmp;
         if (inRange(pos, length) && length > 0) {
             tmp = new char[length];
             for (int i = 0; i < length; i++) {
-                tmp[i] = readCharAscii(pos + i);
+                tmp[i] = readCharAsciiWithPosition(pos + i);
             }
             return new String(tmp);
         } else {
@@ -600,17 +600,17 @@ public class ByteBuffer {
     }
 
     public String readStringAsciiWithShortLength() throws ArrayIndexOutOfBoundsException {
-        String ret = readStringAsciiWithShortLength(curPos);
+        String ret = readStringAsciiWithShortLengthAndPosition(curPos);
         move(ret.length() + 2);
         return ret;
     }
 
-    public String readStringAsciiWithShortLength(int pos) throws ArrayIndexOutOfBoundsException {
+    public String readStringAsciiWithShortLengthAndPosition(int pos) throws ArrayIndexOutOfBoundsException {
         int len;
         if (inRange(pos, 2)) {
-            len = readShort(pos);
+            len = readShortWithPosition(pos);
             if (len > 0) {
-                return readStringAscii(pos + 2, len);
+                return readStringAsciiWithPosition(pos + 2, len);
             } else {
                 return new String("");
             }
@@ -619,7 +619,7 @@ public class ByteBuffer {
         }
     }
 
-    private int[] expandShortArray(int[] array, int size) {
+    public int[] expandShortArray(int[] array, int size) {
         int[] newArr = new int[array.length + size];
         if (size > 0) {
             System.arraycopy(array, 0, newArr, 0, array.length);
@@ -664,66 +664,5 @@ public class ByteBuffer {
         return null;
     }
 
-    public static void saveToZipFile(File f, ByteBuffer buf) {
-
-        try {
-
-            FileOutputStream fOut = new FileOutputStream(f);
-            ZipOutputStream zipOut = new ZipOutputStream(fOut);
-            zipOut.putNextEntry(new ZipEntry("contents"));
-            zipOut.write(buf.getBytes());
-            zipOut.closeEntry();
-            zipOut.close();
-            fOut.close();
-        //System.out.println("Buffer was successfully saved to "+f.getPath());
-
-        } catch (Exception e) {
-
-            //System.out.println("Unable to save buffer to file "+f.getPath());
-            e.printStackTrace();
-
-        }
-
-    }
-
-    public static ByteBuffer readFromZipFile(File f) {
-
-        try {
-
-            FileInputStream in = new FileInputStream(f);
-            ZipInputStream zipIn = new ZipInputStream(in);
-            int len, curlen, read;
-
-            ZipFile zip = new ZipFile(f);
-            ZipEntry entry = zip.getEntry("contents");
-            len = (int) entry.getSize();
-            //System.out.println("Len = "+len);
-
-            curlen = 0;
-            byte[] buf = new byte[len];
-            zipIn.getNextEntry();
-            while (curlen < len) {
-                read = zipIn.read(buf, curlen, len - curlen);
-                if (read >= 0) {
-                    curlen += read;
-                } else {
-                    // end of file.
-                    break;
-                }
-            }
-            zipIn.closeEntry();
-            zipIn.close();
-            in.close();
-            zip.close();
-            return new ByteBuffer(buf, ByteBuffer.BO_BIG_ENDIAN);
-
-        } catch (Exception e) {
-            //System.out.println("Unable to load buffer from file "+f.getPath());
-            e.printStackTrace();
-        }
-
-        // fail:
-        return null;
-
-    }
 }
+

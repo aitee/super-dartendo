@@ -18,9 +18,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 public class Mapper182 extends MapperDefault {
 
-    private int irq_counter = 0;
-    private boolean irq_enabled = false;
-    private int regs[] = new int[1];
+    public int irq_counter = 0;
+    public boolean irq_enabled = false;
+    public int regs[] = new int[1];
 
     public void init(NES nes) {
         super.init(nes);

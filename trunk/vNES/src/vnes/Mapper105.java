@@ -18,10 +18,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 public class Mapper105 extends MapperDefault {
 
-    private int irq_counter = 0;
-    private boolean irq_enabled = false;
-    private int init_state = 0;
-    private int[] regs = new int[4];
+    public int irq_counter = 0;
+    public boolean irq_enabled = false;
+    public int init_state = 0;
+    public int[] regs = new int[4];
     int bits = 0;
     int write_count = 0;
 

@@ -19,10 +19,10 @@ package vnes;
 
 public class PPU {
 
-    private NES nes;
-    private HiResTimer timer;
-    private Memory ppuMem;
-    private Memory sprMem;
+    public NES nes;
+    public HiResTimer timer;
+    public Memory ppuMem;
+    public Memory sprMem;
     // Rendering Options:
     boolean showSpr0Hit = false;
     boolean showSoundBuffer = false;
@@ -293,7 +293,7 @@ public class PPU {
     // Define a mirrored area in the address lookup table.
     // Assumes the regions don't overlap.
     // The 'to' region is the region that is physically in memory.
-    private void defineMirrorRegion(int fromStart, int toStart, int size) {
+    public void defineMirrorRegion(int fromStart, int toStart, int size) {
 
         for (int i = 0; i < size; i++) {
             vramMirrorTable[fromStart + i] = toStart + i;
@@ -856,7 +856,7 @@ public class PPU {
     }
 
     // Updates the scroll registers from a new VRAM address.
-    private void regsFromAddress() {
+    public void regsFromAddress() {
 
         address = (vramTmpAddress >> 8) & 0xFF;
         regFV = (address >> 4) & 7;
@@ -873,7 +873,7 @@ public class PPU {
     }
 
     // Updates the scroll registers from a new VRAM address.
-    private void cntsFromAddress() {
+    public void cntsFromAddress() {
 
         address = (vramAddress >> 8) & 0xFF;
         cntFV = (address >> 4) & 3;
@@ -887,7 +887,7 @@ public class PPU {
 
     }
 
-    private void regsToAddress() {
+    public void regsToAddress() {
 
         b1 = (regFV & 7) << 4;
         b1 |= (regV & 1) << 3;
@@ -901,7 +901,7 @@ public class PPU {
 
     }
 
-    private void cntsToAddress() {
+    public void cntsToAddress() {
 
         b1 = (cntFV & 7) << 4;
         b1 |= (cntV & 1) << 3;
@@ -915,7 +915,7 @@ public class PPU {
 
     }
 
-    private void incTileCounter(int count) {
+    public void incTileCounter(int count) {
 
         for (i = count; i != 0; i--) {
             cntHT++;
@@ -941,7 +941,7 @@ public class PPU {
 
     // Reads from memory, taking into account
     // mirroring/mapping of address ranges.
-    private int mirroredLoad(int address) {
+    public int mirroredLoad(int address) {
 
         return ppuMem.load(vramMirrorTable[address]);
 
@@ -949,7 +949,7 @@ public class PPU {
 
     // Writes to memory, taking into account
     // mirroring/mapping of address ranges.
-    private void mirroredWrite(int address, int value) {
+    public void mirroredWrite(int address, int value) {
 
         if (address >= 0x3f00 && address < 0x3f20) {
 
@@ -1011,7 +1011,7 @@ public class PPU {
 
     }
 
-    private void renderFramePartially(int[] buffer, int startScan, int scanCount) {
+    public void renderFramePartially(int[] buffer, int startScan, int scanCount) {
 
         if (f_spVisibility == 1 && !Globals.disableSprites) {
             renderSpritesPartially(startScan, scanCount, true);
@@ -1063,7 +1063,7 @@ public class PPU {
 
     }
 
-    private void renderBgScanline(int[] buffer, int scan) {
+    public void renderBgScanline(int[] buffer, int scan) {
 
         baseTile = (regS == 0 ? 0 : 256);
         destIndex = (scan << 8) - regFH;
@@ -1163,7 +1163,7 @@ public class PPU {
 
     }
 
-    private void renderSpritesPartially(int startscan, int scancount, boolean bgPri) {
+    public void renderSpritesPartially(int startscan, int scancount, boolean bgPri) {
 
         buffer = nes.getGui().getScreenView().getBuffer();
         if (f_spVisibility == 1) {
@@ -1232,7 +1232,7 @@ public class PPU {
 
     }
 
-    private boolean checkSprite0(int scan) {
+    public boolean checkSprite0(int scan) {
 
         spr0HitX = -1;
         spr0HitY = -1;
@@ -1457,7 +1457,7 @@ public class PPU {
 
     }
 
-    private void renderPalettes() {
+    public void renderPalettes() {
 
         int[] buffer = nes.getGui().getImgPalView().getBuffer();
         for (int i = 0; i < 16; i++) {
@@ -1486,7 +1486,7 @@ public class PPU {
     // This will write to PPU memory, and
     // update internally buffered data
     // appropriately.
-    private void writeMem(int address, int value) {
+    public void writeMem(int address, int value) {
 
         ppuMem.write(address, value);
 

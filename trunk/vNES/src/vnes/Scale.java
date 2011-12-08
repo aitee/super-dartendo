@@ -19,12 +19,12 @@ package vnes;
 
 public class Scale {
 
-    private static int brightenShift;
-    private static int brightenShiftMask;
-    private static int brightenCutoffMask;
-    private static int darkenShift;
-    private static int darkenShiftMask;
-    private static int si,  di,  di2,  val,  x,  y;
+    public static int brightenShift;
+    public static int brightenShiftMask;
+    public static int brightenCutoffMask;
+    public static int darkenShift;
+    public static int darkenShiftMask;
+    public static int si,  di,  di2,  val,  x,  y;
 
     public static void setFilterParams(int darkenDepth, int brightenDepth) {
 

@@ -18,8 +18,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 public class Mapper048 extends MapperDefault {
 
-    private int irq_counter = 0;
-    private boolean irq_enabled = false;
+    public int irq_counter = 0;
+    public boolean irq_enabled = false;
 
     public void init(NES nes) {
         super.init(nes);

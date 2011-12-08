@@ -5,11 +5,11 @@ package vnes;
 public class CpuInfo {
 
     // Opdata array:
-    private static int[] opdata;
+    public static int[] opdata;
     // Instruction names:
-    private static String[] instname;
+    public static String[] instname;
     // Address mode descriptions:
-    private static String[] addrDesc;
+    public static String[] addrDesc;
     public static int[] cycTable;
     // Instruction types:
     // -------------------------------- //
@@ -128,7 +128,7 @@ public class CpuInfo {
         return "???";
     }
 
-    private static void initOpData() {
+    public static void initOpData() {
 
         // Create array:
         opdata = new int[256];
@@ -427,7 +427,7 @@ public class CpuInfo {
 
     }
 
-    private static void setOp(int inst, int op, int addr, int size, int cycles) {
+    public static void setOp(int inst, int op, int addr, int size, int cycles) {
 
         opdata[op] =
                 ((inst & 0xFF)) |
@@ -437,7 +437,7 @@ public class CpuInfo {
 
     }
 
-    private static void initInstNames() {
+    public static void initInstNames() {
 
         instname = new String[56];
 
@@ -501,7 +501,7 @@ public class CpuInfo {
 
     }
 
-    private static void initAddrDesc() {
+    public static void initAddrDesc() {
 
         addrDesc = new String[]{
                     "Zero Page           ",

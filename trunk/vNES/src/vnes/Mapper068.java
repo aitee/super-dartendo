@@ -101,7 +101,7 @@ public class Mapper068 extends MapperDefault {
 
     }
 
-    private void setMirroring() {
+    public void setMirroring() {
 
         if (r1 == 0) {
 

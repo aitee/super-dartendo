@@ -148,7 +148,7 @@ public class Mapper001 extends MapperDefault {
 
     }
 
-    private void setReg(int reg, int value) {
+    public void setReg(int reg, int value) {
 
         int tmp, tmp2;
 
@@ -292,7 +292,7 @@ public class Mapper001 extends MapperDefault {
     }
 
     // Returns the register number from the address written to:
-    private int getRegNumber(int address) {
+    public int getRegNumber(int address) {
 
         if (address >= 0x8000 && address <= 0x9FFF) {
             return 0;
@@ -354,17 +354,17 @@ public class Mapper001 extends MapperDefault {
 
     }
 
-    private void switchLowHighPrgRom(int oldSetting) {
+    public void switchLowHighPrgRom(int oldSetting) {
 
         // not yet.
     }
 
-    private void switch16to32() {
+    public void switch16to32() {
 
         // not yet.
     }
 
-    private void switch32to16() {
+    public void switch32to16() {
 
         // not yet.
     }
