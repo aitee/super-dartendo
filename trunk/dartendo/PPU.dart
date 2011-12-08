@@ -10,20 +10,20 @@ class PPU {
   bool _clipTVrow = false;
 
   // Control Flags Register 1:
-  int f_nmiOnVblank;    // NMI on VBlank. 0=disable, 1=enable
-  int f_spriteSize;     // Sprite size. 0=8x8, 1=8x16
-  int f_bgPatternTable; // Background Pattern Table address. 0=0x0000,1=0x1000
-  int f_spPatternTable; // Sprite Pattern Table address. 0=0x0000,1=0x1000
-  int f_addrInc;        // PPU Address Increment. 0=1,1=32
-  int f_nTblAddress;    // Name Table Address. 0=0x2000,1=0x2400,2=0x2800,3=0x2C00
+  int f_nmiOnVblank = 0;    // NMI on VBlank. 0=disable, 1=enable
+  int f_spriteSize = 0;     // Sprite size. 0=8x8, 1=8x16
+  int f_bgPatternTable = 0; // Background Pattern Table address. 0=0x0000,1=0x1000
+  int f_spPatternTable = 0; // Sprite Pattern Table address. 0=0x0000,1=0x1000
+  int f_addrInc = 0;        // PPU Address Increment. 0=1,1=32
+  int f_nTblAddress = 0;    // Name Table Address. 0=0x2000,1=0x2400,2=0x2800,3=0x2C00
   
   // Control Flags Register 2:
-  int f_color;        // Background color. 0=black, 1=blue, 2=green, 4=red
-  int f_spVisibility;   // Sprite visibility. 0=not displayed,1=displayed
-  int f_bgVisibility;   // Background visibility. 0=Not Displayed,1=displayed
-  int f_spClipping;     // Sprite clipping. 0=Sprites invisible in left 8-pixel column,1=No clipping
-  int f_bgClipping;     // Background clipping. 0=BG invisible in left 8-pixel column, 1=No clipping
-  int f_dispType;       // Display type. 0=color, 1=monochrome
+  int f_color = 0;          // Background color. 0=black, 1=blue, 2=green, 4=red
+  int f_spVisibility = 0;   // Sprite visibility. 0=not displayed,1=displayed
+  int f_bgVisibility = 0;   // Background visibility. 0=Not Displayed,1=displayed
+  int f_spClipping = 0;     // Sprite clipping. 0=Sprites invisible in left 8-pixel column,1=No clipping
+  int f_bgClipping = 0;     // Background clipping. 0=BG invisible in left 8-pixel column, 1=No clipping
+  int f_dispType = 0;       // Display type. 0=color, 1=monochrome
   
   // Status flags:
   static final int _STATUS_VRAMWRITE = 4;
@@ -32,38 +32,38 @@ class PPU {
   static final int _STATUS_VBLANK = 7;
 
   // VRAM I/O:
-  int _vramAddress;
-  int _vramTmpAddress;
-  int _vramBufferedReadValue;
+  int _vramAddress = 0;
+  int _vramTmpAddress = 0;
+  int _vramBufferedReadValue = 0;
   bool _firstWrite = true;    // VRAM/Scroll Hi/Lo latch
-  List<int> _vramMirrorTable; // Mirroring Lookup Table.
+  List<int> _vramMirrorTable = 0; // Mirroring Lookup Table.
 
 
   // SPR-RAM I/O:
-  int _sramAddress; // 8-bit only.
+  int _sramAddress = 0; // 8-bit only.
 
   // Counters:
-  int _cntFV;
-  int _cntV;
-  int _cntH;
-  int _cntVT;
-  int _cntHT;
+  int _cntFV = 0;
+  int _cntV = 0;
+  int _cntH = 0;
+  int _cntVT = 0;
+  int _cntHT = 0;
 
   // Registers:
-  int _regFV;
-  int _regV;
-  int _regH;
-  int _regVT;
-  int _regHT;
-  int _regFH;
-  int _regS;
+  int _regFV = 0;
+  int _regV = 0;
+  int _regH = 0;
+  int _regVT = 0;
+  int _regHT = 0;
+  int _regFH = 0;
+  int _regS = 0;
 
   // VBlank extension for PAL emulation:
   int _vblankAdd = 0;
-  int curX;
-  int scanline;
-  int lastRenderedScanline;
-  int mapperIrqCounter;
+  int curX = 0;
+  int scanline = 0;
+  int lastRenderedScanline = 0;
+  int mapperIrqCounter = 0;
   
   // Sprite data:
   List<int> sprX;        // X coordinate
@@ -73,9 +73,9 @@ class PPU {
   List<bool> vertFlip;    // Vertical Flip
   List<bool> horiFlip;    // Horizontal Flip
   List<bool> bgPriority;  // Background priority
-  int spr0HitX;  // Sprite #0 hit X coordinate
-  int spr0HitY;  // Sprite #0 hit Y coordinate
-  bool hitSpr0;
+  int spr0HitX = 0;  // Sprite #0 hit X coordinate
+  int spr0HitY = 0;  // Sprite #0 hit Y coordinate
+  bool hitSpr0 = false;
 
   // Tiles:
   List<Tile> ptTile;
@@ -90,22 +90,24 @@ class PPU {
   List<int> _imgPalette;
     
   // Misc:
-  bool _scanlineAlreadyRendered;
-  bool _requestEndFrame;
-  bool _nmiOk;
-  int _nmiCounter;
-  int _tmp;
-  bool _dummyCycleToggle;
+  bool _scanlineAlreadyRendered = false;
+  bool _requestEndFrame = false;
+  bool _nmiOk = false;
+  int _nmiCounter = 0;
+  int _tmp = 0;
+  bool _dummyCycleToggle = false;
 
   // Vars used when updating regs/address:
-  int _address, _b1, _b2;
+  int _address = 0;
+  int _b1 = 0;
+  int _b2 = 0;
     
   // Variables used when rendering:
   List<int> buffer;
   List<int> _tpix;
   bool requestRenderAll = false;
-  bool _validTileData;
-  int _att;
+  bool _validTileData = false;
+  int _att = 0;
   List<Tile> _scantile;
   List<int> _attrib;
   List<int> _bgbuffer;
@@ -115,19 +117,25 @@ class PPU {
   List<int> _oldFrame;
   List<bool> _scanlineChanged;
   Tile _t;
-    
+
   // These are temporary variables used in rendering and sound procedures.
   // Their states outside of those procedures can be ignored.
-  int _curNt;
-  int _destIndex;
-  int _x, _y, _sx;
-  int _si, _ei;
-  int _tile;
-  int _col;
-  int _baseTile;
-  int _tscanoffset;
-  int _srcy1, _srcy2;
-  int bufferSize, _available, _scale;
+  int _curNt = 0;
+  int _destIndex = 0;
+  int _x = 0;
+  int _y = 0;
+  int _sx = 0;
+  int _si = 0;
+  int _ei = 0;
+  int _tile = 0;
+  int _col = 0;
+  int _baseTile = 0;
+  int _tscanoffset = 0;
+  int _srcy1 = 0;
+  int _srcy2 = 0;
+  int bufferSize = 0;
+  int _available = 0; 
+  int _scale = 0;
   int cycles = 0;
 
   PPU(this.nes) {
@@ -143,7 +151,7 @@ class PPU {
     _spr0dummybuffer = Util.newIntList(256 * 240,0);
     _dummyPixPriTable = Util.newIntList(256 * 240,0);
     _oldFrame = Util.newIntList(256 * 240,0);
-    _scanlineChanged = Util.newBoolList(240,false);
+    _scanlineChanged = Util.newBoolList(240, false);
   }
 
   void init() {
