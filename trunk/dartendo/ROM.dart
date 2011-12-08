@@ -1,34 +1,39 @@
 class ROM {
 
     // Mirroring types:
-  static final int VERTICAL_MIRRORING = 0;
-      static final int HORIZONTAL_MIRRORING = 1;
-      static final int FOURSCREEN_MIRRORING = 2;
-      static final int SINGLESCREEN_MIRRORING = 3;
-      static final int SINGLESCREEN_MIRRORING2 = 4;
-      static final int SINGLESCREEN_MIRRORING3 = 5;
-      static final int SINGLESCREEN_MIRRORING4 = 6;
-      static final int CHRROM_MIRRORING = 7;
+   static final int VERTICAL_MIRRORING = 0;
+   static final int HORIZONTAL_MIRRORING = 1;
+   static final int FOURSCREEN_MIRRORING = 2;
+   static final int SINGLESCREEN_MIRRORING = 3;
+   static final int SINGLESCREEN_MIRRORING2 = 4;
+   static final int SINGLESCREEN_MIRRORING3 = 5;
+   static final int SINGLESCREEN_MIRRORING4 = 6;
+   static final int CHRROM_MIRRORING = 7;
+   
     bool failedSaveFile = false;
     bool saveRamUpToDate = true;
+    
     List<int> header;
     List<List<int>> rom;
     List<List<int>> vrom;
     List<int> saveRam;
     List<List<Tile>> vromTile;
+    
     NES nes;
-    int romCount=0;
-    int vromCount=0;
-    int mirroring=0;
-    bool batteryRam=false;
-    bool trainer=false;
-    bool fourScreen=false;
-    int mapperType=0;
+    
+    int romCount = 0;
+    int vromCount = 0;
+    int mirroring = 0;
+    bool batteryRam = false;
+    bool trainer = false;
+    bool fourScreen = false;
+    int mapperType = 0;
     String fileName;
     bool enableSave = true;
-    bool valid=false;
-     List<String> mapperName;
-     List<bool> mapperSupported;
+    bool valid = false;
+    
+    List<String> mapperName;
+    List<bool> mapperSupported;
 
      ROM(NES _nes) {
         nes = _nes;

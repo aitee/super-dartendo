@@ -1,11 +1,12 @@
 class ScaleStatics {
 
-    int brightenShift;
-    int brightenShiftMask;
-    int brightenCutoffMask;
-    int darkenShift;
-    int darkenShiftMask;
-    int si,  di,  di2,  val,  x,  y;
+    int brightenShift = 0;
+    int brightenShiftMask = 0;
+    int brightenCutoffMask = 0;
+    int darkenShift = 0;
+    int darkenShiftMask = 0;
+    
+    int si = 0,  di = 0,  di2 = 0,  val = 0,  x = 0,  y = 0;
 
     void setFilterParams(int darkenDepth, int brightenDepth) {
 

@@ -14,3 +14,4 @@ class SourceDataLine {
   
   int getBufferSize() => 0;
 }
+

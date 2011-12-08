@@ -45,8 +45,8 @@ class CUtil {
   {
     List<List<int>> r = new List<List<int>>(size1);
     for(int i = 0; i < size1; ++i) {
-    	    r[i] = new List<int>(size2);
-	    for(int j=0;j < size2 ; j++) {
+      r[i] = new List<int>(size2);
+	    for(int j = 0;j < size2 ; j++) {
                r[i][j] = defaultValue;
             }
     }

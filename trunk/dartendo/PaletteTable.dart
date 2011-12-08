@@ -15,7 +15,6 @@ class PaletteTable {
     int currentLightness = 0;
     int currentContrast = 0;
 
-
     // Load the NTSC palette:
     bool loadNTSCPalette() {
         return loadPalette("palettes/ntsc.json");

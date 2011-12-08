@@ -3,15 +3,16 @@
 class Tile {
     // Tile data:
     List<int> pix;
-    int fbIndex=0;
-    int tIndex=0;
-    int x=0, y=0;
-    int w=0, h=0;
-    int incX=0, incY = 0;
+    int fbIndex = 0;
+    int tIndex = 0;
+    int x = 0, y = 0;
+    int w = 0, h = 0;
+    int incX = 0, incY = 0;
     int palIndex = 0;
     int tpri = 0;
     int c = 0;
     bool initialized = false;
+    
     List<bool> opaque;
 
     Tile() {

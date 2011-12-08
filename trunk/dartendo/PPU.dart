@@ -73,6 +73,7 @@ class PPU {
   List<bool> vertFlip;    // Vertical Flip
   List<bool> horiFlip;    // Horizontal Flip
   List<bool> bgPriority;  // Background priority
+  
   int spr0HitX = 0;  // Sprite #0 hit X coordinate
   int spr0HitY = 0;  // Sprite #0 hit Y coordinate
   bool hitSpr0 = false;
@@ -93,6 +94,7 @@ class PPU {
   bool _scanlineAlreadyRendered = false;
   bool _requestEndFrame = false;
   bool _nmiOk = false;
+  
   int _nmiCounter = 0;
   int _tmp = 0;
   bool _dummyCycleToggle = false;
@@ -105,9 +107,11 @@ class PPU {
   // Variables used when rendering:
   List<int> buffer;
   List<int> _tpix;
+  
   bool requestRenderAll = false;
-  bool _validTileData = false;
+  bool _validTileData = false;  
   int _att = 0;
+  
   List<Tile> _scantile;
   List<int> _attrib;
   List<int> _bgbuffer;
