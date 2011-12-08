@@ -62,6 +62,7 @@
 #source('Scale.dart');
 #source('UI.dart');
 #source('PapuChannel.dart');
+#source('PPU.dart');
 
 class Controller {
   var canvas;
