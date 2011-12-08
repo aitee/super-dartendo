@@ -1,7 +1,8 @@
 #import('dart:dom');
 #source('ByteBuffer.dart');
 #source('Util.dart');
-
+#source('CPU.dart');
+#source('CpuInfo.dart');
 #source('MapperDefault.dart');
 #source('MemoryMapper.dart');
 #source('Mapper001.dart');
