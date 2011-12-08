@@ -3,7 +3,7 @@ class PAPU {
     NES nes;
     Memory cpuMem;
     //Mixer mixer;
-    //SourceDataLine line;
+    SourceDataLine line;
     ChannelSquare square1;
     ChannelSquare square2;
     ChannelTriangle triangle;
@@ -84,8 +84,8 @@ class PAPU {
         cpuMem = nes.getCpuMemory();
 
         setSampleRate(sampleRate, false);
-        sampleBuffer = Util.newIntList(bufferSize * (stereo ? 4 : 2));
-        ismpbuffer = Util.newIntList(bufferSize * (stereo ? 2 : 1));
+        sampleBuffer = Util.newIntList(bufferSize * (stereo ? 4 : 2), 0);
+        ismpbuffer = Util.newIntList(bufferSize * (stereo ? 2 : 1), 0);
         bufferIndex = 0;
         frameIrqEnabled = false;
         initCounter = 2048;
@@ -126,7 +126,9 @@ class PAPU {
     }
 
      void start() {
-
+       Globals.enableSound = false;
+       return;
+       
         //System.out.println("* Starting PAPU lines.");
         if (line != null && line.isActive()) {
             //System.out.println("* Already running.");
@@ -135,8 +137,9 @@ class PAPU {
 
         bufferIndex = 0;
         
+        
         // TODO: Figure out how to properly enable audio
-        //List<Mixer.Info> mixerInfo = AudioSystem.getMixerInfo();
+         //List<Mixer.Info> mixerInfo = AudioSystem.getMixerInfo();
         var mixerInfo = null;
         
         if (mixerInfo == null || mixerInfo.length == 0) {
@@ -334,7 +337,7 @@ class PAPU {
         }
 
         // Clock DMC:
-        if (dmc.isEnabled) {
+        if (dmc.isEnabled()) {
 
             dmc.shiftCounter -= (nCycles << 3);
             while (dmc.shiftCounter <= 0 && dmc.dmaFrequency > 0) {
@@ -356,7 +359,7 @@ class PAPU {
                     triangle.triangleCounter++;
                     triangle.triangleCounter &= 0x1F;
 
-                    if (triangle.isEnabled) {
+                    if (triangle.isEnabled()) {
                         if (triangle.triangleCounter >= 0x10) {
                             // Normal value.
                             triangle.sampleValue = (triangle.triangleCounter & 0xF);
@@ -426,7 +429,7 @@ class PAPU {
 
                         // Find sample value:
                         noise.randomBit = 1;
-                        if (noise.isEnabled && noise.lengthCounter > 0) {
+                        if (noise.isEnabled() && noise.lengthCounter > 0) {
                             noise.sampleValue = noise.masterVolume;
                         } else {
                             noise.sampleValue = 0;
@@ -483,7 +486,7 @@ class PAPU {
         // Special treatment for triangle channel - need to interpolate.
         if (triangle.sampleCondition) {
 
-            triValue = (triangle.progTimerCount << 4) / (triangle.progTimerMax + 1);
+            triValue = ((triangle.progTimerCount << 4) / (triangle.progTimerMax + 1)).toInt();
             if (triValue > 16) {
                 triValue = 16;
             }
@@ -575,15 +578,15 @@ class PAPU {
         if (accCount > 0) {
 
             smpSquare1 <<= 4;
-            smpSquare1 /= accCount;
+            smpSquare1 ~/= accCount;
 
             smpSquare2 <<= 4;
-            smpSquare2 /= accCount;
+            smpSquare2 ~/= accCount;
 
-            smpTriangle /= accCount;
+            smpTriangle ~/= accCount;
 
             smpDmc <<= 4;
-            smpDmc /= accCount;
+            smpDmc ~/= accCount;
 
             accCount = 0;
 
@@ -596,7 +599,7 @@ class PAPU {
 
         }
 
-        smpNoise = ((noise.accValue << 4) / noise.accCount);
+        smpNoise = ((noise.accValue << 4) ~/ noise.accCount);
         noise.accValue = smpNoise >> 4;
         noise.accCount = 1;
 
@@ -659,10 +662,10 @@ class PAPU {
             // Write:
             if (bufferIndex + 4 < sampleBuffer.length) {
 
-                sampleBuffer[bufferIndex++] = (byte) ((sampleValueL) & 0xFF);
-                sampleBuffer[bufferIndex++] = (byte) ((sampleValueL >> 8) & 0xFF);
-                sampleBuffer[bufferIndex++] = (byte) ((sampleValueR) & 0xFF);
-                sampleBuffer[bufferIndex++] = (byte) ((sampleValueR >> 8) & 0xFF);
+                sampleBuffer[bufferIndex++] = (sampleValueL) & 0xFF;
+                sampleBuffer[bufferIndex++] = (sampleValueL >> 8) & 0xFF;
+                sampleBuffer[bufferIndex++] = (sampleValueR) & 0xFF;
+                sampleBuffer[bufferIndex++] = (sampleValueR >> 8) & 0xFF;
 
             }
 
@@ -672,8 +675,8 @@ class PAPU {
             // Write:
             if (bufferIndex + 2 < sampleBuffer.length) {
 
-                sampleBuffer[bufferIndex++] = (byte) ((sampleValueL) & 0xFF);
-                sampleBuffer[bufferIndex++] = (byte) ((sampleValueL >> 8) & 0xFF);
+                sampleBuffer[bufferIndex++] = (sampleValueL) & 0xFF;
+                sampleBuffer[bufferIndex++] = (sampleValueL >> 8) & 0xFF;
 
             }
 
@@ -1029,7 +1032,7 @@ class PAPU {
         }
 
         this.dacRange = max_sqr + max_tnd;
-        this.dcValue = dacRange / 2;
+        this.dcValue = dacRange ~/ 2;
 
     }
 
@@ -1057,11 +1060,11 @@ class PAPU {
         square1 = null;
         square2 = null;
         triangle = null;
-        ;
+        
         noise = null;
         dmc = null;
 
-        mixer = null;
+        //mixer = null;
         line = null;
 
     }
