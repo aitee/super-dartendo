@@ -431,14 +431,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return strBuf.toString();
     }
 
-     int readBoolean() {
+     bool readBoolean() {
         int ret = readint(curPos);
         move(1);
-        return ret;
+        return (ret === 1);
     }
 
-     int readBooleanWithPosition(int pos) {
-        return readByte(pos) == 1;
+     bool readBooleanWithPosition(int pos) {
+        return readBoolean(pos) == 1;
     }
 
      int readByte() {

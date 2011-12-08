@@ -37,7 +37,7 @@ class PPU {
   int _vramBufferedReadValue;
   bool _firstWrite = true;    // VRAM/Scroll Hi/Lo latch
   List<int> _vramMirrorTable; // Mirroring Lookup Table.
-  int _i;
+
 
   // SPR-RAM I/O:
   int _sramAddress; // 8-bit only.
@@ -175,9 +175,9 @@ class PPU {
     }
 
     // Create nametable buffers:
-    nameTable = new List<NameTable>(4);
+    _nameTable = new List<NameTable>(4);
     for (int i = 0; i < 4; i++) {
-      nameTable[i] = new NameTable(32, 32, "Nt" + i);
+      _nameTable[i] = new NameTable(32, 32, "Nt" + i);
     }
 
     // Initialize mirroring lookup table:
@@ -190,18 +190,18 @@ class PPU {
     curX = 0;
 
     // Initialize old frame buffer:
-    for (int i = 0; i < oldFrame.length; i++) {
-      oldFrame[i] = -1;
+    for (int i = 0; i < _oldFrame.length; i++) {
+      _oldFrame[i] = -1;
     }
   }
 
   // Sets Nametable mirroring.
   void setMirroring(int mirroring) {
-    if (mirroring == currentMirroring) {
+    if (mirroring == _currentMirroring) {
       return;
     }
 
-    currentMirroring = mirroring;
+    _currentMirroring = mirroring;
     triggerRendering();
 
     // Remove mirroring:
@@ -224,37 +224,37 @@ class PPU {
 
     if (mirroring == ROM.HORIZONTAL_MIRRORING) {
       // Horizontal mirroring.
-      ntable1[0] = 0;
-      ntable1[1] = 0;
-      ntable1[2] = 1;
-      ntable1[3] = 1;
+      _ntable1[0] = 0;
+      _ntable1[1] = 0;
+      _ntable1[2] = 1;
+      _ntable1[3] = 1;
 
       defineMirrorRegion(0x2400, 0x2000, 0x400);
       defineMirrorRegion(0x2c00, 0x2800, 0x400);
     } else if (mirroring == ROM.VERTICAL_MIRRORING) {
       // Vertical mirroring.
-      ntable1[0] = 0;
-      ntable1[1] = 1;
-      ntable1[2] = 0;
-      ntable1[3] = 1;
+      _ntable1[0] = 0;
+      _ntable1[1] = 1;
+      _ntable1[2] = 0;
+      _ntable1[3] = 1;
             
       defineMirrorRegion(0x2800, 0x2000, 0x400);      
       defineMirrorRegion(0x2c00, 0x2400, 0x400);
     } else if (mirroring == ROM.SINGLESCREEN_MIRRORING) {
       // Single Screen mirroring
-      ntable1[0] = 0;
-      ntable1[1] = 0;
-      ntable1[2] = 0;
-      ntable1[3] = 0;
+      _ntable1[0] = 0;
+      _ntable1[1] = 0;
+      _ntable1[2] = 0;
+      _ntable1[3] = 0;
 
       defineMirrorRegion(0x2400, 0x2000, 0x400);
       defineMirrorRegion(0x2800, 0x2000, 0x400);
       defineMirrorRegion(0x2c00, 0x2000, 0x400);
     } else if (mirroring == ROM.SINGLESCREEN_MIRRORING2) {
-      ntable1[0] = 1;
-      ntable1[1] = 1;
-      ntable1[2] = 1;
-      ntable1[3] = 1;
+      _ntable1[0] = 1;
+      _ntable1[1] = 1;
+      _ntable1[2] = 1;
+      _ntable1[3] = 1;
 
       defineMirrorRegion(0x2400, 0x2400, 0x400);
       defineMirrorRegion(0x2800, 0x2400, 0x400);
@@ -262,10 +262,10 @@ class PPU {
     } else {
       // Assume Four-screen mirroring.
 
-      ntable1[0] = 0;
-      ntable1[1] = 1;
-      ntable1[2] = 2;
-      ntable1[3] = 3;
+      _ntable1[0] = 0;
+      _ntable1[1] = 1;
+      _ntable1[2] = 2;
+      _ntable1[3] = 3;
     }
   }
 
@@ -280,18 +280,18 @@ class PPU {
 
   // Emulates PPU cycles
   void emulateCycles() {
-    //int n = (!requestEndFrame && curX+cycles<341 && (scanline-20 < spr0HitY || scanline-22 > spr0HitY))?cycles:1;
+    //int n = (!_requestEndFrame && curX+cycles<341 && (scanline-20 < spr0HitY || scanline-22 > spr0HitY))?cycles:1;
     for (; cycles > 0; cycles--) {
       if (scanline - 21 == spr0HitY) {
         if ((curX == spr0HitX) && (f_spVisibility == 1)) {
           // Set sprite 0 hit flag:
-          setStatusFlag(STATUS_SPRITE0HIT, true);
+          setStatusFlag(_STATUS_SPRITE0HIT, true);
         }
       }
-      if (requestEndFrame) {
-        nmiCounter--;
-        if (nmiCounter == 0) {
-          requestEndFrame = false;
+      if (_requestEndFrame) {
+        _nmiCounter--;
+        if (_nmiCounter == 0) {
+          _requestEndFrame = false;
           startVBlank();
         }
       }
@@ -330,24 +330,24 @@ class PPU {
   }
 
   void endScanline() {
-    if (scanline < 19 + vblankAdd) {
+    if (scanline < 19 + _vblankAdd) {
       // VINT
       // do nothing.
-    } else if (scanline == 19 + vblankAdd) {
+    } else if (scanline == 19 + _vblankAdd) {
       // Dummy scanline.
       // May be variable length:
-      if (dummyCycleToggle) {
+      if (_dummyCycleToggle) {
         // Remove dead cycle at end of scanline,
         // for next scanline:
         curX = 1;
-        dummyCycleToggle = !dummyCycleToggle;
+        _dummyCycleToggle = !_dummyCycleToggle;
       }
-    } else if (scanline == 20 + vblankAdd) {
+    } else if (scanline == 20 + _vblankAdd) {
       // Clear VBlank flag:
-      setStatusFlag(STATUS_VBLANK, false);
+      setStatusFlag(_STATUS_VBLANK, false);
 
       // Clear Sprite #0 hit flag:
-      setStatusFlag(STATUS_SPRITE0HIT, false);
+      setStatusFlag(_STATUS_SPRITE0HIT, false);
       hitSpr0 = false;
       spr0HitX = -1;
       spr0HitY = -1;
@@ -375,21 +375,21 @@ class PPU {
         // Clock mapper IRQ Counter:
         nes.memMapper.clockIrqCounter();
       }
-    } else if (scanline >= 21 + vblankAdd && scanline <= 260) {
+    } else if (scanline >= 21 + _vblankAdd && scanline <= 260) {
       // Render normally:
       if (f_bgVisibility == 1) {
-        if (!scanlineAlreadyRendered) {
+        if (!_scanlineAlreadyRendered) {
           // update scroll:
           _cntHT = _regHT;
           _cntH = _regH;
-          renderBgScanline(bgbuffer, scanline + 1 - 21);
+          renderBgScanline(_bgbuffer, scanline + 1 - 21);
         }
-        scanlineAlreadyRendered = false;
+        _scanlineAlreadyRendered = false;
         
         // Check for sprite 0 (next scanline):
         if (!hitSpr0 && f_spVisibility == 1) {
-          if (sprX[0] >= -7 && sprX[0] < 256 && sprY[0] + 1 <= (scanline - vblankAdd + 1 - 21) && (sprY[0] + 1 + (f_spriteSize == 0 ? 8 : 16)) >= (scanline - vblankAdd + 1 - 21)) {
-            if (checkSprite0(scanline + vblankAdd + 1 - 21)) {
+          if (sprX[0] >= -7 && sprX[0] < 256 && sprY[0] + 1 <= (scanline - _vblankAdd + 1 - 21) && (sprY[0] + 1 + (f_spriteSize == 0 ? 8 : 16)) >= (scanline - _vblankAdd + 1 - 21)) {
+            if (checkSprite0(scanline + _vblankAdd + 1 - 21)) {
               ////System.out.println("found spr0. curscan="+scanline+" hitscan="+spr0HitY);
               hitSpr0 = true;
             }
@@ -401,12 +401,12 @@ class PPU {
         // Clock mapper IRQ Counter:
         nes.memMapper.clockIrqCounter();
       }
-    } else if (scanline == 261 + vblankAdd) {
+    } else if (scanline == 261 + _vblankAdd) {
       // Dead scanline, no rendering.
       // Set VINT:
-      setStatusFlag(STATUS_VBLANK, true);
-      requestEndFrame = true;
-      nmiCounter = 9;
+      setStatusFlag(_STATUS_VBLANK, true);
+      _requestEndFrame = true;
+      _nmiCounter = 9;
 
       // Wrap around:
       scanline = -1;  // will be incremented to 0
@@ -426,7 +426,7 @@ class PPU {
       // Color display.
       // f_color determines color emphasis.
       // Use first entry of image palette as BG color.
-      bgColor = imgPalette[0];
+      bgColor = _imgPalette[0];
     } else {
       // Monochrome display.
       // f_color determines the bg color.
@@ -462,8 +462,8 @@ class PPU {
     for (int i = 0; i < buffer.length; i++) {
       buffer[i] = bgColor;
     }
-    for (int i = 0; i < pixrendered.length; i++) {
-      pixrendered[i] = 65;
+    for (int i = 0; i < _pixrendered.length; i++) {
+      _pixrendered[i] = 65;
     }
   }
 
@@ -526,13 +526,13 @@ class PPU {
     // Show sound buffer:
     if (_showSoundBuffer && nes.getPapu().getLine() != null) {
       bufferSize = nes.getPapu().getLine().getBufferSize();
-      available = nes.getPapu().getLine().available();
-      scale = bufferSize / 256;
+      _available = nes.getPapu().getLine().available();
+      _scale = bufferSize ~/ 256;
 
       for (int y = 0; y < 4; y++) {
-        scanlineChanged[y] = true;
+        _scanlineChanged[y] = true;
         for (int x = 0; x < 256; x++) {
-          if (x >= (available / scale)) {
+          if (x >= (_available / _scale)) {
             buffer[y * 256 + x] = 0xFFFFFF;
           } else {
             buffer[y * 256 + x] = 0;
@@ -583,16 +583,16 @@ class PPU {
   // CPU Register $2002:
   // Read the Status Register.
   int readStatusRegister() {
-    tmp = nes.getCpuMemory().load(0x2002);
+    _tmp = nes.getCpuMemory().load(0x2002);
 
     // Reset scroll & VRAM Address toggle:
     _firstWrite = true;
 
     // Clear VBlank flag:
-    setStatusFlag(STATUS_VBLANK, false);
+    setStatusFlag(_STATUS_VBLANK, false);
 
     // Fetch status data:
-    return tmp;
+    return _tmp;
   }
 
   // CPU Register $2003:
@@ -660,7 +660,7 @@ class PPU {
       _cntVT = _regVT;
       _cntHT = _regHT;
 
-      checkSprite0(scanline - vblankAdd + 1 - 21);
+      checkSprite0(scanline - _vblankAdd + 1 - 21);
     }
     _firstWrite = !_firstWrite;
 
@@ -755,56 +755,56 @@ class PPU {
 
   // Updates the scroll registers from a new VRAM address.
   void regsFromAddress() {
-    address = (_vramTmpAddress >> 8) & 0xFF;
-    _regFV = (address >> 4) & 7;
-    _regV = (address >> 3) & 1;
-    _regH = (address >> 2) & 1;
-    _regVT = (_regVT & 7) | ((address & 3) << 3);
+    _address = (_vramTmpAddress >> 8) & 0xFF;
+    _regFV = (_address >> 4) & 7;
+    _regV = (_address >> 3) & 1;
+    _regH = (_address >> 2) & 1;
+    _regVT = (_regVT & 7) | ((_address & 3) << 3);
 
-    address = _vramTmpAddress & 0xFF;
-    _regVT = (_regVT & 24) | ((address >> 5) & 7);
-    _regHT = address & 31;
+    _address = _vramTmpAddress & 0xFF;
+    _regVT = (_regVT & 24) | ((_address >> 5) & 7);
+    _regHT = _address & 31;
   }
 
   // Updates the scroll registers from a new VRAM address.
   void cntsFromAddress() {
-    address = (_vramAddress >> 8) & 0xFF;
-    _cntFV = (address >> 4) & 3;
-    _cntV = (address >> 3) & 1;
-    _cntH = (address >> 2) & 1;
-    _cntVT = (_cntVT & 7) | ((address & 3) << 3);
+    _address = (_vramAddress >> 8) & 0xFF;
+    _cntFV = (_address >> 4) & 3;
+    _cntV = (_address >> 3) & 1;
+    _cntH = (_address >> 2) & 1;
+    _cntVT = (_cntVT & 7) | ((_address & 3) << 3);
 
-    address = _vramAddress & 0xFF;
-    _cntVT = (_cntVT & 24) | ((address >> 5) & 7);
-    _cntHT = address & 31;
+    _address = _vramAddress & 0xFF;
+    _cntVT = (_cntVT & 24) | ((_address >> 5) & 7);
+    _cntHT = _address & 31;
   }
 
   void regsToAddress() {
-    b1 = (_regFV & 7) << 4;
-    b1 |= (_regV & 1) << 3;
-    b1 |= (_regH & 1) << 2;
-    b1 |= (_regVT >> 3) & 3;
+    _b1 = (_regFV & 7) << 4;
+    _b1 |= (_regV & 1) << 3;
+    _b1 |= (_regH & 1) << 2;
+    _b1 |= (_regVT >> 3) & 3;
 
-    b2 = (_regVT & 7) << 5;
-    b2 |= _regHT & 31;
+    _b2 = (_regVT & 7) << 5;
+    _b2 |= _regHT & 31;
 
-    _vramTmpAddress = ((b1 << 8) | b2) & 0x7FFF;
+    _vramTmpAddress = ((_b1 << 8) | _b2) & 0x7FFF;
   }
 
   void cntsToAddress() {
-    b1 = (_cntFV & 7) << 4;
-    b1 |= (_cntV & 1) << 3;
-    b1 |= (_cntH & 1) << 2;
-    b1 |= (_cntVT >> 3) & 3;
+    _b1 = (_cntFV & 7) << 4;
+    _b1 |= (_cntV & 1) << 3;
+    _b1 |= (_cntH & 1) << 2;
+    _b1 |= (_cntVT >> 3) & 3;
 
-    b2 = (_cntVT & 7) << 5;
-    b2 |= _cntHT & 31;
+    _b2 = (_cntVT & 7) << 5;
+    _b2 |= _cntHT & 31;
 
-    _vramAddress = ((b1 << 8) | b2) & 0x7FFF;
+    _vramAddress = ((_b1 << 8) | _b2) & 0x7FFF;
   }
 
   void incTileCounter(int count) {
-    for (i = count; i != 0; i--) {
+    for (int i = count; i != 0; i--) {
       _cntHT++;
       if (_cntHT == 32) {
         _cntHT = 0;
@@ -866,12 +866,12 @@ class PPU {
   }
 
   void triggerRendering() {
-    if (scanline - vblankAdd >= 21 && scanline - vblankAdd <= 260) {
+    if (scanline - _vblankAdd >= 21 && scanline - _vblankAdd <= 260) {
       // Render sprites, and combine:
-      renderFramePartially(buffer, lastRenderedScanline + 1, scanline - vblankAdd - 21 - lastRenderedScanline);
+      renderFramePartially(buffer, lastRenderedScanline + 1, scanline - _vblankAdd - 21 - lastRenderedScanline);
 
       // Set last rendered scanline:
-      lastRenderedScanline = scanline - vblankAdd - 21;
+      lastRenderedScanline = scanline - _vblankAdd - 21;
     }
   }
 
@@ -881,14 +881,14 @@ class PPU {
     }
      
     if (f_bgVisibility == 1) {
-      si = startScan << 8;
-      ei = (startScan + scanCount) << 8;
-      if (ei > 0xF000) {
-        ei = 0xF000;
+      _si = startScan << 8;
+      _ei = (startScan + scanCount) << 8;
+      if (_ei > 0xF000) {
+        _ei = 0xF000;
       }
-      for (destIndex = si; destIndex < ei; destIndex++) {
-        if (pixrendered[destIndex] > 0xFF) {
-          buffer[destIndex] = bgbuffer[destIndex];
+      for (_destIndex = _si; _destIndex < _ei; _destIndex++) {
+        if (_pixrendered[_destIndex] > 0xFF) {
+          buffer[_destIndex] = _bgbuffer[_destIndex];
         }
       }
     }
@@ -898,7 +898,7 @@ class PPU {
     }
 
     BufferView screen = nes.getGui().getScreenView();
-    if (screen.scalingEnabled() && !screen.useHWScaling() && !requestRenderAll) {
+    if (screen.scalingEnabled() && /*!screen.useHWScaling() &&*/ !requestRenderAll) {
       // Check which scanlines have changed, to try to
       // speed up scaling:
       int j, jmax;
@@ -906,74 +906,75 @@ class PPU {
         scanCount = 240 - startScan;
       }
       for (int i = startScan; i < startScan + scanCount; i++) {
-        scanlineChanged[i] = false;
-        si = i << 8;
-        jmax = si + 256;
-        for (j = si; j < jmax; j++) {
-          if (buffer[j] != oldFrame[j]) {
-            scanlineChanged[i] = true;
+        _scanlineChanged[i] = false;
+        _si = i << 8;
+        jmax = _si + 256;
+        for (j = _si; j < jmax; j++) {
+          if (buffer[j] != _oldFrame[j]) {
+            _scanlineChanged[i] = true;
             break;
           }
-          oldFrame[j] = buffer[j];
+          _oldFrame[j] = buffer[j];
         }
-        System.arraycopy(buffer, j, oldFrame, j, jmax - j);
+        for (int k = j; k < jmax; ++k)
+          _oldFrame[k] = buffer[k];
       }
     }
 
-    validTileData = false;
+    _validTileData = false;
   }
 
   void renderBgScanline(List<int> buffer, int scan) {
-    baseTile = (_regS == 0 ? 0 : 256);
-    destIndex = (scan << 8) - _regFH;
-    curNt = ntable1[_cntV + _cntV + _cntH];
+    _baseTile = (_regS == 0 ? 0 : 256);
+    _destIndex = (scan << 8) - _regFH;
+    _curNt = _ntable1[_cntV + _cntV + _cntH];
 
     _cntHT = _regHT;
     _cntH = _regH;
-    curNt = ntable1[_cntV + _cntV + _cntH];
+    _curNt = _ntable1[_cntV + _cntV + _cntH];
 
     if (scan < 240 && (scan - _cntFV) >= 0) {
-      tscanoffset = _cntFV << 3;
-      y = scan - _cntFV;
-      for (tile = 0; tile < 32; tile++) {
+      _tscanoffset = _cntFV << 3;
+      _y = scan - _cntFV;
+      for (_tile = 0; _tile < 32; _tile++) {
         if (scan >= 0) {
           // Fetch tile & attrib data:
-          if (validTileData) {
+          if (_validTileData) {
             // Get data from array:
-            t = scantile[tile];
-            tpix = t.pix;
-            att = attrib[tile];
+            _t = _scantile[_tile];
+            _tpix = _t.pix;
+            _att = _attrib[_tile];
           } else {
             // Fetch data:
-            t = ptTile[baseTile + nameTable[curNt].getTileIndex(_cntHT, _cntVT)];
-            tpix = t.pix;
-            att = nameTable[curNt].getAttrib(_cntHT, _cntVT);
-            scantile[tile] = t;
-            attrib[tile] = att;
+            _t = ptTile[_baseTile + _nameTable[_curNt].getTileIndex(_cntHT, _cntVT)];
+            _tpix = _t.pix;
+            _att = _nameTable[_curNt].getAttrib(_cntHT, _cntVT);
+            _scantile[_tile] = _t;
+            _attrib[_tile] = _att;
           }
 
           // Render tile scanline:
-          sx = 0;
-          x = (tile << 3) - _regFH;
-          if (x > -8) {
-            if (x < 0) {
-              destIndex -= x;
-              sx = -x;
+          _sx = 0;
+          _x = (_tile << 3) - _regFH;
+          if (_x > -8) {
+            if (_x < 0) {
+              _destIndex -= _x;
+              _sx = -_x;
             }
-            if (t.opaque[_cntFV]) {
-              for (; sx < 8; sx++) {
-                buffer[destIndex] = imgPalette[tpix[tscanoffset + sx] + att];
-                pixrendered[destIndex] |= 256;
-                destIndex++;
+            if (_t.opaque[_cntFV]) {
+              for (; _sx < 8; _sx++) {
+                buffer[_destIndex] = _imgPalette[_tpix[_tscanoffset + _sx] + _att];
+                _pixrendered[_destIndex] |= 256;
+                _destIndex++;
               }
             } else {
-              for (; sx < 8; sx++) {
-                  col = tpix[tscanoffset + sx];
-                  if (col != 0) {
-                    buffer[destIndex] = imgPalette[col + att];
-                    pixrendered[destIndex] |= 256;
+              for (; _sx < 8; _sx++) {
+                  _col = _tpix[_tscanoffset + _sx];
+                  if (_col != 0) {
+                    buffer[_destIndex] = _imgPalette[_col + _att];
+                    _pixrendered[_destIndex] |= 256;
                   }
-                destIndex++;
+                _destIndex++;
               }
             }
           }
@@ -985,12 +986,12 @@ class PPU {
           _cntHT = 0;
           _cntH++;
           _cntH %= 2;
-          curNt = ntable1[(_cntV << 1) + _cntH];
+          _curNt = _ntable1[(_cntV << 1) + _cntH];
         }
       }
       // Tile data for one row should now have been fetched,
       // so the data in the array is valid.
-      validTileData = true;
+      _validTileData = true;
     }
 
     // update vertical scroll:
@@ -1002,13 +1003,13 @@ class PPU {
         _cntVT = 0;
         _cntV++;
         _cntV %= 2;
-        curNt = ntable1[(_cntV << 1) + _cntH];
+        _curNt = _ntable1[(_cntV << 1) + _cntH];
       } else if (_cntVT == 32) {
         _cntVT = 0;
       }
 
       // Invalidate fetched data:
-      validTileData = false;
+      _validTileData = false;
     }
   }
 
@@ -1022,21 +1023,21 @@ class PPU {
           // Show sprite.
           if (f_spriteSize == 0) {
             // 8x8 sprites
-            srcy1 = 0;
-            srcy2 = 8;
+            _srcy1 = 0;
+            _srcy2 = 8;
 
             if (sprY[i] < startscan) {
-              srcy1 = startscan - sprY[i] - 1;
+              _srcy1 = startscan - sprY[i] - 1;
             }
 
             if (sprY[i] + 8 > startscan + scancount) {
-              srcy2 = startscan + scancount - sprY[i] + 1;
+              _srcy2 = startscan + scancount - sprY[i] + 1;
             }
 
             if (f_spPatternTable == 0) {
-              ptTile[sprTile[i]].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, pixrendered);
+              ptTile[sprTile[i]].render(0, _srcy1, 8, _srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
             } else {
-              ptTile[sprTile[i] + 256].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, pixrendered);
+              ptTile[sprTile[i] + 256].render(0, _srcy1, 8, _srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
             }
           } else {
             // 8x16 sprites
@@ -1045,31 +1046,31 @@ class PPU {
               top = sprTile[i] - 1 + 256;
             }
 
-            srcy1 = 0;
-            srcy2 = 8;
+            _srcy1 = 0;
+            _srcy2 = 8;
 
             if (sprY[i] < startscan) {
-              srcy1 = startscan - sprY[i] - 1;
+              _srcy1 = startscan - sprY[i] - 1;
             }
 
             if (sprY[i] + 8 > startscan + scancount) {
-              srcy2 = startscan + scancount - sprY[i];
+              _srcy2 = startscan + scancount - sprY[i];
             }
 
-            ptTile[top + (vertFlip[i] ? 1 : 0)].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, pixrendered);
+            ptTile[top + (vertFlip[i] ? 1 : 0)].render(0, _srcy1, 8, _srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
 
-            srcy1 = 0;
-            srcy2 = 8;
+            _srcy1 = 0;
+            _srcy2 = 8;
 
             if (sprY[i] + 8 < startscan) {
-              srcy1 = startscan - (sprY[i] + 8 + 1);
+              _srcy1 = startscan - (sprY[i] + 8 + 1);
             }
 
             if (sprY[i] + 16 > startscan + scancount) {
-              srcy2 = startscan + scancount - (sprY[i] + 8);
+              _srcy2 = startscan + scancount - (sprY[i] + 8);
             }
 
-            ptTile[top + (vertFlip[i] ? 0 : 1)].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1 + 8, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, pixrendered);
+            ptTile[top + (vertFlip[i] ? 0 : 1)].render(0, _srcy1, 8, _srcy2, sprX[i], sprY[i] + 1 + 8, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
           }
         }
       }
@@ -1113,7 +1114,7 @@ class PPU {
         if (horiFlip[0]) {
           for (int i = 7; i >= 0; i--) {
             if (x >= 0 && x < 256) {
-              if (bufferIndex >= 0 && bufferIndex < 61440 && pixrendered[bufferIndex] != 0) {
+              if (bufferIndex >= 0 && bufferIndex < 61440 && _pixrendered[bufferIndex] != 0) {
                 if (t.pix[toffset + i] != 0) {
                   spr0HitX = bufferIndex % 256;
                   spr0HitY = scan;
@@ -1127,7 +1128,7 @@ class PPU {
         } else {
           for (int i = 0; i < 8; i++) {
             if (x >= 0 && x < 256) {
-              if (bufferIndex >= 0 && bufferIndex < 61440 && pixrendered[bufferIndex] != 0) {
+              if (bufferIndex >= 0 && bufferIndex < 61440 && _pixrendered[bufferIndex] != 0) {
                 if (t.pix[toffset + i] != 0) {
                   spr0HitX = bufferIndex % 256;
                   spr0HitY = scan;
@@ -1173,7 +1174,7 @@ class PPU {
         if (horiFlip[0]) {
           for (int i = 7; i >= 0; i--) {
             if (x >= 0 && x < 256) {
-              if (bufferIndex >= 0 && bufferIndex < 61440 && pixrendered[bufferIndex] != 0) {
+              if (bufferIndex >= 0 && bufferIndex < 61440 && _pixrendered[bufferIndex] != 0) {
                 if (t.pix[toffset + i] != 0) {
                   spr0HitX = bufferIndex % 256;
                   spr0HitY = scan;
@@ -1187,7 +1188,7 @@ class PPU {
         } else {
           for (int i = 0; i < 8; i++) {
             if (x >= 0 && x < 256) {
-              if (bufferIndex >= 0 && bufferIndex < 61440 && pixrendered[bufferIndex] != 0) {
+              if (bufferIndex >= 0 && bufferIndex < 61440 && _pixrendered[bufferIndex] != 0) {
                 if (t.pix[toffset + i] != 0) {
                   spr0HitX = bufferIndex % 256;
                   spr0HitY = scan;
@@ -1214,7 +1215,7 @@ class PPU {
     for (int j = 0; j < 2; j++) {
       for (int y = 0; y < 16; y++) {
         for (int x = 0; x < 16; x++) {
-          ptTile[tIndex].renderSimple(j * 128 + x * 8, y * 8, buffer, 0, sprPalette);
+          ptTile[tIndex].renderSimple(j * 128 + x * 8, y * 8, buffer, 0, _sprPalette);
           tIndex++;
         }
       }
@@ -1225,44 +1226,44 @@ class PPU {
   void renderNameTables() {
     List<int> buffer = nes.getGui().getNameTableView().getBuffer();
     if (f_bgPatternTable == 0) {
-      baseTile = 0;
+      _baseTile = 0;
     } else {
-      baseTile = 256;
+      _baseTile = 256;
     }
 
     int ntx_max = 2;
     int nty_max = 2;
 
-    if (currentMirroring == ROM.HORIZONTAL_MIRRORING) {
+    if (_currentMirroring == ROM.HORIZONTAL_MIRRORING) {
       ntx_max = 1;
-    } else if (currentMirroring == ROM.VERTICAL_MIRRORING) {
+    } else if (_currentMirroring == ROM.VERTICAL_MIRRORING) {
       nty_max = 1;
     }
 
     for (int nty = 0; nty < nty_max; nty++) {
       for (int ntx = 0; ntx < ntx_max; ntx++) {
-        int nt = ntable1[nty * 2 + ntx];
+        int nt = _ntable1[nty * 2 + ntx];
         int x = ntx * 128;
         int y = nty * 120;
 
         // Render nametable:
         for (int ty = 0; ty < 30; ty++) {
           for (int tx = 0; tx < 32; tx++) {
-            //ptTile[baseTile+nameTable[nt].getTileIndex(tx,ty)].render(0,0,4,4,x+tx*4,y+ty*4,buffer,nameTable[nt].getAttrib(tx,ty),imgPalette,false,false,0,dummyPixPriTable);
-            ptTile[baseTile + nameTable[nt].getTileIndex(tx, ty)].renderSmall(x + tx * 4, y + ty * 4, buffer, nameTable[nt].getAttrib(tx, ty), imgPalette);
+            //ptTile[baseTile+_nameTable[nt].getTileIndex(tx,ty)].render(0,0,4,4,x+tx*4,y+ty*4,buffer,_nameTable[nt].getAttrib(tx,ty),imgPalette,false,false,0,dummyPixPriTable);
+            ptTile[_baseTile + _nameTable[nt].getTileIndex(tx, ty)].renderSmall(x + tx * 4, y + ty * 4, buffer, _nameTable[nt].getAttrib(tx, ty), _imgPalette);
           }
         }
       }
     }
     
-    if (currentMirroring == ROM.HORIZONTAL_MIRRORING) {
+    if (_currentMirroring == ROM.HORIZONTAL_MIRRORING) {
       // double horizontally:
       for (int y = 0; y < 240; y++) {
         for (int x = 0; x < 128; x++) {
           buffer[(y << 8) + 128 + x] = buffer[(y << 8) + x];
         }
       }
-    } else if (currentMirroring == ROM.VERTICAL_MIRRORING) {
+    } else if (_currentMirroring == ROM.VERTICAL_MIRRORING) {
       // double vertically:
       for (int y = 0; y < 120; y++) {
         for (int x = 0; x < 256; x++) {
@@ -1279,7 +1280,7 @@ class PPU {
     for (int i = 0; i < 16; i++) {
       for (int y = 0; y < 16; y++) {
         for (int x = 0; x < 16; x++) {
-          buffer[y * 256 + i * 16 + x] = imgPalette[i];
+          buffer[y * 256 + i * 16 + x] = _imgPalette[i];
         }
       }
     }
@@ -1288,7 +1289,7 @@ class PPU {
     for (int i = 0; i < 16; i++) {
       for (int y = 0; y < 16; y++) {
         for (int x = 0; x < 16; x++) {
-          buffer[y * 256 + i * 16 + x] = sprPalette[i];
+          buffer[y * 256 + i * 16 + x] = _sprPalette[i];
         }
       }
     }
@@ -1308,21 +1309,21 @@ class PPU {
       ppuMem.write(address, value);
       patternWrite(address, value);
     } else if (address >= 0x2000 && address < 0x23c0) {
-      nameTableWrite(ntable1[0], address - 0x2000, value);
+      nameTableWrite(_ntable1[0], address - 0x2000, value);
     } else if (address >= 0x23c0 && address < 0x2400) {
-      attribTableWrite(ntable1[0], address - 0x23c0, value);
+      attribTableWrite(_ntable1[0], address - 0x23c0, value);
     } else if (address >= 0x2400 && address < 0x27c0) {
-      nameTableWrite(ntable1[1], address - 0x2400, value);
+      nameTableWrite(_ntable1[1], address - 0x2400, value);
     } else if (address >= 0x27c0 && address < 0x2800) {
-      attribTableWrite(ntable1[1], address - 0x27c0, value);
+      attribTableWrite(_ntable1[1], address - 0x27c0, value);
     } else if (address >= 0x2800 && address < 0x2bc0) {
-      nameTableWrite(ntable1[2], address - 0x2800, value);
+      nameTableWrite(_ntable1[2], address - 0x2800, value);
     } else if (address >= 0x2bc0 && address < 0x2c00) {
-      attribTableWrite(ntable1[2], address - 0x2bc0, value);
+      attribTableWrite(_ntable1[2], address - 0x2bc0, value);
     } else if (address >= 0x2c00 && address < 0x2fc0) {
-      nameTableWrite(ntable1[3], address - 0x2c00, value);
+      nameTableWrite(_ntable1[3], address - 0x2c00, value);
     } else if (address >= 0x2fc0 && address < 0x3000) {
-      attribTableWrite(ntable1[3], address - 0x2fc0, value);
+      attribTableWrite(_ntable1[3], address - 0x2fc0, value);
     } else if (address >= 0x3f00 && address < 0x3f20) {
       updatePalettes();
     }
@@ -1333,16 +1334,16 @@ class PPU {
   void updatePalettes() {
     for (int i = 0; i < 16; i++) {
       if (f_dispType == 0) {
-        imgPalette[i] = nes.palTable.getEntry(ppuMem.load(0x3f00 + i) & 63);
+        _imgPalette[i] = nes.palTable.getEntry(ppuMem.load(0x3f00 + i) & 63);
       } else {
-        imgPalette[i] = nes.palTable.getEntry(ppuMem.load(0x3f00 + i) & 32);
+        _imgPalette[i] = nes.palTable.getEntry(ppuMem.load(0x3f00 + i) & 32);
       }
     }
     for (int i = 0; i < 16; i++) {
       if (f_dispType == 0) {
-        sprPalette[i] = nes.palTable.getEntry(ppuMem.load(0x3f10 + i) & 63);
+        _sprPalette[i] = nes.palTable.getEntry(ppuMem.load(0x3f10 + i) & 63);
       } else {
-        sprPalette[i] = nes.palTable.getEntry(ppuMem.load(0x3f10 + i) & 32);
+        _sprPalette[i] = nes.palTable.getEntry(ppuMem.load(0x3f10 + i) & 32);
       }
     }
 
@@ -1353,7 +1354,7 @@ class PPU {
   // table buffers with this new byte.
   void patternWrite(int address, Object value, [int offset, int length]) {
     if (value is int) {
-      int tileIndex = address / 16;
+      int tileIndex = address ~/ 16;
       int leftOver = address % 16;
       if (leftOver < 8) {
         ptTile[tileIndex].setScanline(leftOver, value, ppuMem.load(address + 8));
@@ -1365,14 +1366,16 @@ class PPU {
       Expect.isTrue(offset !== null);
       Expect.isTrue(length !== null);
       
+      List<int> valueList = value;
+      
       for (int i = 0; i < length; i++) {
         int tileIndex = (address + i) >> 4;
         int leftOver = (address + i) % 16;
 
         if (leftOver < 8) {
-            ptTile[tileIndex].setScanline(leftOver, value[offset + i], ppuMem.load(address + 8 + i));
+            ptTile[tileIndex].setScanline(leftOver, valueList[offset + i], ppuMem.load(address + 8 + i));
         } else {
-            ptTile[tileIndex].setScanline(leftOver - 8, ppuMem.load(address - 8 + i), value[offset + i]);
+            ptTile[tileIndex].setScanline(leftOver - 8, ppuMem.load(address - 8 + i), valueList[offset + i]);
         }
       }
     }
@@ -1381,37 +1384,37 @@ class PPU {
   void invalidateFrameCache() {
     // Clear the no-update scanline buffer:
     for (int i = 0; i < 240; i++) {
-      scanlineChanged[i] = true;
+      _scanlineChanged[i] = true;
     }
-    java.util.Arrays.fill(oldFrame, -1);
+    _oldFrame.forEach((e) => e = -1);
     requestRenderAll = true;
   }
 
   // Updates the internal name table buffers
   // with this new byte.
   void nameTableWrite(int index, int address, int value) {
-    nameTable[index].writeTileIndex(address, value);
+    _nameTable[index].writeTileIndex(address, value);
 
     // Update Sprite #0 hit:
     //updateSpr0Hit();
-    checkSprite0(scanline + 1 - vblankAdd - 21);
+    checkSprite0(scanline + 1 - _vblankAdd - 21);
   }
 
   // Updates the internal pattern
   // table buffers with this new attribute
   // table byte.
   void attribTableWrite(int index, int address, int value) {
-    nameTable[index].writeAttrib(address, value);
+    _nameTable[index].writeAttrib(address, value);
   }
 
   // Updates the internally buffered sprite
   // data with this new byte of info.
   void spriteRamWriteUpdate(int address, int value) {
-    int tIndex = address / 4;
+    int tIndex = address ~/ 4;
 
     if (tIndex == 0) {
       //updateSpr0Hit();
-      checkSprite0(scanline + 1 - vblankAdd - 21);
+      checkSprite0(scanline + 1 - _vblankAdd - 21);
     }
 
     if (address % 4 == 0) {
@@ -1434,7 +1437,7 @@ class PPU {
 
   void doNMI() {
     // Set VBlank flag:
-    setStatusFlag(STATUS_VBLANK, true);
+    setStatusFlag(_STATUS_VBLANK, true);
     //nes.getCpu().doNonMaskableInterrupt();
     nes.getCpu().requestIrq(CPU.IRQ_NMI);
   }
@@ -1505,7 +1508,7 @@ class PPU {
       //System.out.println("_firstWrite: "+_firstWrite);
 
       // Mirroring:
-      //currentMirroring = -1;
+      //_currentMirroring = -1;
       //setMirroring(buf.readInt());
       for (int i = 0; i < _vramMirrorTable.length; i++) {
         _vramMirrorTable[i] = buf.readInt();
@@ -1520,24 +1523,24 @@ class PPU {
       lastRenderedScanline = buf.readInt();
 
       // Misc:
-      requestEndFrame = buf.readBoolean();
-      nmiOk = buf.readBoolean();
-      dummyCycleToggle = buf.readBoolean();
-      nmiCounter = buf.readInt();
-      tmp =  buf.readInt();
+      _requestEndFrame = buf.readBoolean();
+      _nmiOk = buf.readBoolean();
+      _dummyCycleToggle = buf.readBoolean();
+      _nmiCounter = buf.readInt();
+      _tmp =  buf.readInt();
 
       // Stuff used during rendering:
-      for (int i = 0; i < bgbuffer.length; i++) {
-        bgbuffer[i] = buf.readByte();
+      for (int i = 0; i < _bgbuffer.length; i++) {
+        _bgbuffer[i] = buf.readByte();
       }
-      for (int i = 0; i < pixrendered.length; i++) {
-        pixrendered[i] = buf.readByte();
+      for (int i = 0; i < _pixrendered.length; i++) {
+        _pixrendered[i] = buf.readByte();
       }
 
       // Name tables:
       for (int i = 0; i < 4; i++) {
-        ntable1[i] = buf.readByte();
-        nameTable[i].stateLoad(buf);
+        _ntable1[i] = buf.readByte();
+        _nameTable[i].stateLoad(buf);
       }
 
       // Pattern data:
@@ -1594,7 +1597,7 @@ class PPU {
     buf.putBoolean(_firstWrite);
 
     // Mirroring:
-    //buf.putInt(currentMirroring);
+    //buf.putInt(_currentMirroring);
     for (int i = 0; i < _vramMirrorTable.length; i++) {
       buf.putInt(_vramMirrorTable[i]);
     }
@@ -1608,24 +1611,24 @@ class PPU {
     buf.putInt(lastRenderedScanline);
 
     // Misc:
-    buf.putBoolean(requestEndFrame);
-    buf.putBoolean(nmiOk);
-    buf.putBoolean(dummyCycleToggle);
-    buf.putInt(nmiCounter);
-    buf.putInt(tmp);
+    buf.putBoolean(_requestEndFrame);
+    buf.putBoolean(_nmiOk);
+    buf.putBoolean(_dummyCycleToggle);
+    buf.putInt(_nmiCounter);
+    buf.putInt(_tmp);
 
     // Stuff used during rendering:
-    for (int i = 0; i < bgbuffer.length; i++) {
-      buf.putByte( bgbuffer[i]);
+    for (int i = 0; i < _bgbuffer.length; i++) {
+      buf.putByte( _bgbuffer[i]);
     }
-    for (int i = 0; i < pixrendered.length; i++) {
-      buf.putByte( pixrendered[i]);
+    for (int i = 0; i < _pixrendered.length; i++) {
+      buf.putByte( _pixrendered[i]);
     }
 
     // Name tables:
     for (int i = 0; i < 4; i++) {
-      buf.putByte( ntable1[i]);
-      nameTable[i].stateSave(buf);
+      buf.putByte( _ntable1[i]);
+      _nameTable[i].stateSave(buf);
     }
 
     // Pattern data:
@@ -1648,18 +1651,17 @@ class PPU {
     spr0HitY = 0;
     mapperIrqCounter = 0;
 
-    currentMirroring = -1;
+    _currentMirroring = -1;
 
     _firstWrite = true;
-    requestEndFrame = false;
-    nmiOk = false;
+    _requestEndFrame = false;
+    _nmiOk = false;
     hitSpr0 = false;
-    dummyCycleToggle = false;
-    validTileData = false;
-    nmiCounter = 0;
-    tmp = 0;
-    att = 0;
-    i = 0;
+    _dummyCycleToggle = false;
+    _validTileData = false;
+    _nmiCounter = 0;
+    _tmp = 0;
+    _att = 0;
 
     // Control Flags Register 1:
     f_nmiOnVblank = 0;    // NMI on VBlank. 0=disable, 1=enable
@@ -1693,8 +1695,8 @@ class PPU {
     _regFH = 0;
     _regS = 0;
 
-    scanlineChanged.forEach((e) => e = true);
-    oldFrame.forEach((e) => e = -1);
+    _scanlineChanged.forEach((e) => e = true);
+    _oldFrame.forEach((e) => e = -1);
 
     // Initialize stuff:
     init();
@@ -1704,6 +1706,6 @@ class PPU {
     nes = null;
     ppuMem = null;
     sprMem = null;
-    scantile = null;
+    _scantile = null;
   }
 }

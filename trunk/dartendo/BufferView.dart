@@ -74,7 +74,9 @@ class BufferView {
              nes.getGui().imageReady();
          }
       
-    }
+     }
+     
+     List<int> getBuffer() => pix;
 
      bool scalingEnabled() {
         return scaleMode != SCALE_NONE;
