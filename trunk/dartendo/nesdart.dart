@@ -4,6 +4,7 @@
 #source('ByteBuffer.dart');
 #source('Util.dart');
 #source('misc.dart');
+#source('NameTable.dart');
 
 class snes {
   var canvas;
