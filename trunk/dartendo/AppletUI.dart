@@ -5,11 +5,12 @@
     KbInputHandler kbJoy1;
     KbInputHandler kbJoy2;
     BufferView vScreen;
-    int t1, t2;
-    int sleepTime;
+    
+    int t1 = 0;
+    int t2 = 0;
+    int sleepTime = 0;
 
      AppletUI(Controller applet) {
-
         this.applet = applet;
         nes = new NES(this);
     }

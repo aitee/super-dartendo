@@ -15,7 +15,7 @@
    
     List<bool> allKeysState;
     List<int> keyMapping;
-    int id;
+    int id = 0;
     NES nes;
 
      KbInputHandler(NES nes, int id) {

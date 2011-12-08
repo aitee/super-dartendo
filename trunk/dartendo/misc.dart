@@ -2,7 +2,7 @@ class MiscClass {
     bool debug = false;
     List<double> rnd;
     int nextRnd = 0;
-    double rndret;
+    double rndret = 0.0;
 
     MiscClass() {
       debug = Globals.debug;

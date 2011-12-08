@@ -15,7 +15,7 @@
       bool appletMode = true;
       bool disableSprites = false;
       bool timeEmulation = true;
-      bool palEmulation;
+      bool palEmulation = false;
       bool enableSound = false; //TODO: Support sound
       bool focused = false;
 

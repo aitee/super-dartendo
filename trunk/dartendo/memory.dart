@@ -1,7 +1,7 @@
 class Memory{
   
   List<int> mem;
-  int memLength;
+  int memLength = 0;
   NES nes;
   
   Memory(NES nes, int byteCount) {

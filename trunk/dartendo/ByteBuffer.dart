@@ -17,14 +17,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
  class ByteBuffer {
 
-      final int DEBUG = false;
-      final int BO_BIG_ENDIAN = 0;
-      final int BO_LITTLE_ENDIAN = 1;
+     final int DEBUG = false;
+     final int BO_BIG_ENDIAN = 0;
+     final int BO_LITTLE_ENDIAN = 1;
+     
      int byteOrder = 1;
      List<int> buf;
-     int size;
-     int curPos;
-     bool hasBeenErrors;
+     int size = 0;
+     int curPos = 0;
+     bool hasBeenErrors = false;
      bool expandable = true;
      int expandBy = 4096;
 

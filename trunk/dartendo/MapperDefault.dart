@@ -22,7 +22,7 @@ class MapperDefault implements MemoryMapper
     Memory cpuMem;
     Memory ppuMem;
     List<int> cpuMemArray;
-    int cpuMemSize;
+    int cpuMemSize = 0;
 
     ROM rom;
     CPU cpu;

@@ -1,7 +1,8 @@
 class BufferView {
 
-  var canvas;
-  var context;
+     var canvas;
+     var context;
+     
      // Scale modes:
      static final int SCALE_NONE = 0;
      static final int SCALE_HW2X = 1;

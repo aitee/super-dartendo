@@ -20,6 +20,7 @@ class ChannelSquare implements PapuChannel {
     PAPU papu = null;
     static List<int> dutyLookup;
     static List<int> impLookup;
+    
     bool sqr1 = false;
     bool _isEnabled = false;
     bool lengthCounterEnable = false;
@@ -29,6 +30,7 @@ class ChannelSquare implements PapuChannel {
     bool envReset = false;
     bool sweepCarry = false;
     bool updateSweepPeriod = false;
+    
     int progTimerCount = 0;
     int progTimerMax = 0;
     int lengthCounter = 0;

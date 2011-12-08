@@ -1,17 +1,19 @@
 class NES {
 
-     AppletUI gui;
-     CPU cpu;
-     PPU ppu;
-     PAPU papu;
-     Memory cpuMem;
-     Memory ppuMem;
-     Memory sprMem;
-     MemoryMapper memMapper;
-     PaletteTable palTable;
-     ROM rom;
-    int cc;
-     String romFile;
+    AppletUI gui;
+    CPU cpu;
+    PPU ppu;
+    PAPU papu;
+    
+    Memory cpuMem;
+    Memory ppuMem;
+    Memory sprMem;
+    
+    MemoryMapper memMapper;
+    PaletteTable palTable;
+    ROM rom;
+    int cc = 0;
+    String romFile;
     bool isRunningFlag = false;
 
     // Creates the NES system.

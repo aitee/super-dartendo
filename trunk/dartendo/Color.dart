@@ -6,5 +6,4 @@ class Color {
     g = _g;
     b = _b;
   }
-
 }

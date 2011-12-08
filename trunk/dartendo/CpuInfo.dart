@@ -13,8 +13,8 @@ class CpuInfo {
     // -------------------------------- //
     static final int INS_ADC = 0;
     static final int INS_AND = 1;
-    static final INS_ASL = 2;
-    static final INS_BCC = 3;
+    static final int INS_ASL = 2;
+    static final int INS_BCC = 3;
     static final int INS_BCS = 4;
     static final int INS_BEQ = 5;
     static final int INS_BIT = 6;

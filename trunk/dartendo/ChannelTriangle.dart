@@ -18,11 +18,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 class ChannelTriangle implements PapuChannel {
 
     PAPU papu = null;
+    
     bool _isEnabled = false;
     bool sampleCondition = false;
     bool lengthCounterEnable = false;
     bool lcHalt = false;
     bool lcControl = false;
+    
     int progTimerCount = 0;
     int progTimerMax = 0;
     int triangleCounter = 0;

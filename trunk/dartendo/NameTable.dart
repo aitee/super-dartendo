@@ -3,8 +3,8 @@ class NameTable {
     String name;
     List<int> tile;
     List<int> attrib;
-    int width;
-    int height;
+    int width = 0;
+    int height = 0;
 
     NameTable(int width, int height, String name) {
         this.name = name;
