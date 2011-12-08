@@ -898,7 +898,8 @@ class PAPU {
 
     }
 
-    
+     SourceDataLine getLine() => line;
+   
      bool isRunning() {
         return (line != null && line.isActive());
     }
