@@ -202,7 +202,6 @@ public class vNESFrame extends javax.swing.JFrame implements Runnable {
         
         System.out.println("ROM LOADED");
         
-        while(true) {
           nes.getCpu().active = true;
  		nes.getCpu().initRun();
                 while (!nes.getCpu().stopRunning) {
@@ -210,8 +209,7 @@ public class vNESFrame extends javax.swing.JFrame implements Runnable {
                 }
                 nes.getCpu().finishRun();
           nes.getCpu().active = false;
-       }
-
+ 
     }
 
     public void stop() {

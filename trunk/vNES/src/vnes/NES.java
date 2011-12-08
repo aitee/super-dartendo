@@ -236,7 +236,7 @@ public class NES {
     }
 
     // Returns the GUI.
-    public UI getGui() {
+    public AppletUI getGui() {
         return gui;
     }
 

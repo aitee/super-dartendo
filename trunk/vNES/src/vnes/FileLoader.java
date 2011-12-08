@@ -23,7 +23,7 @@ import java.net.URI;
 public class FileLoader {
 
     // Load a file.
-    public int[] loadFile(String fileName, UI ui) {
+    public int[] loadFile(String fileName, AppletUI ui) {
 
         int flen;
         byte[] tmp = new byte[2048];
