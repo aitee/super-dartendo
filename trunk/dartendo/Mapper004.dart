@@ -1,4 +1,3 @@
-package vnes;
 /*
 vNES
 Copyright © 2006-2011 Jamie Sanders
@@ -16,38 +15,37 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Mapper004 extends MapperDefault {
+class Mapper004 extends MapperDefault {
 
-    public static final int CMD_SEL_2_1K_VROM_0000 = 0;
-    public static final int CMD_SEL_2_1K_VROM_0800 = 1;
-    public static final int CMD_SEL_1K_VROM_1000 = 2;
-    public static final int CMD_SEL_1K_VROM_1400 = 3;
-    public static final int CMD_SEL_1K_VROM_1800 = 4;
-    public static final int CMD_SEL_1K_VROM_1C00 = 5;
-    public static final int CMD_SEL_ROM_PAGE1 = 6;
-    public static final int CMD_SEL_ROM_PAGE2 = 7;
-    int command;
-    int prgAddressSelect;
-    int chrAddressSelect;
-    int pageNumber;
-    int irqCounter;
-    int irqLatchValue;
-    int irqEnable;
-    boolean prgAddressChanged = false;
+    static final int CMD_SEL_2_1K_VROM_0000 = 0;
+    static final int CMD_SEL_2_1K_VROM_0800 = 1;
+    static final int CMD_SEL_1K_VROM_1000 = 2;
+    static final int CMD_SEL_1K_VROM_1400 = 3;
+    static final int CMD_SEL_1K_VROM_1800 = 4;
+    static final int CMD_SEL_1K_VROM_1C00 = 5;
+    static final int CMD_SEL_ROM_PAGE1 = 6;
+    static final int CMD_SEL_ROM_PAGE2 = 7;
+    
+    int command = 0;
+    int prgAddressSelect = 0;
+    int chrAddressSelect = 0;
+    int pageNumber = 0;
+    int irqCounter = 0;
+    int irqLatchValue = 0;
+    int irqEnable = 0;
+    
+    bool prgAddressChanged = false;
 
-    public void init(NES nes) {
-
+    void init(NES nes) {
         super.init(nes);
-
     }
 
-    public void mapperInternalStateLoad(ByteBuffer buf) {
+    void mapperInternalStateLoad(ByteBuffer buf) {
 
         super.mapperInternalStateLoad(buf);
 
         // Check version:
         if (buf.readByte() == 1) {
-
             command = buf.readInt();
             prgAddressSelect = buf.readInt();
             chrAddressSelect = buf.readInt();
@@ -56,13 +54,10 @@ public class Mapper004 extends MapperDefault {
             irqLatchValue = buf.readInt();
             irqEnable = buf.readInt();
             prgAddressChanged = buf.readBoolean();
-
         }
-
     }
 
-    public void mapperInternalStateSave(ByteBuffer buf) {
-
+    void mapperInternalStateSave(ByteBuffer buf) {
         super.mapperInternalStateSave(buf);
 
         // Version:
@@ -77,21 +72,16 @@ public class Mapper004 extends MapperDefault {
         buf.putInt(irqLatchValue);
         buf.putInt(irqEnable);
         buf.putBoolean(prgAddressChanged);
-
     }
 
-    public void write(int address, int value) {
-
+    void write(int address, int value) {
         if (address < 0x8000) {
-
             // Normal memory write.
             super.write(address, value);
             return;
-
         }
 
         if (address == 0x8000) {
-
             // Command/Address Select register
             command = value & 7;
             int tmp = (value >> 6) & 1;
@@ -102,10 +92,8 @@ public class Mapper004 extends MapperDefault {
             chrAddressSelect = (value >> 7) & 1;
 
         } else if (address == 0x8001) {
-
             // Page number for command
             executeCommand(command, value);
-
         } else if (address == 0xA000) {
 
             // Mirroring select
@@ -151,7 +139,7 @@ public class Mapper004 extends MapperDefault {
 
     }
 
-    public void executeCommand(int cmd, int arg) {
+    void executeCommand(int cmd, int arg) {
 
         if (cmd == CMD_SEL_2_1K_VROM_0000) {
 
@@ -174,7 +162,6 @@ public class Mapper004 extends MapperDefault {
                 load1kVromBank(arg, 0x1800);
                 load1kVromBank(arg + 1, 0x1C00);
             }
-
         } else if (cmd == CMD_SEL_1K_VROM_1000) {
 
             // Select 1K VROM Page at 0x1000:
@@ -203,7 +190,6 @@ public class Mapper004 extends MapperDefault {
             }
 
         } else if (cmd == CMD_SEL_1K_VROM_1C00) {
-
             // Select 1K VROM Page at 0x1C00:
             if (chrAddressSelect == 0) {
                 load1kVromBank(arg, 0x1C00);
@@ -233,7 +219,6 @@ public class Mapper004 extends MapperDefault {
             } else {
                 load8kRomBank(arg, 0xC000);
             }
-
         } else if (cmd == CMD_SEL_ROM_PAGE2) {
 
             //Globals.println("cmd=SEL_ROM_PAGE2");
@@ -258,10 +243,8 @@ public class Mapper004 extends MapperDefault {
 
     }
 
-    public void loadROM(ROM rom) {
-
+    void loadROM(ROM rom) {
         //System.out.println("Loading ROM.");
-
         if (!rom.isValid()) {
             //System.out.println("MMC3: Invalid ROM! Unable to load.");
             return;
@@ -287,7 +270,7 @@ public class Mapper004 extends MapperDefault {
 
     }
 
-    public void clockIrqCounter() {
+    void clockIrqCounter() {
 
         if (irqEnable == 1) {
             irqCounter--;
@@ -303,7 +286,7 @@ public class Mapper004 extends MapperDefault {
 
     }
 
-    public void reset() {
+    void reset() {
 
         command = 0;
         prgAddressSelect = 0;

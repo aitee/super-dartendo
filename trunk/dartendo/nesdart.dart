@@ -1,4 +1,5 @@
 #import('dart:dom');
+
 #source('ByteBuffer.dart');
 #source('Util.dart');
 #source('CPU.dart');
@@ -35,6 +36,8 @@
 #source('Mapper105.dart');
 #source('Mapper140.dart');
 #source('Mapper182.dart');
+
+#source('memory.dart');
 
 #source('misc.dart');
 #source('NameTable.dart');
@@ -84,7 +87,7 @@ class snes {
       break;
     }
 
-    List<int> intList = new List<int>(5);
+    List<int> intList = Util.newIntList(5, 0);
     
     intList[3] = 2;
     print(intList);

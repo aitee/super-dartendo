@@ -1,4 +1,3 @@
-package vnes;
 /*
 vNES
 Copyright © 2006-2011 Jamie Sanders
@@ -16,21 +15,19 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Mapper064 extends MapperDefault {
+class Mapper064 extends MapperDefault {
 
-    public int irq_counter = 0;
-    public int irq_latch = 0;
-    public boolean irq_enabled = false;
-    int regs[] = new int[3];
+    int irq_counter = 0;
+    int irq_latch = 0;
+    bool irq_enabled = false;
+    List<int> regs = Util.newIntList(3, 0);
 
-    public void init(NES nes) {
-
+    void init(NES nes) {
         super.init(nes);
         reset();
-
     }
 
-    public void write(int address, int value) {
+    void write(int address, int value) {
 
         if (address < 0x8000) {
             // Normal memory write.
@@ -195,12 +192,12 @@ public class Mapper064 extends MapperDefault {
         }
     }
 
-    public void loadROM(ROM rom) {
+    void loadROM(ROM rom) {
 
         //System.out.println("Loading ROM.");
 
         if (!rom.isValid()) {
-            //System.out.println("MMC3: Invalid ROM! Unable to load.");
+            println("Mapper064.loadROM: MMC3: Invalid ROM! Unable to load.");
             return;
         }
 
@@ -215,13 +212,13 @@ public class Mapper064 extends MapperDefault {
 
         load8kVromBank(0, 0x0000);
 
-        System.out.println("CHR = " + chr_banks + "");
+        print("Mapper064.loadROM: CHR = " + chr_banks + "");
 
         nes.getCpu().requestIrq(CPU.IRQ_RESET);
 
     }
 
-    public int syncH(int scanline) {
+    int syncH(int scanline) {
 
         if (irq_enabled) {
             if ((scanline >= 0) && (scanline <= 239)) {
@@ -238,7 +235,7 @@ public class Mapper064 extends MapperDefault {
 
     }
 
-    public void reset() {
+    void reset() {
 
         // Set Interrupts
         irq_latch = 0;

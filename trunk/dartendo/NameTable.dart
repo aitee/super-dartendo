@@ -12,8 +12,8 @@ class NameTable {
         this.width = width;
         this.height = height;
 
-        tile = new List<int>(width * height);
-        attrib = new List<int>(width * height);
+        tile = Util.newIntList(width * height, 0);
+        attrib = Util.newIntList(width * height, 0);
     }
 
     int getTileIndex(int x, int y) {

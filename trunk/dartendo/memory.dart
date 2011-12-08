@@ -6,13 +6,13 @@ class Memory{
   
   Memory(NES nes, int byteCount) {
     this.nes = nes;
-    mem = new List<int>(byteCount);
+    mem = Util.newIntList(byteCount, 0);
     memLength = byteCount;
   }
   
   void stateLoad(ByteBuffer buf){
-    if(mem==null) {
-      mem=new List<int>(memLength);
+    if(mem == null) {
+      mem = Util.newIntList(memLength, 0);
     }
     buf.readByteArray(mem);
   }

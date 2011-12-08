@@ -17,6 +17,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class MapperDefault implements MemoryMapper
 {
+    // Set at constructor
     NES nes;
     Memory cpuMem;
     Memory ppuMem;
@@ -27,15 +28,15 @@ class MapperDefault implements MemoryMapper
     CPU cpu;
     PPU ppu;
     
-    int joy1StrobeState;
-    int joy2StrobeState;
-    int joypadLastWrite;
+    int joy1StrobeState = 0;
+    int joy2StrobeState = 0;
+    int joypadLastWrite = 0;
     
-    boolean mousePressed;
-    boolean gameGenieActive;
+    bool mousePressed = false;
+    bool gameGenieActive = false;
     
-    int mouseX;
-    int mouseY;
+    int mouseX = 0;
+    int mouseY = 0;
 
     void init(NES nes) 
     {
@@ -294,11 +295,9 @@ class MapperDefault implements MemoryMapper
 
             }
             case 0x2004: {
-
                 // Write to Sprite RAM:
                 ppu.sramWrite(value);
                 break;
-
             }
             case 0x2005: {
 
@@ -572,7 +571,7 @@ class MapperDefault implements MemoryMapper
         }
         ppu.triggerRendering();
 
-        int bank4k = (bank1k / 4) % rom.getVromBankCount();
+        int bank4k = (bank1k >> 2) % rom.getVromBankCount();
         int bankoffset = (bank1k % 4) * 1024;
         Util.arraycopy(rom.getVromBank(bank4k), 0, nes.ppuMem.mem, bankoffset, 1024);
 
@@ -590,7 +589,7 @@ class MapperDefault implements MemoryMapper
         }
         ppu.triggerRendering();
 
-        int bank4k = (bank2k / 2) % rom.getVromBankCount();
+        int bank4k = (bank2k >> 1) % rom.getVromBankCount();
         int bankoffset = (bank2k % 2) * 2048;
         Util.arraycopy(rom.getVromBank(bank4k), bankoffset, nes.ppuMem.mem, address, 2048);
 
@@ -603,7 +602,7 @@ class MapperDefault implements MemoryMapper
     }
 
     void load8kRomBank(int bank8k, int address) {
-        int bank16k = (bank8k / 2) % rom.getRomBankCount();
+        int bank16k = (bank8k >> 1) % rom.getRomBankCount();
         int offset = (bank8k % 2) * 8192;
 
         List<int> bank = rom.getRomBank(bank16k);

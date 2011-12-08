@@ -1,4 +1,3 @@
-package vnes;
 /*
 vNES
 Copyright © 2006-2011 Jamie Sanders
@@ -16,21 +15,17 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Mapper066 extends MapperDefault {
+class Mapper066 extends MapperDefault {
 
-    public void init(NES nes) {
-
+    void init(NES nes) {
         super.init(nes);
-
     }
 
-    public void write(int address, int value) {
+    void write(int address, int value) {
 
         if (address < 0x8000) {
-
             // Let the base mapper take care of it.
             super.write(address, value);
-
         } else {
 
             // Swap in the given PRG-ROM bank at 0x8000:
@@ -38,8 +33,6 @@ public class Mapper066 extends MapperDefault {
 
             // Swap in the given VROM bank at 0x0000:
             load8kVromBank((value & 3) * 2, 0x0000);
-
         }
-
     }
 }

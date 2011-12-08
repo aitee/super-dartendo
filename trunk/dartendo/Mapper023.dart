@@ -1,4 +1,3 @@
-package vnes;
 /*
 vNES
 Copyright © 2006-2011 Jamie Sanders
@@ -16,20 +15,20 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-public class Mapper023 extends MapperDefault {
+class Mapper023 extends MapperDefault {
 
-    public int irq_counter = 0;
-    public int irq_latch = 0;
-    public int irq_enabled = 0;
-    public int regs[] = new int[9];
+    int irq_counter = 0;
+    int irq_latch = 0;
+    int irq_enabled = 0;
+    List<int> regs = List.newIntList(9, 0);
     int patch = 0xFFFF;
 
-    public void init(NES nes) {
+    void init(NES nes) {
         super.init(nes);
         reset();
     }
 
-    public void write(int address, int value) {
+    void write(int address, int value) {
 
         if (address < 0x8000) {
             super.write(address, value);
@@ -170,7 +169,7 @@ public class Mapper023 extends MapperDefault {
                      {
                         regs[5] = (regs[5] & 0x0F) | ((value & 0x0F) << 4);
                         load1kVromBank(regs[5], 0x1400);
-                    }
+                     }
                     break;
 
                 case 0xE000:
@@ -234,10 +233,10 @@ public class Mapper023 extends MapperDefault {
         }
     }
 
-    public void loadROM(ROM rom) {
+    void loadROM(ROM rom) {
 
         if (!rom.isValid()) {
-            System.out.println("VRC2: Invalid ROM! Unable to load.");
+            print("Mapper023.loadROM: VRC2: Invalid ROM! Unable to load.");
             return;
         }
 
@@ -257,9 +256,7 @@ public class Mapper023 extends MapperDefault {
         nes.getCpu().requestIrq(CPU.IRQ_RESET);
     }
 
-    public int syncH(int scanline) {
-
-
+    int syncH(int scanline) {
         if ((irq_enabled & 0x02) != 0) {
             if (irq_counter == 0xFF) {
                 irq_counter = irq_latch;
@@ -270,12 +267,10 @@ public class Mapper023 extends MapperDefault {
             }
         }
 
-
         return 0;
-
     }
 
-    public void reset() {
+    void reset() {
 
         regs[0] = 0;
         regs[1] = 1;

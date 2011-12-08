@@ -1,4 +1,3 @@
-package vnes;
 /*
 vNES
 Copyright © 2006-2011 Jamie Sanders
@@ -16,42 +15,37 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Mapper009 extends MapperDefault {
+class Mapper009 extends MapperDefault {
 
-    int latchLo;
-    int latchHi;
-    int latchLoVal1;
-    int latchLoVal2;
-    int latchHiVal1;
-    int latchHiVal2;
+    int latchLo = 0;
+    int latchHi = 0;
+    int latchLoVal1 = 0;
+    int latchLoVal2 = 0;
+    int latchHiVal1 = 0;
+    int latchHiVal2 = 0;
 
-    public void init(NES nes) {
+    void init(NES nes) {
 
         super.init(nes);
         reset();
 
     }
 
-    public void write(int address, int value) {
+    void write(int address, int value) {
 
         if (address < 0x8000) {
-
             // Handle normally.
             super.write(address, value);
-
         } else {
 
             // MMC2 write.
-
             value &= 0xFF;
             address &= 0xF000;
             switch (address >> 12) {
                 case 0xA: {
-
                     // Select 8k ROM bank at 0x8000
                     load8kRomBank(value, 0x8000);
                     return;
-
                 }
                 case 0xB: {
 
@@ -97,10 +91,8 @@ public class Mapper009 extends MapperDefault {
 
                     // Select mirroring
                     if ((value & 0x1) == 0) {
-
                         // Vertical mirroring
                         nes.getPpu().setMirroring(ROM.VERTICAL_MIRRORING);
-
                     } else {
 
                         // Horizontal mirroring
@@ -113,10 +105,8 @@ public class Mapper009 extends MapperDefault {
         }
     }
 
-    public void loadROM(ROM rom) {
-
+    void loadROM(ROM rom) {
         //System.out.println("Loading ROM.");
-
         if (!rom.isValid()) {
             //System.out.println("MMC2: Invalid ROM! Unable to load.");
             return;
@@ -139,10 +129,9 @@ public class Mapper009 extends MapperDefault {
 
         // Do Reset-Interrupt:
         nes.getCpu().requestIrq(CPU.IRQ_RESET);
-
     }
 
-    public void latchAccess(int address) {
+    void latchAccess(int address) {
         if ((address & 0x1FF0) == 0x0FD0 && latchLo != 0xFD) {
             // Set $FD mode
             loadVromBank(latchLoVal1, 0x0000);
@@ -166,25 +155,21 @@ public class Mapper009 extends MapperDefault {
         }
     }
 
-    public void mapperInternalStateLoad(ByteBuffer buf) {
-
+    void mapperInternalStateLoad(ByteBuffer buf) {
         super.mapperInternalStateLoad(buf);
 
         // Check version:
         if (buf.readByte() == 1) {
-
             latchLo = buf.readByte();
             latchHi = buf.readByte();
             latchLoVal1 = buf.readByte();
             latchLoVal2 = buf.readByte();
             latchHiVal1 = buf.readByte();
             latchHiVal2 = buf.readByte();
-
         }
-
     }
 
-    public void mapperInternalStateSave(ByteBuffer buf) {
+    void mapperInternalStateSave(ByteBuffer buf) {
 
         super.mapperInternalStateSave(buf);
 
@@ -192,16 +177,15 @@ public class Mapper009 extends MapperDefault {
         buf.putByte( 1);
 
         // State:
-        buf.putByte((byte) latchLo);
-        buf.putByte((byte) latchHi);
-        buf.putByte((byte) latchLoVal1);
-        buf.putByte((byte) latchLoVal2);
-        buf.putByte((byte) latchHiVal1);
-        buf.putByte((byte) latchHiVal2);
-
+        buf.putByte(latchLo);
+        buf.putByte(latchHi);
+        buf.putByte(latchLoVal1);
+        buf.putByte(latchLoVal2);
+        buf.putByte(latchHiVal1);
+        buf.putByte(latchHiVal2);
     }
 
-    public void reset() {
+    void reset() {
 
         // Set latch to $FE mode:
         latchLo = 0xFE;

@@ -1,4 +1,3 @@
-package vnes;
 /*
 vNES
 Copyright © 2006-2011 Jamie Sanders
@@ -16,23 +15,21 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Mapper071 extends MapperDefault {
+class Mapper071 extends MapperDefault {
 
-    int curBank;
+    int curBank = 0;
 
-    public void init(NES nes) {
-
+    void init(NES nes) {
         super.init(nes);
         reset();
-
     }
 
-    public void loadROM(ROM rom) {
+    void loadROM(ROM rom) {
 
         //System.out.println("Loading ROM.");
 
         if (!rom.isValid()) {
-            //System.out.println("Camerica: Invalid ROM! Unable to load.");
+            print("Mapper071.loadROM: Camerica: Invalid ROM! Unable to load.");
             return;
         }
 
@@ -51,35 +48,26 @@ public class Mapper071 extends MapperDefault {
 
         // Do Reset-Interrupt:
         nes.getCpu().requestIrq(CPU.IRQ_RESET);
-
     }
 
-    public void write(int address, int value) {
+    void write(int address, int value) {
 
         if (address < 0x8000) {
-
             // Handle normally:
             super.write(address, value);
-
         } else if (address < 0xC000) {
             // Unknown function.
         } else {
-
             // Select 16K PRG ROM at 0x8000:
             if (value != curBank) {
 
                 curBank = value;
                 loadRomBank(value, 0x8000);
-
             }
-
         }
-
     }
 
-    public void reset() {
-
+    void reset() {
         curBank = -1;
-
     }
 }

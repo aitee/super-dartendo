@@ -1,4 +1,3 @@
-package vnes;
 /*
 vNES
 Copyright © 2006-2011 Jamie Sanders
@@ -16,17 +15,17 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Mapper048 extends MapperDefault {
+class Mapper048 extends MapperDefault {
 
-    public int irq_counter = 0;
-    public boolean irq_enabled = false;
+    int irq_counter = 0;
+    bool irq_enabled = false;
 
-    public void init(NES nes) {
+    void init(NES nes) {
         super.init(nes);
         reset();
     }
 
-    public void write(int address, int value) {
+    void write(int address, int value) {
 
         if (address < 0x8000) {
             super.write(address, value);
@@ -110,10 +109,10 @@ public class Mapper048 extends MapperDefault {
         }
     }
 
-    public void loadROM(ROM rom) {
+    void loadROM(ROM rom) {
 
         if (!rom.isValid()) {
-            System.out.println("VRC4: Invalid ROM! Unable to load.");
+            print("Mapper048.loadROM: VRC4: Invalid ROM! Unable to load.");
             return;
         }
 
@@ -136,7 +135,7 @@ public class Mapper048 extends MapperDefault {
         nes.getCpu().requestIrq(CPU.IRQ_RESET);
     }
 
-    public int syncH(int scanline) {
+    int syncH(int scanline) {
         if (irq_enabled) {
             if ((ppu.scanline & 0x18) != 00) {
                 if (scanline >= 0 && scanline <= 239) {
@@ -156,10 +155,8 @@ public class Mapper048 extends MapperDefault {
         return 0;
     }
 
-    public void reset() {
-
+    void reset() {
         irq_enabled = false;
         irq_counter = 0;
-
     }
 }

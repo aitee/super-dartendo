@@ -32,7 +32,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         if (size < 1) {
             size = 1;
         }
-        buf = new List<int>(size);
+        buf = Util.newIntList(size, 0);
         this.size = size;
         this.byteOrder = byteOrdering;
         curPos = 0;
@@ -41,7 +41,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      ByteBuffer.fromArray(List<int> content, int byteOrdering) {
         try {
-            buf = new List<int>(content.length);
+            buf = Util.newIntList(content.length, 0);
             for (int i = 0; i < content.length; i++) {
                 buf[i] = (content[i] & 255);
             }
@@ -75,7 +75,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      List<int> getBytes() {
-       List<int> ret = new List<int>(buf.length);
+       List<int> ret = Util.newIntList(buf.length, 0);
         for (int i = 0; i < buf.length; i++) {
             ret[i] = buf[i];
         }
@@ -126,7 +126,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void resize(int length) {
 
-        List<int> newbuf = new List<int>(length);
+        List<int> newbuf = Util.newIntList(length);
         System.arraycopy(buf, 0, newbuf, 0, Math.min(length, size));
         buf = newbuf;
         size = length;
@@ -608,7 +608,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      List<int> expandShortArray(List<int> array, int size) {
-        List<int> newArr = new List<int>(array.length + size);
+        List<int> newArr = Util.newIntList(array.length + size, 0);
         if (size > 0) {
             System.arraycopy(array, 0, newArr, 0, array.length);
         } else {
@@ -620,7 +620,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void crop() {
         if (curPos > 0) {
             if (curPos < buf.length) {
-                List<int> newBuf = new List<int>(curPos);
+                List<int> newBuf = Util.newIntList(curPos, 0);
                 System.arraycopy(buf, 0, newBuf, 0, curPos);
                 buf = newBuf;
             }
@@ -632,7 +632,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
       ByteBuffer asciiEncode(ByteBuffer buf) {
 
         List<int> data = buf.buf;
-        List<int> enc = new List<int>(buf.getSize() * 2);
+        List<int> enc = Util.newIntList(buf.getSize() * 2, 0);
 
         int encpos = 0;
         int tmp;
@@ -651,7 +651,4 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
       ByteBuffer asciiDecode(ByteBuffer buf) {
         return null;
     }
-
 }
- 
- 

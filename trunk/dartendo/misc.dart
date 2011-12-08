@@ -1,10 +1,11 @@
 class MiscClass {
     bool debug = Globals.debug;
-    List<double> rnd = new List<double>(10000);
+    List<double> rnd;
     int nextRnd = 0;
     double rndret;
 
     MiscClass() {
+      rnd = new List<double>(10000);
       for (int i = 0; i < rnd.length; i++) {
         rnd[i] = Math.random();
       }
@@ -54,8 +55,8 @@ class MiscClass {
     }
 
     List<int> resizeArray(List<int> array, int newSize) {
-        List<int> newArr = new List<int>(newSize);
-        newArr.setRange(0, array.length, array, Math.min(newSize, array.length));
+        List<int> newArr = Util.newIntList(newSize, 0);
+        Util.arraycopy(array, 0, newArr, 0, Math.min(newSize, array.length));        
         return newArr;
     }
 

@@ -1,4 +1,3 @@
-package vnes;
 /*
 vNES
 Copyright © 2006-2011 Jamie Sanders
@@ -16,23 +15,21 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Mapper018 extends MapperDefault {
+class Mapper018 extends MapperDefault {
 
-    public int irq_counter = 0;
-    public int irq_latch = 0;
-    public boolean irq_enabled = false;
-    public int regs[] = new int[11];
-    int num_8k_banks;
+    int irq_counter = 0;
+    int irq_latch = 0;
+    bool irq_enabled = false;
+    List<int> regs = Util.newIntList(11, 0);
+    int num_8k_banks = 0;
     int patch = 0;
 
-    public void init(NES nes) {
-
+    void init(NES nes) {
         super.init(nes);
         reset();
-
     }
 
-    public void mapperInternalStateLoad(ByteBuffer buf) {
+    void mapperInternalStateLoad(ByteBuffer buf) {
         super.mapperInternalStateLoad(buf);
 
         if (buf.readByte() == 1) {
@@ -42,22 +39,20 @@ public class Mapper018 extends MapperDefault {
         }
     }
 
-    public void mapperInternalStateSave(ByteBuffer buf) {
+    void mapperInternalStateSave(ByteBuffer buf) {
         super.mapperInternalStateLoad(buf);
 
         // Version:
-        buf.putByte( 1);
+        buf.putByte(1);
 
         buf.putInt(irq_counter);
         buf.putInt(irq_latch);
         buf.putBoolean(irq_enabled);
     }
 
-    public void write(int address, int value) {
-
+    void write(int address, int value) {
         if (address < 0x8000) {
             super.write(address, value);
-
         } else {
 
             switch (address) {
@@ -135,14 +130,14 @@ public class Mapper018 extends MapperDefault {
                      {
                         regs[5] = (regs[5] & 0xF0) | (value & 0x0F);
                         load1kVromBank(regs[5], 0x0800);
-                    }
+                     }
                     break;
 
                 case 0xB001:
                      {
                         regs[5] = (regs[5] & 0x0F) | ((value & 0x0F) << 4);
                         load1kVromBank(regs[5], 0x0800);
-                    }
+                     }
                     break;
 
                 case 0xB002:
@@ -163,7 +158,7 @@ public class Mapper018 extends MapperDefault {
                      {
                         regs[7] = (regs[7] & 0xF0) | (value & 0x0F);
                         load1kVromBank(regs[7], 0x1000);
-                    }
+                     }
                     break;
 
                 case 0xC001:
@@ -271,12 +266,10 @@ public class Mapper018 extends MapperDefault {
 
     }
 
-    public void loadROM(ROM rom) {
-
-        //System.out.println("Loading ROM.");
+    void loadROM(ROM rom) {
 
         if (!rom.isValid()) {
-            System.out.println("VRC2: Invalid ROM! Unable to load.");
+            println("Mapper018.loadRom: VRC2: Invalid ROM! Unable to load.");
             return;
         }
 
@@ -299,7 +292,7 @@ public class Mapper018 extends MapperDefault {
 
     }
 
-    public int syncH(int scanline) {
+    int syncH(int scanline) {
 
         if (irq_enabled) {
             if (irq_counter <= 113) {
@@ -316,7 +309,7 @@ public class Mapper018 extends MapperDefault {
 
     }
 
-    public void reset() {
+    void reset() {
 
         regs[0] = 0;
         regs[1] = 1;

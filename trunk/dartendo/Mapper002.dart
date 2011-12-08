@@ -1,4 +1,3 @@
-package vnes;
 /*
 vNES
 Copyright © 2006-2011 Jamie Sanders
@@ -16,33 +15,24 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Mapper002 extends MapperDefault {
+class Mapper002 extends MapperDefault {
 
-    public void init(NES nes) {
-
+    void init(NES nes) {
         super.init(nes);
-
     }
 
-    public void write(int address, int value) {
-
+    void write(int address, int value) {
         if (address < 0x8000) {
-
             // Let the base mapper take care of it.
             super.write(address, value);
-
         } else {
-
             // This is a ROM bank select command.
             // Swap in the given ROM bank at 0x8000:
             loadRomBank(value, 0x8000);
-
         }
-
     }
 
-    public void loadROM(ROM rom) {
-
+    void loadROM(ROM rom) {
         if (!rom.isValid()) {
             //System.out.println("UNROM: Invalid ROM! Unable to load.");
             return;
@@ -60,6 +50,5 @@ public class Mapper002 extends MapperDefault {
         // Do Reset-Interrupt:
         //nes.getCpu().doResetInterrupt();
         nes.getCpu().requestIrq(CPU.IRQ_RESET);
-
     }
 }

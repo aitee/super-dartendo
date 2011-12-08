@@ -1,4 +1,3 @@
-package vnes;
 /*
 vNES
 Copyright © 2006-2011 Jamie Sanders
@@ -16,13 +15,13 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Mapper072 extends MapperDefault {
+class Mapper072 extends MapperDefault {
 
-    public void init(NES nes) {
+    void init(NES nes) {
         super.init(nes);
     }
 
-    public void write(int address, int value) {
+    void write(int address, int value) {
 
         if (address < 0x8000) {
             super.write(address, value);
@@ -40,10 +39,10 @@ public class Mapper072 extends MapperDefault {
         }
     }
 
-    public void loadROM(ROM rom) {
+    void loadROM(ROM rom) {
 
         if (!rom.isValid()) {
-            System.out.println("048: Invalid ROM! Unable to load.");
+            print("Mapper072.loadROM: 048: Invalid ROM! Unable to load.");
             return;
         }
 

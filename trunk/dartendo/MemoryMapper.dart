@@ -38,3 +38,4 @@ interface MemoryMapper {
 
     void latchAccess(int address);
 }
+

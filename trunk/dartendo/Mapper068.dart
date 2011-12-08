@@ -1,4 +1,3 @@
-package vnes;
 /*
 vNES
 Copyright © 2006-2011 Jamie Sanders
@@ -16,12 +15,14 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Mapper068 extends MapperDefault {
+class Mapper068 extends MapperDefault {
 
-    int r1, r2, r3, r4;
+    int r1 = 0;
+    int r2 = 0; 
+    int r3 = 0; 
+    int r4 = 0;
 
-    public void write(int address, int value) {
-
+    void write(int address, int value) {
         if (address < 0x8000) {
             super.write(address, value);
             return;
@@ -30,7 +31,6 @@ public class Mapper068 extends MapperDefault {
         switch ((address >> 12) - 0x8) {
 
             case 0: {
-
                 // Select 2K VROM bank at 0x0000
                 load2kVromBank(value, 0x0000);
                 break;
@@ -80,28 +80,22 @@ public class Mapper068 extends MapperDefault {
             }
 
             case 6: {
-
                 // Mirroring.
                 r1 = (value >> 4) & 0x1;
                 r2 = value & 0x3;
                 setMirroring();
                 break;
-
             }
 
             case 7: {
-
                 // Select 16K ROM bank at 0x8000
                 loadRomBank(value, 0x8000);
                 break;
-
             }
-
         }
-
     }
 
-    public void setMirroring() {
+    void setMirroring() {
 
         if (r1 == 0) {
 
@@ -147,12 +141,12 @@ public class Mapper068 extends MapperDefault {
 
     }
 
-    public void loadROM(ROM rom) {
+    void loadROM(ROM rom) {
 
         //System.out.println("Loading ROM.");
 
         if (!rom.isValid()) {
-            //System.out.println("Sunsoft#4: Invalid ROM! Unable to load.");
+            print("Mapper068.loadROM: Sunsoft#4: Invalid ROM! Unable to load.");
             return;
         }
 
@@ -171,12 +165,9 @@ public class Mapper068 extends MapperDefault {
 
         // Do Reset-Interrupt:
         nes.getCpu().requestIrq(CPU.IRQ_RESET);
-
     }
 
-    public void reset() {
-
+    void reset() {
         r1 = r2 = r3 = r4 = 0;
-
     }
 }

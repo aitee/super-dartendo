@@ -1,4 +1,3 @@
-package vnes;
 /*
 vNES
 Copyright © 2006-2011 Jamie Sanders
@@ -16,41 +15,38 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Mapper001 extends MapperDefault {
+class Mapper001 extends MapperDefault {
 
     // Register flags:
 
     // Register 0:
-    int mirroring;
-    int oneScreenMirroring;
+    int mirroring = 0;
+    int oneScreenMirroring = 0;
     int prgSwitchingArea = 1;
     int prgSwitchingSize = 1;
-    int vromSwitchingSize;
+    int vromSwitchingSize = 0;
 
     // Register 1:
-    int romSelectionReg0;
+    int romSelectionReg0 = 0;
 
     // Register 2:
-    int romSelectionReg1;
+    int romSelectionReg1 = 0;
 
     // Register 3:
-    int romBankSelect;
+    int romBankSelect = 0;
 
     // 5-bit buffer:
-    int regBuffer;
-    int regBufferCounter;
+    int regBuffer = 0;
+    int regBufferCounter = 0;
 
-    public void init(NES nes) {
-
+    void init(NES nes) {
         super.init(nes);
-
     }
 
-    public void mapperInternalStateLoad(ByteBuffer buf) {
+    void mapperInternalStateLoad(ByteBuffer buf) {
 
         // Check version:
         if (buf.readByte() == 1) {
-
             // Reg 0:
             mirroring = buf.readInt();
             oneScreenMirroring = buf.readInt();
@@ -70,12 +66,10 @@ public class Mapper001 extends MapperDefault {
             // 5-bit buffer:
             regBuffer = buf.readInt();
             regBufferCounter = buf.readInt();
-
         }
-
     }
 
-    public void mapperInternalStateSave(ByteBuffer buf) {
+    void mapperInternalStateSave(ByteBuffer buf) {
 
         // Version:
         buf.putByte( 1);
@@ -99,11 +93,9 @@ public class Mapper001 extends MapperDefault {
         // 5-bit buffer:
         buf.putInt(regBuffer);
         buf.putInt(regBufferCounter);
-
     }
 
-    public void write(int address, int value) {
-
+    void write(int address, int value) {
         // Writes to addresses other than MMC registers are handled by NoMapper.
         if (address < 0x8000) {
             super.write(address, value);
@@ -121,16 +113,14 @@ public class Mapper001 extends MapperDefault {
 
             // Reset register:
             if (getRegNumber(address) == 0) {
-
                 prgSwitchingArea = 1;
                 prgSwitchingSize = 1;
-
             }
 
         } else {
 
             // Continue buffering:
-            //regBuffer = (regBuffer & (0xFF-(1<<regBufferCounter))) | ((value & (1<<regBufferCounter))<<regBufferCounter);
+            // regBuffer = (regBuffer & (0xFF-(1<<regBufferCounter))) | ((value & (1<<regBufferCounter))<<regBufferCounter);
             regBuffer = (regBuffer & (0xFF - (1 << regBufferCounter))) | ((value & 1) << regBufferCounter);
             regBufferCounter++;
             if (regBufferCounter == 5) {
@@ -141,17 +131,13 @@ public class Mapper001 extends MapperDefault {
                 // Reset buffer:
                 regBuffer = 0;
                 regBufferCounter = 0;
-
             }
-
         }
-
     }
 
-    public void setReg(int reg, int value) {
+    void setReg(int reg, int value) {
 
         int tmp, tmp2;
-
         if (reg == 0) {
 
             // Mirroring:
@@ -195,11 +181,10 @@ public class Mapper001 extends MapperDefault {
                     if (romSelectionReg0 == 0) {
                         load8kVromBank((value & 0xF), 0x0000);
                     } else {
-                        load8kVromBank(nes.getRom().getVromBankCount() / 2 + (value & 0xF), 0x0000);
+                        load8kVromBank((nes.getRom().getVromBankCount() ~/ 2) + (value & 0xF), 0x0000);
                     }
 
                 } else {
-
                     // Swap 4kB VROM:
                     ////System.out.println("ROMSELREG0 = "+romSelectionReg0);
                     ////System.out.println("Swapping 4k VROM at 0x0000, bank="+(value&0xF));
@@ -207,7 +192,7 @@ public class Mapper001 extends MapperDefault {
                     if (romSelectionReg0 == 0) {
                         loadVromBank((value & 0xF), 0x0000);
                     } else {
-                        loadVromBank(nes.getRom().getVromBankCount() / 2 + (value & 0xF), 0x0000);
+                        loadVromBank((nes.getRom().getVromBankCount() ~/ 2) + (value & 0xF), 0x0000);
                     }
 
                 }
@@ -231,7 +216,7 @@ public class Mapper001 extends MapperDefault {
                     if (romSelectionReg1 == 0) {
                         loadVromBank((value & 0xF), 0x1000);
                     } else {
-                        loadVromBank(nes.getRom().getVromBankCount() / 2 + (value & 0xF), 0x1000);
+                        loadVromBank((nes.getRom().getVromBankCount() ~/ 2) + (value & 0xF), 0x1000);
                     }
 
                 }
@@ -292,8 +277,7 @@ public class Mapper001 extends MapperDefault {
     }
 
     // Returns the register number from the address written to:
-    public int getRegNumber(int address) {
-
+    int getRegNumber(int address) {
         if (address >= 0x8000 && address <= 0x9FFF) {
             return 0;
         } else if (address >= 0xA000 && address <= 0xBFFF) {
@@ -303,13 +287,11 @@ public class Mapper001 extends MapperDefault {
         } else {
             return 3;
         }
-
     }
 
-    public void loadROM(ROM rom) {
+    void loadROM(ROM rom) {
 
         //System.out.println("Loading ROM.");
-
         if (!rom.isValid()) {
             //System.out.println("MMC1: Invalid ROM! Unable to load.");
             return;
@@ -331,7 +313,7 @@ public class Mapper001 extends MapperDefault {
 
     }
 
-    public void reset() {
+    void reset() {
 
         regBuffer = 0;
         regBufferCounter = 0;
@@ -351,21 +333,17 @@ public class Mapper001 extends MapperDefault {
 
         // Register 3:
         romBankSelect = 0;
-
     }
 
-    public void switchLowHighPrgRom(int oldSetting) {
-
+    void switchLowHighPrgRom(int oldSetting) {
         // not yet.
     }
 
-    public void switch16to32() {
-
+    void switch16to32() {
         // not yet.
     }
 
-    public void switch32to16() {
-
+    void switch32to16() {
         // not yet.
     }
 }
