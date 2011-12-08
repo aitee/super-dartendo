@@ -37,10 +37,14 @@
 #source('Mapper140.dart');
 #source('Mapper182.dart');
 #source('MapperDefault.dart');
+#source('Color.dart');
+#source('Globals.dart');
+#source('AppletUI.dart');
+#source('KbInputHandler.dart');
+#source('PaletteTable.dart');
 #source('memory.dart');
 #source('NES.dart');
 #source('PaletteTable.dart');
-#source('PAPU.dart');
 #source('ROM.dart');
 #source('Tile.dart');
 #source('UI.dart');
@@ -61,9 +65,8 @@ class Controller {
   int progress;
   AppletUI gui;
   NES nes;
-  ScreenView panelScreen;
+  BufferView panelScreen;
   String rom;
-  Font progressFont;
   Color bgColor;
   bool started;
   
@@ -71,6 +74,7 @@ class Controller {
   
   
   snes() {
+    Globals = new SGlobals();
     canvas = document.getElementById("webGlCanvas");
     context = canvas.getContext('2d');
      scale = false;
@@ -254,63 +258,7 @@ class Controller {
  void showLoadProgress(int percentComplete) {
 
     progress = percentComplete;
-    paint(getGraphics());
-
 }
-
- void paint(Graphics g) {
-  print("PAINTING\n");
-
-    String pad;
-    String disp;
-    int scrw, scrh;
-    int txtw, txth;
-
-    if (!started) {
-        return;
-    }
-
-    // Get screen size:
-    if (scale) {
-        scrw = 512;
-        scrh = 480;
-    } else {
-        scrw = 256;
-        scrh = 240;
-    }
-
-    // Fill background:
-    g.setColor(bgColor);
-    g.fillRect(0, 0, 512, 512);
-    print("BG FILLED "+scrw+","+scrh);
-    if(true)
-      return;
-
-    // Prepare text:
-    if (progress < 10) {
-        pad = "  ";
-    } else if (progress < 100) {
-        pad = " ";
-    } else {
-        pad = "";
-    }
-    disp = "vNES is Loading Game... " + pad + progress + "%";
-
-    // Measure text:
-    g.setFont(progressFont);
-    txtw = g.getFontMetrics(progressFont).stringWidth(disp);
-    txth = g.getFontMetrics(progressFont).getHeight();
-
-    // Display text:
-    g.setFont(progressFont);
-    g.setColor(Color.white);
-    g.drawString(disp, scrw / 2 - txtw / 2, scrh / 2 - txth / 2);
-    g.drawString(disp, scrw / 2 - txtw / 2, scrh / 2 - txth / 2);
-    g.drawString("vNES \u00A9 2006-2011 Jamie Sanders", 12, 448);
-    g.drawString("For updates, visit www.thatsanderskid.com", 12, 464);
-}
-// Variables declaration - do not modify                     
-// End of variables declaration                   
 
  void readParams() {
 

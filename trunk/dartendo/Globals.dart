@@ -29,5 +29,5 @@
     }
 }
  
- SGlobals Globals = new SGlobals();
+SGlobals Globals = null;
  
