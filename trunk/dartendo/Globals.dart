@@ -1,4 +1,4 @@
- class Globals {
+ class SGlobals {
 
       final double CPU_FREQ_NTSC = 1789772.5;
       final double CPU_FREQ_PAL = 1773447.4;
@@ -33,3 +33,7 @@
         nes.getGui().println(s);
     }
 }
+ 
+ SGlobals Globals
+ 
+ 

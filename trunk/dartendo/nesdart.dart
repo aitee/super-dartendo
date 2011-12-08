@@ -2,6 +2,7 @@
 #source('MapperDefault.dart');
 #source('ByteBuffer.dart');
 #source('memory.dart');
+#source('UI.dart');
 
 class snes {
   var canvas;
