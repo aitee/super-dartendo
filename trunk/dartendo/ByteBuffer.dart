@@ -456,13 +456,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      int readShort() {
-        int ret = readShort(curPos);
+        int ret = readShortWithPosition(curPos);
         move(2);
         return ret;
     }
 
      int readShortWithPosition(int pos) {
-        if (inRange(pos, 2)) {
+        if (inRangeWithLength(pos, 2)) {
             if (this.byteOrder == BO_BIG_ENDIAN) {
                 return  ((buf[pos] << 8) | (buf[pos + 1]));
             } else {
@@ -474,14 +474,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      int readInt() {
-        int ret = readInt(curPos);
+        int ret = readIntWithPosition(curPos);
         move(4);
         return ret;
     }
 
      int readIntWithPosition(int pos) {
         int ret = 0;
-        if (inRange(pos, 4)) {
+        if (inRangeWithLength(pos, 4)) {
             if (this.byteOrder == BO_BIG_ENDIAN) {
                 ret |= (buf[pos + 0] << 24);
                 ret |= (buf[pos + 1] << 16);
@@ -500,28 +500,28 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      int readChar() {
-        int ret = readChar(curPos);
+        int ret = readCharWithPosition(curPos);
         move(2);
         return ret;
     }
 
      int readCharWithPosition(int pos) {
-        if (inRange(pos, 2)) {
-            return (char) (readShort(pos));
+        if (inRangeWithLength(pos, 2)) {
+            return (readShortWithPosition(pos));
         } else {
             error();
         }
     }
 
      int readCharAscii() {
-        int ret = readCharAscii(curPos);
+        int ret = readCharAsciiWithPosition(curPos);
         move(1);
         return ret;
     }
 
      int readCharAsciiWithPosition(int pos) {
-        if (inRange(pos, 1)) {
-            return (char) (readByte(pos) & 255);
+        if (inRangeWithLength(pos, 1)) {
+            return (readByteWithPosition(pos) & 255);
         } else {
             error();
         }
@@ -529,8 +529,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      String readString(int length) {
         if (length > 0) {
-            String ret = readString(curPos, length);
-            move(ret.length() * 2);
+            String ret = readStringWithPosition(curPos, length);
+            move(ret.length * 2);
             return ret;
         } else {
             return "";
@@ -539,9 +539,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      String readStringWithPosition(int pos, int length) {
         String tmp = "";
-        if (inRange(pos, length * 2) && length > 0) {
+        if (inRangeWithLength(pos, length * 2) && length > 0) {
             for (int i = 0; i < length; i++) {
-                tmp = tmp + readChar(pos + i * 2);
+                tmp = tmp + readCharWithPosition(pos + i * 2);
             }
             return tmp;
         } else {
@@ -550,17 +550,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      String readStringWithShortLength() {
-        String ret = readStringWithShortLength(curPos);
-        move(ret.length() * 2 + 2);
+        String ret = readStringWithShortLengthAndPosition(curPos);
+        move(ret.length * 2 + 2);
         return ret;
     }
 
      String readStringWithShortLengthAndPosition(int pos) {
         int len;
-        if (inRange(pos, 2)) {
-            len = readShort(pos);
+        if (inRangeWithLength(pos, 2)) {
+            len = readShortWithPosition(pos);
             if (len > 0) {
-                return readString(pos + 2, len);
+                return readStringWithPosition(pos + 2, len);
             } else {
                 return "";
             }
@@ -570,16 +570,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      String readStringAscii(int length) {
-        String ret = readStringAscii(curPos, length);
-        move(ret.length());
+        String ret = readStringAsciiWithPosition(curPos, length);
+        move(ret.length);
         return ret;
     }
 
      String readStringAsciiWithPosition(int pos, int length) {
         String tmp = "";
-        if (inRange(pos, length) && length > 0) {
+        if (inRangeWithLength(pos, length) && length > 0) {
             for (int i = 0; i < length; i++) {
-                tmp = tmp + readCharAscii(pos + i); //JJG: MAKE THIS USE String.fromCharCodes
+                tmp = tmp + readCharAsciiWithPosition(pos + i); //JJG: MAKE THIS USE String.fromCharCodes
             }
             return tmp;
         } else {
@@ -588,17 +588,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      String readStringAsciiWithShortLength() {
-        String ret = readStringAsciiWithShortLength(curPos);
-        move(ret.length() + 2);
+        String ret = readStringAsciiWithShortLengthAndPosition(curPos);
+        move(ret.length + 2);
         return ret;
     }
 
      String readStringAsciiWithShortLengthAndPosition(int pos) {
         int len;
-        if (inRange(pos, 2)) {
-            len = readShort(pos);
+        if (inRangeWithLength(pos, 2)) {
+            len = readShortWithPosition(pos);
             if (len > 0) {
-                return readStringAscii(pos + 2, len);
+                return readStringWithPosition(pos + 2, len);
             } else {
                 return "";
             }
@@ -610,9 +610,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      List<int> expandShortArray(List<int> array, int size) {
         List<int> newArr = Util.newIntList(array.length + size, 0);
         if (size > 0) {
-            System.arraycopy(array, 0, newArr, 0, array.length);
+          Util.arraycopy(array, 0, newArr, 0, array.length);
         } else {
-            System.arraycopy(array, 0, newArr, 0, newArr.length);
+          Util.arraycopy(array, 0, newArr, 0, newArr.length);
         }
         return newArr;
     }
@@ -621,7 +621,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         if (curPos > 0) {
             if (curPos < buf.length) {
                 List<int> newBuf = Util.newIntList(curPos, 0);
-                System.arraycopy(buf, 0, newBuf, 0, curPos);
+                Util.arraycopy(buf, 0, newBuf, 0, curPos);
                 buf = newBuf;
             }
         } else {
@@ -639,12 +639,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         for (int i = 0; i < data.length; i++) {
 
             tmp = data[i];
-            enc[encpos] = (byte) (65 + (tmp) & 0xF);
-            enc[encpos + 1] = (byte) (65 + (tmp >> 4) & 0xF);
+            enc[encpos] = (65 + (tmp) & 0xF);
+            enc[encpos + 1] = (65 + (tmp >> 4) & 0xF);
             encpos += 2;
 
         }
-        return new ByteBuffer(enc, BO_BIG_ENDIAN);
+        return new ByteBuffer.fromArray(enc, BO_BIG_ENDIAN);
 
     }
 
