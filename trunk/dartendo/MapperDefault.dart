@@ -13,9 +13,9 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
-class MapperDefault implements MemoryMapper 
+class MapperDefault implements MemoryMapper
 {
     NES nes;
     Memory cpuMem;
@@ -476,10 +476,9 @@ class MapperDefault implements MemoryMapper
         // Reset IRQ:
         //nes.getCpu().doResetInterrupt();
         nes.getCpu().requestIrq(CPU.IRQ_RESET);
-
     }
 
-    protected void loadPRGROM() {
+    void loadPRGROM() {
 
         if (rom.getRomBankCount() > 1) {
             // Load the two first banks into memory.
@@ -493,9 +492,9 @@ class MapperDefault implements MemoryMapper
 
     }
 
-    protected void loadCHRROM() {
+    void loadCHRROM() {
 
-        ////System.out.println("Loading CHR ROM..");
+        print("Loading CHR ROM..");
 
         if (rom.getVromBankCount() > 0) {
             if (rom.getVromBankCount() == 1) {
@@ -506,59 +505,57 @@ class MapperDefault implements MemoryMapper
                 loadVromBank(1, 0x1000);
             }
         } else {
-            //System.out.println("There aren't any CHR-ROM banks..");
+            print("MapperDefault: There aren't any CHR-ROM banks..");
         }
 
     }
 
-     void loadBatteryRam() {
-
+    void loadBatteryRam() {
         if (rom.batteryRam) {
-
-            int[] ram = rom.getBatteryRam();
+            List<int> ram = rom.getBatteryRam();
             if (ram != null && ram.length == 0x2000) {
-
-                // Load Battery RAM into memory:
-                System.arraycopy(ram, 0, nes.cpuMem.mem, 0x6000, 0x2000);
-
+              // Load Battery RAM into memory:
+              // System.arraycopy(ram, 0, nes.cpuMem.mem, 0x6000, 0x2000);
+              // arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
+              
+              // void setRange(int start, int length, List<E> from, [int startFrom])
+              cpuMem.mem.setRange(0x6000, 0x2000, ram, 0);                
             }
-
         }
-
     }
 
-    protected void loadRomBank(int bank, int address) {
+    void loadRomBank(int bank, int address) {
 
         // Loads a ROM bank into the specified address.
         bank %= rom.getRomBankCount();
-        int[] data = rom.getRomBank(bank);
-        //cpuMem.write(address,data,data.length);
-        System.arraycopy(rom.getRomBank(bank), 0, cpuMem.mem, address, 16384);
+        List<int> data = rom.getRomBank(bank);
+        
+        // System.arraycopy(rom.getRomBank(bank), 0, cpuMem.mem, address, 16384);
+        // arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
 
+        // void setRange(int start, int length, List<E> from, [int startFrom])
+        cpuMem.mem.setRange(address, 16384, data, 0);
     }
 
-    protected void loadVromBank(int bank, int address) {
-
+    void loadVromBank(int bank, int address) {
         if (rom.getVromBankCount() == 0) {
             return;
         }
         ppu.triggerRendering();
-
-        System.arraycopy(rom.getVromBank(bank % rom.getVromBankCount()), 0, nes.ppuMem.mem, address, 4096);
-
-        Tile[] vromTile = rom.getVromBankTiles(bank % rom.getVromBankCount());
-        System.arraycopy(vromTile, 0, ppu.ptTile, address >> 4, 256);
-
+        
+        // arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
+        Util.arraycopy(rom.getVromBank(bank % rom.getVromBankCount()), 0, nes.ppuMem.mem, address, 4096);
+        
+        List<Tile> vromTile = rom.getVromBankTiles(bank % rom.getVromBankCount());
+        Util.arraycopy(vromTile, 0, ppu.ptTile, address >> 4, 256);
     }
 
-    protected void load32kRomBank(int bank, int address) {
-
+    void load32kRomBank(int bank, int address) {
         loadRomBank((bank * 2) % rom.getRomBankCount(), address);
         loadRomBank((bank * 2 + 1) % rom.getRomBankCount(), address + 16384);
-
     }
 
-    protected void load8kVromBank(int bank4kStart, int address) {
+    void load8kVromBank(int bank4kStart, int address) {
 
         if (rom.getVromBankCount() == 0) {
             return;
@@ -567,11 +564,9 @@ class MapperDefault implements MemoryMapper
 
         loadVromBank((bank4kStart) % rom.getVromBankCount(), address);
         loadVromBank((bank4kStart + 1) % rom.getVromBankCount(), address + 4096);
-
     }
 
-    protected void load1kVromBank(int bank1k, int address) {
-
+    void load1kVromBank(int bank1k, int address) {
         if (rom.getVromBankCount() == 0) {
             return;
         }
@@ -579,19 +574,17 @@ class MapperDefault implements MemoryMapper
 
         int bank4k = (bank1k / 4) % rom.getVromBankCount();
         int bankoffset = (bank1k % 4) * 1024;
-        System.arraycopy(rom.getVromBank(bank4k), 0, nes.ppuMem.mem, bankoffset, 1024);
+        Util.arraycopy(rom.getVromBank(bank4k), 0, nes.ppuMem.mem, bankoffset, 1024);
 
         // Update tiles:
-        Tile[] vromTile = rom.getVromBankTiles(bank4k);
+        List<Tile> vromTile = rom.getVromBankTiles(bank4k);
         int baseIndex = address >> 4;
         for (int i = 0; i < 64; i++) {
             ppu.ptTile[baseIndex + i] = vromTile[((bank1k % 4) << 6) + i];
         }
-
     }
 
-    protected void load2kVromBank(int bank2k, int address) {
-
+    void load2kVromBank(int bank2k, int address) {
         if (rom.getVromBankCount() == 0) {
             return;
         }
@@ -599,25 +592,22 @@ class MapperDefault implements MemoryMapper
 
         int bank4k = (bank2k / 2) % rom.getVromBankCount();
         int bankoffset = (bank2k % 2) * 2048;
-        System.arraycopy(rom.getVromBank(bank4k), bankoffset, nes.ppuMem.mem, address, 2048);
+        Util.arraycopy(rom.getVromBank(bank4k), bankoffset, nes.ppuMem.mem, address, 2048);
 
         // Update tiles:
-        Tile[] vromTile = rom.getVromBankTiles(bank4k);
+        List<Tile> vromTile = rom.getVromBankTiles(bank4k);
         int baseIndex = address >> 4;
         for (int i = 0; i < 128; i++) {
             ppu.ptTile[baseIndex + i] = vromTile[((bank2k % 2) << 7) + i];
         }
-
     }
 
-    protected void load8kRomBank(int bank8k, int address) {
-
+    void load8kRomBank(int bank8k, int address) {
         int bank16k = (bank8k / 2) % rom.getRomBankCount();
         int offset = (bank8k % 2) * 8192;
 
-        int[] bank = rom.getRomBank(bank16k);
+        List<int> bank = rom.getRomBank(bank16k);
         cpuMem.write(address, bank, offset, 8192);
-
     }
 
      void clockIrqCounter() {
@@ -636,31 +626,25 @@ class MapperDefault implements MemoryMapper
         return 0;
     }
 
-     void setMouseState(boolean pressed, int x, int y) {
-
+     void setMouseState(bool pressed, int x, int y) {
         mousePressed = pressed;
         mouseX = x;
         mouseY = y;
-
     }
 
      void reset() {
-
         joy1StrobeState = 0;
         joy2StrobeState = 0;
         joypadLastWrite = 0;
         mousePressed = false;
-
     }
 
      void destroy() {
-
         nes = null;
         cpuMem = null;
         ppuMem = null;
         rom = null;
         cpu = null;
         ppu = null;
-
     }
 }
