@@ -1,10 +1,14 @@
 #import('dart:dom');
-
 #source('ByteBuffer.dart');
-#source('Util.dart');
-#source('CPU.dart');
-#source('CpuInfo.dart');
-#source('MapperDefault.dart');
+#source('memory.dart');
+#source('UI.dart');
+#source('Color.dart');
+#source('Globals.dart');
+#source('AppletUI.dart');
+#source('KbInputHandler.dart');
+#source('BufferView.dart');
+#source('NES.dart');
+#source('ROM.dart');
 #source('MemoryMapper.dart');
 #source('Mapper001.dart');
 #source('Mapper002.dart');
@@ -36,25 +40,134 @@
 #source('Mapper105.dart');
 #source('Mapper140.dart');
 #source('Mapper182.dart');
-
-#source('memory.dart');
-
-#source('misc.dart');
-#source('NameTable.dart');
+#source('Color.dart');
+#source('Globals.dart');
+#source('AppletUI.dart');
+#source('KbInputHandler.dart');
 #source('PaletteTable.dart');
 #source('memory.dart');
 #source('Tile.dart');
+#source('PAPU.dart');
 
-class snes {
+class Controller {
   var canvas;
   var context;
-  var gl;
 
+  bool scale;
+  bool scanlines;
+  bool sound;
+  bool fps;
+  bool stereo;
+  bool timeemulation;
+  bool showsoundbuffer;
+  int samplerate;
+  int romSize;
+  int progress;
+  AppletUI gui;
+  NES nes;
+  ScreenView panelScreen;
+  String rom;
+  Font progressFont;
+  Color bgColor;
+  bool started;
+  
+  int lastTime;
+  
+  
   snes() {
     canvas = document.getElementById("webGlCanvas");
     context = canvas.getContext('2d');
+     scale = false;
+     scanlines = false;
+     sound = false;
+     fps = false;
+     stereo = false;
+     timeemulation = false;
+     showsoundbuffer = false;
+     samplerate = 0;
+     romSize = 0;
+     progress = 0;
+     rom = "";
+     bgColor = new Color(0,0,0);
+     started = false;
+     lastTime = 0;
+  }
 
-    window.webkitRequestAnimationFrame(animate, canvas);
+   void init() {
+    readParams();
+    System.gc();
+
+    gui = new AppletUI(this);
+    gui.init(false);
+
+    Globals.appletMode = true;
+    Globals.memoryFlushValue = 0x00; // make SMB1 hacked version work.
+
+    nes = gui.getNES();
+    nes.enableSound(sound);
+    nes.reset();
+
+}
+
+ void addScreenView() {
+  print("ADD SCREEN VIEW");
+
+    panelScreen = gui.getScreenView();
+    panelScreen.setFPSEnabled(fps);
+
+    if (scale) {
+      print("SCALE");
+
+        if (scanlines) {
+            panelScreen.setScaleMode(BufferView.SCALE_SCANLINE);
+        } else {
+            panelScreen.setScaleMode(BufferView.SCALE_NORMAL);
+        }
+
+    } else {
+
+        panelScreen.setBounds(0, 0, 256, 240);
+
+    }
+
+}
+
+ void run() {
+
+    // Can start painting:
+    started = true;
+
+    // Load ROM file:
+    print("vNES 2.14 \u00A9 2006-2011 Jamie Sanders");
+    print("For updates, see www.thatsanderskid.com");
+    print("Use of this program subject to GNU GPL, Version 3.");
+
+    nes.loadRom(rom);
+
+    if (nes.rom.isValid()) {
+
+        // Add the screen buffer:
+        addScreenView();
+
+        // Set some properties:
+        Globals.timeEmulation = timeemulation;
+        nes.ppu.showSoundBuffer = showsoundbuffer;
+
+        // Start emulation:
+        //print("vNES is now starting the processor.");
+        nes.getCpu().beginExecution();
+
+    } else {
+
+        // ROM file was invalid.
+        print("vNES was unable to find (" + rom + ").");
+
+    }
+    
+    print("ROM LOADED");
+    nes.getCpu().initRun();
+    nes.getCpu().active = true;
+    
     
     //var ac = window.webkitAudioContext();
     //audioContext = new AudioContext();
@@ -87,41 +200,290 @@ class snes {
       break;
     }
 
-    List<int> intList = Util.newIntList(5, 0);
+    List<int> intList = new List<int>(5);
     
     intList[3] = 2;
     print(intList);
-  }
+    
+    canvas.addEventListener('click', (Event e) {
+      print('GOT EVENT');
+    }, true);
+    canvas.addEventListener('click', (Event e) {
+      print('GOT EVENT');
+    }, true);
+    window.addEventListener('keydown', (Event e) {
+      print('GOT KEY DOWN EVENT ' + e.keyCode);
+    }, true);
+    window.addEventListener('keyup', (Event e) {
+      print('GOT KEY UP EVENT ' + e.keyCode);
+    }, true);
+    //element.on.keyUp.add( (EventListener event) { 
+      //print('KEY RELEASED'); }); 
 
-  void run() {
-  }
+    window.webkitRequestAnimationFrame(animate, canvas);
+}
+
+ void stop() {
+   nes.getCpu().active = false;
+    nes.stopEmulation();
+    print("vNES has stopped the processor.");
+    nes.getPapu().stop();
+    this.destroy();
+
+}
+
+ void destroy() {
+
+    if (nes != null && nes.getCpu().isRunning()) {
+        stop();
+    }
+    
+    if (nes != null) {
+        nes.destroy();
+    }
+    if (gui != null) {
+        gui.destroy();
+    }
+
+    gui = null;
+    nes = null;
+    panelScreen = null;
+    rom = null;
+
+    System.runFinalization();
+    System.gc();
+
+}
+
+ void showLoadProgress(int percentComplete) {
+
+    progress = percentComplete;
+    paint(getGraphics());
+
+}
+
+ void paint(Graphics g) {
+  print("PAINTING\n");
+
+    String pad;
+    String disp;
+    int scrw, scrh;
+    int txtw, txth;
+
+    if (!started) {
+        return;
+    }
+
+    // Get screen size:
+    if (scale) {
+        scrw = 512;
+        scrh = 480;
+    } else {
+        scrw = 256;
+        scrh = 240;
+    }
+
+    // Fill background:
+    g.setColor(bgColor);
+    g.fillRect(0, 0, 512, 512);
+    print("BG FILLED "+scrw+","+scrh);
+    if(true)
+      return;
+
+    // Prepare text:
+    if (progress < 10) {
+        pad = "  ";
+    } else if (progress < 100) {
+        pad = " ";
+    } else {
+        pad = "";
+    }
+    disp = "vNES is Loading Game... " + pad + progress + "%";
+
+    // Measure text:
+    g.setFont(progressFont);
+    txtw = g.getFontMetrics(progressFont).stringWidth(disp);
+    txth = g.getFontMetrics(progressFont).getHeight();
+
+    // Display text:
+    g.setFont(progressFont);
+    g.setColor(Color.white);
+    g.drawString(disp, scrw / 2 - txtw / 2, scrh / 2 - txth / 2);
+    g.drawString(disp, scrw / 2 - txtw / 2, scrh / 2 - txth / 2);
+    g.drawString("vNES \u00A9 2006-2011 Jamie Sanders", 12, 448);
+    g.drawString("For updates, visit www.thatsanderskid.com", 12, 464);
+}
+// Variables declaration - do not modify                     
+// End of variables declaration                   
+
+ void readParams() {
+
+    String tmp;
+
+    tmp = "IceHockey.nes";
+    if (tmp == null || tmp.equals("")) {
+        rom = "vnes.nes";
+    } else {
+        rom = tmp;
+    }
+
+    tmp = "";
+    if (tmp == null || tmp.equals("")) {
+        scale = true;
+    } else {
+        scale = tmp.equals("on");
+    }
+
+    if (tmp == null || tmp.equals("")) {
+        sound = true;
+    } else {
+        sound = tmp.equals("on");
+    }
+
+    if (tmp == null || tmp.equals("")) {
+        stereo = true; // on by default
+    } else {
+        stereo = tmp.equals("on");
+    }
+
+    if (tmp == null || tmp.equals("")) {
+        scanlines = false;
+    } else {
+        scanlines = tmp.equals("on");
+    }
+
+    if (tmp == null || tmp.equals("")) {
+        fps = true;
+    } else {
+        fps = tmp.equals("on");
+    }
+
+    if (tmp == null || tmp.equals("")) {
+        timeemulation = true;
+    } else {
+        timeemulation = tmp.equals("on");
+    }
+
+    if (tmp == null || tmp.equals("")) {
+        showsoundbuffer = false;
+    } else {
+        showsoundbuffer = tmp.equals("on");
+    }
+
+    /* Controller Setup for Player 1 */
+
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p1_up", "VK_UP");
+    } else {
+        Globals.controls.put("p1_up", "VK_" + tmp);
+    }
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p1_down", "VK_DOWN");
+    } else {
+        Globals.controls.put("p1_down", "VK_" + tmp);
+    }
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p1_left", "VK_LEFT");
+    } else {
+        Globals.controls.put("p1_left", "VK_" + tmp);
+    }
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p1_right", "VK_RIGHT");
+    } else {
+        Globals.controls.put("p1_right", "VK_" + tmp);
+    }
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p1_a", "VK_X");
+    } else {
+        Globals.controls.put("p1_a", "VK_" + tmp);
+    }
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p1_b", "VK_Z");
+    } else {
+        Globals.controls.put("p1_b", "VK_" + tmp);
+    }
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p1_start", "VK_ENTER");
+    } else {
+        Globals.controls.put("p1_start", "VK_" + tmp);
+    }
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p1_select", "VK_CONTROL");
+    } else {
+        Globals.controls.put("p1_select", "VK_" + tmp);
+    }
+
+    /* Controller Setup for Player 2 */
+
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p2_up", "VK_NUMPAD8");
+    } else {
+        Globals.controls.put("p2_up", "VK_" + tmp);
+    }
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p2_down", "VK_NUMPAD2");
+    } else {
+        Globals.controls.put("p2_down", "VK_" + tmp);
+    }
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p2_left", "VK_NUMPAD4");
+    } else {
+        Globals.controls.put("p2_left", "VK_" + tmp);
+    }
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p2_right", "VK_NUMPAD6");
+    } else {
+        Globals.controls.put("p2_right", "VK_" + tmp);
+    }
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p2_a", "VK_NUMPAD7");
+    } else {
+        Globals.controls.put("p2_a", "VK_" + tmp);
+    }
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p2_b", "VK_NUMPAD9");
+    } else {
+        Globals.controls.put("p2_b", "VK_" + tmp);
+    }
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p2_start", "VK_NUMPAD1");
+    } else {
+        Globals.controls.put("p2_start", "VK_" + tmp);
+    }
+    if (tmp == null || tmp.equals("")) {
+        Globals.controls.put("p2_select", "VK_NUMPAD3");
+    } else {
+        Globals.controls.put("p2_select", "VK_" + tmp);
+    }
+
+    if (tmp == null || tmp.equals("")) {
+        romSize = -1;
+    } else {
+        try {
+            romSize = Integer.parseInt(tmp);
+        } catch (Exception e) {
+            romSize = -1;
+        }
+    }
+}
 
   void animate(int time) {
     //print("test: " + time);
     //canvas.width = canvas.width;
     
-    //print('Getting imagedata');
-    var arr = context.getImageData(0,0,150,50);
-    var data = arr.data;
-    //print(data.length);
-    for (var i=0;i<150*50*4;) {
-      //print('Setting pixels');
-      data[i++] = 0; // r
-      data[i++] = 0; // g
-      data[i++] = 0; // b
-      data[i++] = 255; // a
-    }
-    //print('Blitting imagedata');
-    var a = 1;
-    var b = 2;
-    var c = a ~/ b;
-    //print(c);
-    context.putImageData(arr, 0, 0, 0,   0, 150, 50);
     
+    
+            if (nes.getCpu().stopRunning) {
+              return;
+            }
+
+            nes.getCpu().emulate();
+            nes.getCpu().finishRun();
+    lastTime = time;
     window.webkitRequestAnimationFrame(animate, canvas);
   }
 }
 
 void main() {
-  new snes().run();
+  new Controller().run();
 }
