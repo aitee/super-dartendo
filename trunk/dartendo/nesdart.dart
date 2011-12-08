@@ -8,8 +8,6 @@
 #source('CPU.dart');
 #source('CpuInfo.dart');
 
-#source('FileLoader.dart');
-
 #source('Color.dart');
 #source('Globals.dart');
 #source('KbInputHandler.dart');
