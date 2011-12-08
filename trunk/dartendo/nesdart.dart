@@ -281,7 +281,7 @@ class Controller {
 
     String tmp;
 
-    tmp = "IceHockey.nes";
+    tmp = "IceHockey.json";
     if (tmp == null || tmp == ("")) {
         rom = "vnes.nes";
     } else {

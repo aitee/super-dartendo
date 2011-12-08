@@ -529,11 +529,7 @@ class MapperDefault implements MemoryMapper
         bank %= rom.getRomBankCount();
         List<int> data = rom.getRomBank(bank);
         
-        // System.arraycopy(rom.getRomBank(bank), 0, cpuMem.mem, address, 16384);
-        // arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
-
-        // void setRange(int start, int length, List<E> from, [int startFrom])
-        cpuMem.mem.setRange(address, 16384, data, 0);
+        Util.arraycopy(rom.getRomBank(bank), 0, cpuMem.mem, address, 16384);
     }
 
     void loadVromBank(int bank, int address) {

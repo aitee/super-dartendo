@@ -17,16 +17,16 @@ class ROM {
     List<int> saveRam;
     List<List<Tile>> vromTile;
     NES nes;
-    int romCount;
-    int vromCount;
-    int mirroring;
-    bool batteryRam;
-    bool trainer;
-    bool fourScreen;
-    int mapperType;
+    int romCount=0;
+    int vromCount=0;
+    int mirroring=0;
+    bool batteryRam=false;
+    bool trainer=false;
+    bool fourScreen=false;
+    int mapperType=0;
     String fileName;
     bool enableSave = true;
-    bool valid;
+    bool valid=false;
      List<String> mapperName;
      List<bool> mapperSupported;
 

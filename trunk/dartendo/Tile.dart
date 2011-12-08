@@ -3,20 +3,20 @@
 class Tile {
     // Tile data:
     List<int> pix;
-    int fbIndex;
-    int tIndex;
-    int x, y;
-    int w, h;
-    int incX, incY;
-    int palIndex;
-    int tpri;
-    int c;
+    int fbIndex=0;
+    int tIndex=0;
+    int x=0, y=0;
+    int w=0, h=0;
+    int incX=0, incY = 0;
+    int palIndex = 0;
+    int tpri = 0;
+    int c = 0;
     bool initialized = false;
     List<bool> opaque;
 
     Tile() {
         pix = Util.newIntList(64,0);
-        List<bool> opaque = Util.newBoolList(8,false);
+        opaque = Util.newBoolList(8,false);
     }
 
     void setBuffer(List<int> scanline) {

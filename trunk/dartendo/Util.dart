@@ -5,13 +5,19 @@ class CUtil {
   void arraycopy(List<int> src, int srcPos, List<int> dest, int destPos, int length)
   {
     // void setRange(int start, int length, List<E> from, [int startFrom])
-    dest.setRange(destPos, length, src, srcPos);
+    //dest.setRange(destPos, length, src, srcPos);
+    for (var i = 0 ; i < length ; i++) {
+      dest[destPos+i] = src[srcPos+i];
+    }
   }
 
   void arrayTileCopy(List<Tile> src, int srcPos, List<Tile> dest, int destPos, int length)
   {
     // void setRange(int start, int length, List<E> from, [int startFrom])
-    dest.setRange(destPos, length, src, srcPos);
+    //dest.setRange(destPos, length, src, srcPos);
+    for (var i = 0 ; i < length ; i++) {
+      dest[destPos+i] = src[srcPos+i];
+    }
   }
 
   List<double> newDoubleList(int size, double defaultValue)  {

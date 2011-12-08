@@ -7,7 +7,7 @@
     // Microseconds per frame:
       final int frameTime = 1000000 ~/ 60;
     // What value to flush memory with on power-up:
-      final int memoryFlushValue = 0xFF;
+      int memoryFlushValue = 0xFF;
 
       final bool debug = true;
       final bool fsdebug = false;
