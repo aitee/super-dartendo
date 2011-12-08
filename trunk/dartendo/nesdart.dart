@@ -56,7 +56,6 @@
 #source('ROM.dart');
 #source('Tile.dart');
 #source('Scale.dart');
-#source('SourceDataLine.dart');
 #source('UI.dart');
 #source('Util.dart');
 
@@ -64,36 +63,33 @@ class Controller {
   var canvas;
   var context;
 
-  bool scale = false;
-  bool scanlines = false;
-  bool sound = false;
-  bool fps = false;
-  bool stereo = false;
-  bool timeemulation = false;
-  bool showsoundbuffer = false;
-  
-  int samplerate = 0;
-  int romSize = 0;
-  int progress = 0;
-  
+  bool scale;
+  bool sound;
+  bool fps;
+  bool stereo;
+  bool timeemulation;
+  bool showsoundbuffer;
+  int samplerate;
+  int romSize;
+  int progress;
   AppletUI gui;
   NES nes;
   BufferView panelScreen;
   String rom;
   Color bgColor;
+  bool started;
   
-  bool started = false;
-  int lastTime = 0;
-  int sleepTime = 0;
+  int lastTime;
+  
+  int sleepTime;
+  
   
   snes() {
     Globals = new SGlobals();
     Util = new CUtil();
-    
     canvas = document.getElementById("webGlCanvas");
     context = canvas.getContext('2d');
      scale = false;
-     scanlines = false;
      sound = false;
      fps = false;
      stereo = false;
@@ -121,6 +117,7 @@ class Controller {
     nes = gui.getNES();
     nes.enableSound(sound);
     nes.reset();
+
 }
 
  void addScreenView() {
@@ -130,16 +127,12 @@ class Controller {
     panelScreen.setFPSEnabled(fps);
 
     if (scale) {
-      print("SCALE");
+      print("SCALE NOT SUPPORTED");
 
-        if (scanlines) {
-            panelScreen.setScaleMode(BufferView.SCALE_SCANLINE);
-        } else {
             panelScreen.setScaleMode(BufferView.SCALE_NORMAL);
-        }
 
     } else {
-        panelScreen.setBounds(0, 0, 256, 240);
+
     }
 
 }
@@ -262,9 +255,6 @@ class Controller {
     panelScreen = null;
     rom = null;
 
-    System.runFinalization();
-    System.gc();
-
 }
 
  void showLoadProgress(int percentComplete) {
@@ -277,150 +267,50 @@ class Controller {
     String tmp;
 
     tmp = "IceHockey.nes";
-    if (tmp == null || tmp.equals("")) {
+    if (tmp == null || tmp == ("")) {
         rom = "vnes.nes";
     } else {
         rom = tmp;
     }
 
     tmp = "";
-    if (tmp == null || tmp.equals("")) {
-        scale = true;
+    if (tmp == null || tmp == ("")) {
+        scale = false;
     } else {
-        scale = tmp.equals("on");
+        scale = tmp == ("on");
     }
 
-    if (tmp == null || tmp.equals("")) {
+    if (tmp == null || tmp == ("")) {
         sound = false; //TODO: Support sound
     } else {
-        sound = tmp.equals("on");
+        sound = tmp == ("on");
     }
 
-    if (tmp == null || tmp.equals("")) {
+    if (tmp == null || tmp == ("")) {
         stereo = true; // on by default
     } else {
-        stereo = tmp.equals("on");
+        stereo = tmp == ("on");
     }
 
-    if (tmp == null || tmp.equals("")) {
-        scanlines = false;
-    } else {
-        scanlines = tmp.equals("on");
-    }
-
-    if (tmp == null || tmp.equals("")) {
+    if (tmp == null || tmp == ("")) {
         fps = true;
     } else {
-        fps = tmp.equals("on");
+        fps = tmp == ("on");
     }
 
-    if (tmp == null || tmp.equals("")) {
+    if (tmp == null || tmp == ("")) {
         timeemulation = true;
     } else {
-        timeemulation = tmp.equals("on");
+        timeemulation = tmp == ("on");
     }
 
-    if (tmp == null || tmp.equals("")) {
+    if (tmp == null || tmp == ("")) {
         showsoundbuffer = false;
     } else {
-        showsoundbuffer = tmp.equals("on");
+        showsoundbuffer = tmp == ("on");
     }
 
-    /* Controller Setup for Player 1 */
-
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p1_up", "VK_UP");
-    } else {
-        Globals.controls.put("p1_up", "VK_" + tmp);
-    }
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p1_down", "VK_DOWN");
-    } else {
-        Globals.controls.put("p1_down", "VK_" + tmp);
-    }
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p1_left", "VK_LEFT");
-    } else {
-        Globals.controls.put("p1_left", "VK_" + tmp);
-    }
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p1_right", "VK_RIGHT");
-    } else {
-        Globals.controls.put("p1_right", "VK_" + tmp);
-    }
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p1_a", "VK_X");
-    } else {
-        Globals.controls.put("p1_a", "VK_" + tmp);
-    }
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p1_b", "VK_Z");
-    } else {
-        Globals.controls.put("p1_b", "VK_" + tmp);
-    }
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p1_start", "VK_ENTER");
-    } else {
-        Globals.controls.put("p1_start", "VK_" + tmp);
-    }
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p1_select", "VK_CONTROL");
-    } else {
-        Globals.controls.put("p1_select", "VK_" + tmp);
-    }
-
-    /* Controller Setup for Player 2 */
-
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p2_up", "VK_NUMPAD8");
-    } else {
-        Globals.controls.put("p2_up", "VK_" + tmp);
-    }
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p2_down", "VK_NUMPAD2");
-    } else {
-        Globals.controls.put("p2_down", "VK_" + tmp);
-    }
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p2_left", "VK_NUMPAD4");
-    } else {
-        Globals.controls.put("p2_left", "VK_" + tmp);
-    }
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p2_right", "VK_NUMPAD6");
-    } else {
-        Globals.controls.put("p2_right", "VK_" + tmp);
-    }
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p2_a", "VK_NUMPAD7");
-    } else {
-        Globals.controls.put("p2_a", "VK_" + tmp);
-    }
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p2_b", "VK_NUMPAD9");
-    } else {
-        Globals.controls.put("p2_b", "VK_" + tmp);
-    }
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p2_start", "VK_NUMPAD1");
-    } else {
-        Globals.controls.put("p2_start", "VK_" + tmp);
-    }
-    if (tmp == null || tmp.equals("")) {
-        Globals.controls.put("p2_select", "VK_NUMPAD3");
-    } else {
-        Globals.controls.put("p2_select", "VK_" + tmp);
-    }
-
-    if (tmp == null || tmp.equals("")) {
-        romSize = -1;
-    } else {
-        try {
-            romSize = Integer.parseInt(tmp);
-        } catch (Exception e) {
-            romSize = -1;
-        }
-    }
+    romSize = -1;
 }
 
   void animate(int time) {

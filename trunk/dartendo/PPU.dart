@@ -5,7 +5,7 @@ class PPU {
   
   // Rendering Options:
   bool _showSpr0Hit = false;
-  bool _showSoundBuffer = false;
+  bool showSoundBuffer = false;
   bool _clipTVcolumn = true;
   bool _clipTVrow = false;
 
@@ -532,7 +532,7 @@ class PPU {
     }
 
     // Show sound buffer:
-    if (_showSoundBuffer && nes.getPapu().getLine() != null) {
+    if (showSoundBuffer && nes.getPapu().getLine() != null) {
       bufferSize = nes.getPapu().getLine().getBufferSize();
       _available = nes.getPapu().getLine().available();
       _scale = bufferSize ~/ 256;
