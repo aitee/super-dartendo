@@ -113,7 +113,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      bool fillRange(int start, int length, int value) {
-        if (inRange(start, length)) {
+        if (inRangeWithLength(start, length)) {
             for (int i = start; i < (start + length); i++) {
                 buf[i] = value;
             }
@@ -126,8 +126,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void resize(int length) {
 
-        List<int> newbuf = Util.newIntList(length);
-        System.arraycopy(buf, 0, newbuf, 0, Math.min(length, size));
+        List<int> newbuf = Util.newIntList(length,0);
+        Util.arraycopy(buf, 0, newbuf, 0, Math.min(length, size));
         buf = newbuf;
         size = length;
 
@@ -165,7 +165,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             return true;
         } else {
             if (expandable) {
-                expand(Math.max(pos + 1 - size, expandBy));
+                expandBySize(Math.max(pos + 1 - size, expandBy));
                 return true;
             } else {
                 return false;
@@ -178,7 +178,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             return true;
         } else {
             if (expandable) {
-                expand(Math.max(pos + length - size, expandBy));
+              expandBySize(Math.max(pos + length - size, expandBy));
                 return true;
             } else {
                 return false;
@@ -186,13 +186,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     int putBoolean(bool b) {
-        int ret = putBooleanWithPosition(b, curPos);
+     bool putBoolean(bool b) {
+       bool ret = putBooleanWithPosition(b, curPos);
         move(1);
         return ret;
     }
 
-     int putBooleanWithPosition(int b, int pos) {
+     bool putBooleanWithPosition(bool b, int pos) {
         if (b) {
             return putByteWithPos(1, pos);
         } else {
@@ -200,8 +200,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     int putByte(int mybyte) {
-        if (inRange(curPos, 1)) {
+     bool putByte(int mybyte) {
+        if (inRangeWithLength(curPos, 1)) {
             buf[curPos] = mybyte;
             move(1);
             return true;
@@ -211,8 +211,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     int putByteWithPos(int mybyte, int pos) {
-        if (inRange(pos, 1)) {
+     bool putByteWithPos(int mybyte, int pos) {
+        if (inRangeWithLength(pos, 1)) {
             buf[pos] = mybyte;
             return true;
         } else {
@@ -221,16 +221,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     int putShort(int myshort) {
-        int ret = putShortWithPos(myshort, curPos);
+     bool putShort(int myshort) {
+       bool ret = putShortWithPos(myshort, curPos);
         if (ret) {
             move(2);
         }
         return ret;
     }
 
-     int putShortWithPos(int myshort, int pos) {
-        if (inRange(pos, 2)) {
+     bool putShortWithPos(int myshort, int pos) {
+        if (inRangeWithLength(pos, 2)) {
             if (this.byteOrder == BO_BIG_ENDIAN) {
                 buf[pos + 0] =  ((myshort >> 8) & 255);
                 buf[pos + 1] =  ((myshort) & 255);
@@ -245,16 +245,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     int putInt(int myint) {
-        int ret = putIntWithPos(myint, curPos);
+     bool putInt(int myint) {
+        bool ret = putIntWithPos(myint, curPos);
         if (ret) {
             move(4);
         }
         return ret;
     }
 
-     int putIntWithPos(int myint, int pos) {
-        if (inRange(pos, 4)) {
+     bool putIntWithPos(int myint, int pos) {
+        if (inRangeWithLength(pos, 4)) {
             if (this.byteOrder == BO_BIG_ENDIAN) {
                 buf[pos + 0] =  ((myint >> 24) & 255);
                 buf[pos + 1] =  ((myint >> 16) & 255);
@@ -273,18 +273,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     int putString(String myString) {
-        int ret = putString(myString, curPos);
+     bool putString(String myString) {
+        bool ret = putStringWithPos(myString, curPos);
         if (ret) {
             move(2 * myString.length);
         }
         return ret;
     }
 
-     int putStringWithPos(String myString, int pos) {
+     bool putStringWithPos(String myString, int pos) {
         int theChar;
-        if (inRange(pos, myString.length() * 2)) {
-            for (int i = 0; i < myString.length(); i++) {
+        if (inRangeWithLength(pos, myString.length * 2)) {
+            for (int i = 0; i < myString.length; i++) {
                 theChar = (myString.charCodeAt(i));
                 buf[pos + 0] = ((theChar >> 8) & 255);
                 buf[pos + 1] = ((theChar) & 255);
@@ -297,17 +297,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     int putChar(int myChar) {
-        int ret = putChar(myChar, curPos);
+     bool putChar(int myChar) {
+       bool ret = putCharWithPos(myChar, curPos);
         if (ret) {
             move(2);
         }
         return ret;
     }
 
-     int putCharWithPos(int myChar, int pos) {
+     bool putCharWithPos(int myChar, int pos) {
         int tmp = myChar;
-        if (inRange(pos, 2)) {
+        if (inRangeWithLength(pos, 2)) {
             if (byteOrder == BO_BIG_ENDIAN) {
                 buf[pos + 0] =  ((myChar >> 8) & 255);
                 buf[pos + 1] =  ((myChar) & 255);
@@ -322,15 +322,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     int putCharAscii(char myvar) {
-        int ret = putCharAscii(myvar, curPos);
+     bool putCharAscii(int myvar) {
+        bool ret = putCharAsciiWithPosition(myvar, curPos);
         if (ret) {
             move(1);
         }
         return ret;
     }
 
-     int putCharAsciiWithPosition(char myvar, int pos) {
+     bool putCharAsciiWithPosition(int myvar, int pos) {
         if (inRange(pos)) {
             buf[pos] = myvar;
             return true;
@@ -340,19 +340,19 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     int putStringAscii(String myvar) {
-        bool ret = putStringAscii(myvar, curPos);
+     bool putStringAscii(String myvar) {
+        bool ret = putStringAsciiWithPosition(myvar, curPos);
         if (ret) {
-            move(myvar.length());
+            move(myvar.length);
         }
         return ret;
     }
 
-     int putStringAsciiWithPosition(String myvar, int pos) {
-        String charArr = myvar.toCharArray();
-        if (inRange(pos, myvar.length())) {
-            for (int i = 0; i < myvar.length(); i++) {
-                buf[pos] = charArr[i];
+     bool putStringAsciiWithPosition(String myvar, int pos) {
+        String charArr = myvar;
+        if (inRangeWithLength(pos, myvar.length)) {
+            for (int i = 0; i < myvar.length; i++) {
+                buf[pos] = charArr.charCodeAt(i);
                 pos++;
             }
             return true;
@@ -362,7 +362,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     int putByteArray(List<int> arr) {
+     bool putByteArray(List<int> arr) {
         if (arr == null) {
             return false;
         }
@@ -376,7 +376,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return true;
     }
 
-     int readByteArray(List<int> arr) {
+     bool readByteArray(List<int> arr) {
         if (arr == null) {
             return false;
         }
@@ -390,7 +390,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return true;
     }
 
-     int putShortArray(List<int> arr) {
+     bool putShortArray(List<int> arr) {
         if (arr == null) {
             return false;
         }
@@ -414,35 +414,35 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      String toString() {
-        StringBuffer strBuf = new StringBuffer();
+        String strBuf = '';
         int tmp;
         for (int i = 0; i < (size - 1); i += 2) {
             tmp =  ((buf[i] << 8) | (buf[i + 1]));
-            strBuf.append((char) (tmp));
+            strBuf += tmp;
         }
         return strBuf.toString();
     }
 
      String toStringAscii() {
-        StringBuffer strBuf = new StringBuffer();
+        String strBuf = '';
         for (int i = 0; i < size; i++) {
-            strBuf.append((char) (buf[i]));
+            strBuf += buf[i];
         }
         return strBuf.toString();
     }
 
      bool readBoolean() {
-        int ret = readint(curPos);
+        bool ret = readBooleanWithPosition(curPos);
         move(1);
-        return (ret === 1);
+        return ret;
     }
 
      bool readBooleanWithPosition(int pos) {
-        return readBoolean(pos) == 1;
+        return readByteWithPosition(pos) == 1;
     }
 
      int readByte() {
-        int ret = readByte(curPos);
+        int ret = readByteWithPosition(curPos);
         move(1);
         return ret;
     }

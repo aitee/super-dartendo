@@ -1263,7 +1263,7 @@ class CPU {
           if(!crash){
             crash = true;
             stopRunning = true;
-            nes.gui.showErrorMsg("Game crashed, invalid opcode at address ${Misc.hex16(opaddr)}");
+            nes.gui.showErrorMsg("Game crashed, invalid opcode");
           }
           break;
 

@@ -17,15 +17,15 @@ class CUtil {
   List<int> newIntList(int size, int defaultValue)
   {
     List<int> r = new List<int>(size);
-    for(int i = 0; i < size; ++i) r[i] = defaultvalue;
+    for(int i = 0; i < size; ++i) r[i] = defaultValue;
     
     return r;
   }
 
   List<bool> newBoolList(int size, bool defaultValue)
   {
-    List<int> r = new List<bool>(size);
-    for(int i = 0; i < size; ++i) r[i] = defaultvalue;
+    List<bool> r = new List<bool>(size);
+    for(int i = 0; i < size; ++i) r[i] = defaultValue;
     
     return r;
   }
@@ -42,6 +42,7 @@ class CUtil {
 
     return r;
   }
+  
 }
 
 CUtil Util = null;

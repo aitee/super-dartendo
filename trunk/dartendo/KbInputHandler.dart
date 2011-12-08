@@ -13,7 +13,7 @@
    // Key count:
     static final int NUM_KEYS = 8;
    
-    List<int> allKeysState;
+    List<bool> allKeysState;
     List<int> keyMapping;
     int id;
     NES nes;
@@ -21,12 +21,16 @@
      KbInputHandler(NES nes, int id) {
         this.nes = nes;
         this.id = id;
-        allKeysState = new List<int>(255);;
-        keyMapping = new List<int>(InputHandler.NUM_KEYS);
+        allKeysState = Util.newBoolList(255,false);
+        keyMapping = new List<int>(KbInputHandler.NUM_KEYS);
     }
 
      int getKeyState(int padKey) {
-        return  (allKeysState[keyMapping[padKey]] ? 0x41 : 0x40);
+       if(allKeysState[keyMapping[padKey]]) {
+         return 0x41;
+       } else {
+         return 0x40;
+       }
     }
 
      void mapKey(int padKey, int kbKeycode) {

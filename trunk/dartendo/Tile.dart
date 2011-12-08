@@ -15,7 +15,7 @@ class Tile {
     List<bool> opaque;
 
     Tile() {
-        pix = Util.newIntList(64);
+        pix = Util.newIntList(64,0);
         List<bool> opaque = Util.newBoolList(8,false);
     }
 

@@ -896,10 +896,6 @@ class PAPU {
     }
 
     
-    SourceDataLine getLine() {
-        return line;
-    }
-
      bool isRunning() {
         return (line != null && line.isActive());
     }
