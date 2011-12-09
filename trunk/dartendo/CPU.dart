@@ -23,6 +23,8 @@ instructions and invokes emulation of the PPU and pAPU.
 
 class CPU {
 
+  bool debugMe = true;
+  
   // References to other parts of NES :
   NES nes;
   MemoryMapper mmap;
@@ -1282,7 +1284,7 @@ class CPU {
               if(!crash){
                 crash = true;
                 stopRunning = true;
-                nes.gui.showErrorMsg("Game crashed, invalid opcode");
+                Util.printDebug("Game crashed, invalid opcode", debugMe);
               }
               break;
     

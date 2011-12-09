@@ -3,7 +3,7 @@ class PPU {
   Memory ppuMem;
   Memory sprMem;
   
-  bool debugPPU = false;
+  bool debugMe = false;
   
   // Rendering Options:
   bool _showSpr0Hit = false;
@@ -210,7 +210,7 @@ class PPU {
       _oldFrame[i] = -1;
     }
     
-    //print('[PPU] initialized');
+    Util.printDebug('PPU.init(): initialized', debugMe);
   }
 
   // Sets Nametable mirroring.
@@ -318,11 +318,9 @@ class PPU {
   }
 
   void startVBlank() {
-    //print('[PPU] VBLANK');
+    Util.printDebug('PPU.startVBlank: VBLANK', debugMe);
     // Start VBlank period:
     // Do VBlank.
-    if (Globals.debug)
-      Globals.println("VBlank occurs!");
 
     // Do NMI:
     nes.getCpu().requestIrq(CPU.IRQ_NMI);
@@ -417,7 +415,7 @@ class PPU {
     } else if (scanline == 261 + _vblankAdd) {
       // Dead scanline, no rendering.
       // Set VINT:
-      //print("SETTING REQUESTENDFRAME");
+      Util.printDebug("SETTING REQUESTENDFRAME", debugMe);     
       setStatusFlag(_STATUS_VBLANK, true);
       _requestEndFrame = true;
       _nmiCounter = 9;
@@ -478,7 +476,7 @@ class PPU {
   }
 
   void endFrame() {
-    //print("IN ENDFRAME");
+    Util.printDebug("PPU.endFrame(): begins", debugMe); 
     // Draw spr#0 hit coordinates:
     if (_showSpr0Hit) {
       // Spr 0 position:

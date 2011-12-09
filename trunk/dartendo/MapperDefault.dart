@@ -379,6 +379,7 @@ class MapperDefault implements MemoryMapper
                 break;
             case 3:
                 ret = input.getKeyState(KbInputHandler.KEY_START);
+                
                 break;
             case 4:
                 ret = input.getKeyState(KbInputHandler.KEY_UP);

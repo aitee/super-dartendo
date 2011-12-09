@@ -23,10 +23,6 @@
       
       Globals() {
       }
-
-      void println(String s) {
-        nes.getGui().println(s);
-    }
 }
  
 SGlobals Globals = null;

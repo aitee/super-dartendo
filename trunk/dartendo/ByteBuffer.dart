@@ -16,7 +16,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
  class ByteBuffer {
-
+     bool debugMe = true;
+     
      final int DEBUG = false;
      final int BO_BIG_ENDIAN = 0;
      final int BO_LITTLE_ENDIAN = 1;
@@ -51,7 +52,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             curPos = 0;
             hasBeenErrors = false;
         } catch (Exception e) {
-            //System.out.println("ByteBuffer: Couldn't create buffer from empty array.");
+            Util.printDebug("ByteBuffer: Couldn't create buffer from empty array.", debugMe);
         }
     }
 
@@ -584,7 +585,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
             return tmp;
         } else {
-          print('INVALID STRING READ');
+          Util.printDebug('ByteBuffer.readStringAsciiWithPosition: INVALID STRING READ', debugMe);
         }
     }
 
