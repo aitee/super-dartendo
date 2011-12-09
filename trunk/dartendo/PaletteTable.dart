@@ -75,12 +75,8 @@ class PaletteTable {
             }
 
             // Calculate table:
-            for (int i = 0; i < 64; i++) {
-                col = origTable[i];
-                r = (getRed(col) * rFactor).toInt();
-                g = (getGreen(col) * gFactor).toInt();
-                b = (getBlue(col) * bFactor).toInt();
-                emphTable[emph][i] = getRgb(r, g, b);
+            for (int i = 0; i < 64*3; i += 3) {
+                emphTable[emph][i] = getRgb(origTable[i], origTable[i+1], origTable[i+2]);
             }
 
         }
