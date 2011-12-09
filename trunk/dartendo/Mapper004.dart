@@ -40,7 +40,7 @@ class Mapper004 extends MapperDefault {
         super.init(nes);
     }
 
-    void mapperInternalStateLoad(ByteBuffer buf) {
+    void mapperInternalStateLoad(MemByteBuffer buf) {
 
         super.mapperInternalStateLoad(buf);
 
@@ -57,7 +57,7 @@ class Mapper004 extends MapperDefault {
         }
     }
 
-    void mapperInternalStateSave(ByteBuffer buf) {
+    void mapperInternalStateSave(MemByteBuffer buf) {
         super.mapperInternalStateSave(buf);
 
         // Version:

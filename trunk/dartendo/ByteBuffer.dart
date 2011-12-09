@@ -15,7 +15,7 @@ You should have received a copy of the GNU General  License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
- class ByteBuffer {
+ class MemByteBuffer {
      bool debugMe = true;
      
      final int DEBUG = false;
@@ -30,7 +30,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      bool expandable = true;
      int expandBy = 4096;
 
-     ByteBuffer(int size, int byteOrdering) {
+     MemByteBuffer(int size, int byteOrdering) {
         if (size < 1) {
             size = 1;
         }
@@ -41,7 +41,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         hasBeenErrors = false;
     }
 
-     ByteBuffer.fromArray(List<int> content, int byteOrdering) {
+     MemByteBuffer.fromArray(List<int> content, int byteOrdering) {
         try {
             buf = Util.newIntList(content.length, 0);
             for (int i = 0; i < content.length; i++) {
@@ -52,7 +52,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             curPos = 0;
             hasBeenErrors = false;
         } catch (Exception e) {
-            Util.printDebug("ByteBuffer: Couldn't create buffer from empty array.", debugMe);
+            Util.printDebug("MemByteBuffer: Couldn't create buffer from empty array.", debugMe);
         }
     }
 
@@ -585,7 +585,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
             return tmp;
         } else {
-          Util.printDebug('ByteBuffer.readStringAsciiWithPosition: INVALID STRING READ', debugMe);
+          Util.printDebug('MemByteBuffer.readStringAsciiWithPosition: INVALID STRING READ', debugMe);
         }
     }
 
@@ -631,7 +631,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-      ByteBuffer asciiEncode(ByteBuffer buf) {
+      MemByteBuffer asciiEncode(MemByteBuffer buf) {
 
         List<int> data = buf.buf;
         List<int> enc = Util.newIntList(buf.getSize() * 2, 0);
@@ -646,11 +646,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             encpos += 2;
 
         }
-        return new ByteBuffer.fromArray(enc, BO_BIG_ENDIAN);
+        return new MemByteBuffer.fromArray(enc, BO_BIG_ENDIAN);
 
     }
 
-      ByteBuffer asciiDecode(ByteBuffer buf) {
+      MemByteBuffer asciiDecode(MemByteBuffer buf) {
         return null;
     }
 }

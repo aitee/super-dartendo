@@ -53,7 +53,7 @@ class NameTable {
         }
     }
 
-    void stateSave(ByteBuffer buf) {
+    void stateSave(MemByteBuffer buf) {
         for (int i = 0; i < width * height; i++) {
             if (tile[i] > 255)
             {
@@ -65,7 +65,7 @@ class NameTable {
         }
     }
 
-    void stateLoad(ByteBuffer buf) {
+    void stateLoad(MemByteBuffer buf) {
         for (int i = 0; i < width * height; i++) {
             tile[i] = buf.readByte();
         }

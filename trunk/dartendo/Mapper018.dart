@@ -50,7 +50,7 @@ class Mapper018 extends MapperDefault {
       irq_counter = 0;
   }
         
-    void mapperInternalStateLoad(ByteBuffer buf) {
+    void mapperInternalStateLoad(MemByteBuffer buf) {
         super.mapperInternalStateLoad(buf);
 
         if (buf.readByte() == 1) {
@@ -60,7 +60,7 @@ class Mapper018 extends MapperDefault {
         }
     }
 
-    void mapperInternalStateSave(ByteBuffer buf) {
+    void mapperInternalStateSave(MemByteBuffer buf) {
         super.mapperInternalStateLoad(buf);
 
         // Version:

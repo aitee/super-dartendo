@@ -62,7 +62,7 @@ class NES {
 
     }
 
-     bool stateLoad(ByteBuffer buf) {
+     bool stateLoad(MemByteBuffer buf) {
 
         bool continueEmulation = false;
         bool success;
@@ -101,7 +101,7 @@ class NES {
 
     }
 
-     void stateSave(ByteBuffer buf) {
+     void stateSave(MemByteBuffer buf) {
 
         bool continueEmulation = isRunning();
         stopEmulation();

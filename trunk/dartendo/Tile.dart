@@ -205,19 +205,19 @@ class Tile {
         return (pix[(y << 3) + x] == 0);
     }
 
-    void stateSave(ByteBuffer buf) {
+    void stateSave(MemByteBuffer buf) {
         buf.putBoolean(initialized);
         for (int i = 0; i < 8; i++) {
             buf.putBoolean(opaque[i]);
         }
         for (int i = 0; i < 64; i++) {
             // iainmcgin: cast to byte was here, no longer needed
-            // as truncation handled by ByteBuffer?
+            // as truncation handled by MemByteBuffer?
             buf.putByte(pix[i]);
         }
     }
 
-    void stateLoad(ByteBuffer buf) {
+    void stateLoad(MemByteBuffer buf) {
         initialized = buf.readBoolean();
         for (int i = 0; i < 8; i++) {
             opaque[i] = buf.readBoolean();

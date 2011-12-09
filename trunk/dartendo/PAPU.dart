@@ -130,11 +130,11 @@ class PAPU {
 
     }
 
-     void stateLoad(ByteBuffer buf) {
+     void stateLoad(MemByteBuffer buf) {
         // not yet.
     }
 
-     void stateSave(ByteBuffer buf) {
+     void stateSave(MemByteBuffer buf) {
         // not yet.
     }
 

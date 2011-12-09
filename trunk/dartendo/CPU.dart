@@ -169,7 +169,7 @@ class CPU {
     stopRunning = false;
   }
 
-  void stateLoad(ByteBuffer buf){
+  void stateLoad(MemByteBuffer buf){
 
     if(buf.readByte()==1){
       // Version 1
@@ -187,7 +187,7 @@ class CPU {
     }
   }
 
-  void stateSave(ByteBuffer buf){
+  void stateSave(MemByteBuffer buf){
 
     // Save info version:
     buf.putByte(1);

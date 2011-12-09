@@ -1361,7 +1361,7 @@ class PPU {
     f_dispType = (n >> 11) & 0x1;
   }
 
-  void stateLoad(ByteBuffer buf) {
+  void stateLoad(MemByteBuffer buf) {
     // Check version:
     if (buf.readByte() == 1) {
       // Counters:
@@ -1449,7 +1449,7 @@ class PPU {
     }
   }
 
-  void stateSave(ByteBuffer buf) {
+  void stateSave(MemByteBuffer buf) {
     // Version:
     buf.putByte( 1);
 

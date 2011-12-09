@@ -31,8 +31,8 @@ interface MemoryMapper {
     void loadBatteryRam();
     void destroy();
 
-    void stateLoad(ByteBuffer buf);
-    void stateSave(ByteBuffer buf);
+    void stateLoad(MemByteBuffer buf);
+    void stateSave(MemByteBuffer buf);
 
     void setMouseState(bool pressed, int x, int y);
 

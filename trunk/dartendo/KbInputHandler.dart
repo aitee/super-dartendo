@@ -5,7 +5,7 @@
   // Joypad keys:
   static final int KEY_A = 0;
   static final int KEY_B = 1;
-  static final int KEY_START = 13;
+  static final int KEY_START = 2;
   static final int KEY_SELECT = 3;
   static final int KEY_UP = 4;
   static final int KEY_DOWN = 5;

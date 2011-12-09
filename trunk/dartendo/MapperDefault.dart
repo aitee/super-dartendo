@@ -54,7 +54,7 @@ class MapperDefault implements MemoryMapper
         joypadLastWrite = -1;
     }
 
-    void stateLoad(ByteBuffer buf) {
+    void stateLoad(MemByteBuffer buf) {
 
         // Check version:
         if (buf.readByte() == 1) {
@@ -69,7 +69,7 @@ class MapperDefault implements MemoryMapper
 
     }
 
-    void stateSave(ByteBuffer buf) 
+    void stateSave(MemByteBuffer buf) 
     {
 
         // Version:
@@ -84,13 +84,13 @@ class MapperDefault implements MemoryMapper
         mapperInternalStateSave(buf);
     }
 
-    void mapperInternalStateLoad(ByteBuffer buf) {
+    void mapperInternalStateLoad(MemByteBuffer buf) {
         buf.putByte( joy1StrobeState);
         buf.putByte( joy2StrobeState);
         buf.putByte( joypadLastWrite);
     }
 
-     void mapperInternalStateSave(ByteBuffer buf) {
+     void mapperInternalStateSave(MemByteBuffer buf) {
         joy1StrobeState = buf.readByte();
         joy2StrobeState = buf.readByte();
         joypadLastWrite = buf.readByte();

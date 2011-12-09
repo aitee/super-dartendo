@@ -43,7 +43,7 @@ class Mapper001 extends MapperDefault {
         super.init(nes);
     }
 
-    void mapperInternalStateLoad(ByteBuffer buf) {
+    void mapperInternalStateLoad(MemByteBuffer buf) {
 
         // Check version:
         if (buf.readByte() == 1) {
@@ -69,7 +69,7 @@ class Mapper001 extends MapperDefault {
         }
     }
 
-    void mapperInternalStateSave(ByteBuffer buf) {
+    void mapperInternalStateSave(MemByteBuffer buf) {
 
         // Version:
         buf.putByte( 1);

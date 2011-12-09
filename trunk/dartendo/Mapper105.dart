@@ -45,7 +45,7 @@ class Mapper105 extends MapperDefault {
   }
     
     
-    void mapperInternalStateLoad(ByteBuffer buf) {
+    void mapperInternalStateLoad(MemByteBuffer buf) {
         super.mapperInternalStateLoad(buf);
 
         if (buf.readByte() == 1) {
@@ -55,7 +55,7 @@ class Mapper105 extends MapperDefault {
         }
     }
 
-    void mapperInternalStateSave(ByteBuffer buf) {
+    void mapperInternalStateSave(MemByteBuffer buf) {
         super.mapperInternalStateSave(buf);
 
         // Version:

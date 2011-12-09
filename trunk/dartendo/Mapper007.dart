@@ -73,7 +73,7 @@ class Mapper007 extends MapperDefault {
         }
     }
 
-    void mapperInternalStateLoad(ByteBuffer buf) {
+    void mapperInternalStateLoad(MemByteBuffer buf) {
 
         super.mapperInternalStateLoad(buf);
 
@@ -87,7 +87,7 @@ class Mapper007 extends MapperDefault {
 
     }
 
-    void mapperInternalStateSave(ByteBuffer buf) {
+    void mapperInternalStateSave(MemByteBuffer buf) {
 
         super.mapperInternalStateSave(buf);
 

@@ -10,14 +10,14 @@ class Memory{
     memLength = byteCount;
   }
   
-  void stateLoad(ByteBuffer buf){
+  void stateLoad(MemByteBuffer buf){
     if(mem == null) {
       mem = Util.newIntList(memLength, 0);
     }
     buf.readByteArray(mem);
   }
   
-  void stateSave(ByteBuffer buf) {
+  void stateSave(MemByteBuffer buf) {
     buf.putByteArray(mem);
   }
   
