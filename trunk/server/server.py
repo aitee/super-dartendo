@@ -64,6 +64,9 @@ conf = {
 'tools.sessions.storage_type' : "file",
 'tools.sessions.storage_path' : "./sessions/",
 'tools.sessions.timeout' : 60,
+'tools.staticdir.on' : True,
+'tools.staticdir.root' : os.getcwd(),
+'tools.staticdir.dir' : '../dartendo/',
     }
 }
 
