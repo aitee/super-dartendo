@@ -65,6 +65,8 @@
 #source('Util.dart');
 
 class Controller {
+  bool debugMe = false;
+  
   var canvas;
   var context;
 
@@ -114,7 +116,7 @@ class Controller {
   }
 
    void init() {
-     print("CALLED INIT");
+     Util.printDebug("nesdart.init(): begins", debugMe);
      PaletteTable.init();
     readParams();
 
@@ -131,16 +133,14 @@ class Controller {
 }
 
  void addScreenView() {
-  print("ADD SCREEN VIEW");
+    Util.printDebug("nesdart.addScreenView(): begins", debugMe);
 
     panelScreen = gui.getScreenView();
     panelScreen.setFPSEnabled(fps);
 
     if (scale) {
-      print("SCALE NOT SUPPORTED");
-
-            panelScreen.setScaleMode(BufferView.SCALE_NORMAL);
-
+      Util.printDebug("nesdart.addScreenView(): SCALE NOT SUPPORTED!", debugMe);
+      panelScreen.setScaleMode(BufferView.SCALE_NORMAL);
     } else {
 
     }
@@ -169,7 +169,7 @@ class Controller {
         nes.ppu.showSoundBuffer = showsoundbuffer;
 
         // Start emulation:
-        //print("vNES is now starting the processor.");
+        Util.printDebug("nesdart.run(): vNES is now starting the processor.", debugMe);
         nes.getCpu().beginExecution();
 
     } else {
@@ -179,7 +179,7 @@ class Controller {
 
     }
     
-    print("ROM LOADED");
+    Util.printDebug("nesdart.run(): ROM LOADED", debugMe);
     nes.getCpu().initRun();
     nes.getCpu().active = true;
     
@@ -202,23 +202,10 @@ class Controller {
     //audioElement.setAttribute('src', 'sample.ogg');
     //audioElement.play();
     
-    int x = 3;
-    int y = x & 4;
-    print(y);
-    
-    switch(x) {
-    case 1:
-      print('1');
-      break;
-    case 3:
-      print('3');
-      break;
-    }
-
     List<int> intList = Util.newIntList(5, 0);
     
     intList[3] = 2;
-    print(intList);
+    //Util.printDebug("nesdart.run(): initList = " + intList.toString(), debugMe);
     
     /*
     canvas.addEventListener('click', (Event e) {
@@ -348,7 +335,9 @@ class Controller {
 }
 
   void animate(int time) {
-    //print("test: " + time);
+    bool debugLocal = debugMe;
+    Util.printDebug("nesdart.animate(" + time + ") begins.", debugLocal);
+    
     //canvas.width = canvas.width;
 
     if (nes.getCpu().stopRunning) {
