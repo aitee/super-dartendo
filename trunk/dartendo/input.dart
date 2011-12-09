@@ -3,26 +3,32 @@ class Input {
   bool debugMe = false;
   List<int> romBytes;
   Controller controller;
+  Element menuElement;
   
-  Input(this.controller);
+  Input(this.controller) {
+    this.menuElement = document.query('#menu');  
+  }
+  
+  void toggleMenu() {
+    if (menuElement.style.bottom == '0px') {
+      menuElement.style.transition = 'bottom 0.2s';
+      menuElement.style.bottom = '-21ex';
+    } else {
+      menuElement.style.transition = 'bottom 0.2s';
+      menuElement.style.bottom = '0';
+    }
+  }
 
   void init() {
     // Menu handler
     Element menuLabel = document.query('#roms-label');
-    Element menu = document.query('#menu');
     Element content = document.query('#roms-content');
     InputElement input = document.query('#input-file');
 
     menuLabel.on.click.add((EventWrappingImplementation event) {
       print("menu click");
       unwrapDomObject(event).preventDefault();
-      if (menu.style.bottom == '0px') {
-        menu.style.transition = 'bottom 0.2s';
-        menu.style.bottom = '-21ex';
-      } else {
-        menu.style.transition = 'bottom 0.2s';
-        menu.style.bottom = '0';
-      }
+      toggleMenu();
     });
 
     // Input handler
@@ -50,12 +56,10 @@ class Input {
     content.on.dragEnter.add((EventWrappingImplementation event) {
       print("dragEnter");
       unwrapDomObject(event).preventDefault();
-      content.style.border = '4px solid #b1ecb3';
       return false;
     });
   
     content.on.dragOver.add((EventWrappingImplementation event) {
-      print("dragOver");
       unwrapDomObject(event).preventDefault();
       return false;
     });
@@ -69,7 +73,6 @@ class Input {
     content.on.drop.add((EventWrappingImplementation event) {
       print("drop");
       unwrapDomObject(event).preventDefault();
-      content.style.border = '4px solid transparent';
       loadFile(new FileWrappingImplementation._wrap(unwrapDomObject(event).dataTransfer.files[0]));
       return false;
     });
@@ -86,6 +89,7 @@ class Input {
       if (reader.readyState == 2) {
         List<int> fromFileBytes = new dom.Uint8Array.fromBuffer(reader.result);
         romBytes = fromFileBytes;
+        toggleMenu();
         controller.run();
       } else {
         window.setTimeout(handler, 100);
