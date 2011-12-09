@@ -89,17 +89,15 @@ class BufferView {
         var ppui = 0;
         Util.printDebug('BufferView.paint: setting pixels', debugLoop);
         for (var i = 0; i < 256*240*4;) {
-          Util.printDebug('BufferView.paint: Setting pixels, i = ' + i, debugMe);
+          //Util.printDebug('BufferView.paint: Setting pixels, i = ' + i, debugMe);
           
-          data[i] = (nes.ppu.buffer[ppui])&0xFF; // r
-          i++;
-          data[i] = (nes.ppu.buffer[ppui]>>8)&0xFF; // g
-          i++;
-          data[i] = (nes.ppu.buffer[ppui]>>16)&0xFF; // b
-          i++;
+          int val = (nes.ppu.buffer[ppui]);
+          
+          data[i++] = val&0xFF; // r
+          data[i++] = (val>>8)&0xFF; // g
+          data[i++] = (val>>16)&0xFF; // b
           ppui++;
-          data[i] = 255; // a
-          i++;
+          data[i++] = 255; // a
         }
         Util.printDebug('Blitting imagedata', debugMe);
         context.putImageData(arr, 0, 0, 0,   0, 256, 240);
