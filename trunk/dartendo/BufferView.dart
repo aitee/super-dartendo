@@ -82,6 +82,7 @@ class BufferView {
         var data = arr.data;
         //print(data.length);
         var ppui=0;
+        print('setting pixels');
         for (var i=0;i<256*240*4;) {
           //print('Setting pixels');
           data[i] = (nes.ppu.buffer[ppui])&0xFF; // r

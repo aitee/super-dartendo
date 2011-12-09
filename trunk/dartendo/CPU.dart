@@ -464,810 +464,830 @@ class CPU {
       // ----------------------------------------------------------------------------------------------------
 
       // This should be compiled to a jump table.
-
-      switch(opinf&0xFF){
-        case 0:{
-
-          // *******
-          // * ADC *
-          // *******
-
-          // Add with carry.
-          temp = REG_ACC + load(addr) + F_CARRY;
-          F_OVERFLOW = ((!(((REG_ACC ^ load(addr)) & 0x80)!=0) && (((REG_ACC ^ temp) & 0x80))!=0)?1:0);
-          F_CARRY = (temp>255?1:0);
-          F_SIGN = (temp>>7)&1;
-          F_ZERO = temp&0xFF;
-          REG_ACC = (temp&255);
-          cycleCount+=cycleAdd;
-          break;
-
-        }case 1:{
-
-          // *******
-          // * AND *
-          // *******
-
-          // AND memory with accumulator.
-          REG_ACC = REG_ACC & load(addr);
-          F_SIGN = (REG_ACC>>7)&1;
-          F_ZERO = REG_ACC;
-          //REG_ACC = temp;
-          if(addrMode!=11)cycleCount+=cycleAdd; // PostIdxInd = 11
-          break;
-
-        }case 2:{
-
-          // *******
-          // * ASL *
-          // *******
-
-          // Shift left one bit
-          if(addrMode == 4){ // ADDR_ACC = 4
-
-            F_CARRY = (REG_ACC>>7)&1;
-            REG_ACC = (REG_ACC<<1)&255;
+      int opcode = opinf&0xFF;
+      
+      if (opcode < 10) {
+        switch(opcode){
+          case 0:{
+  
+            // *******
+            // * ADC *
+            // *******
+  
+            // Add with carry.
+            temp = REG_ACC + load(addr) + F_CARRY;
+            F_OVERFLOW = ((!(((REG_ACC ^ load(addr)) & 0x80)!=0) && (((REG_ACC ^ temp) & 0x80))!=0)?1:0);
+            F_CARRY = (temp>255?1:0);
+            F_SIGN = (temp>>7)&1;
+            F_ZERO = temp&0xFF;
+            REG_ACC = (temp&255);
+            cycleCount+=cycleAdd;
+            break;
+  
+          }case 1:{
+  
+            // *******
+            // * AND *
+            // *******
+  
+            // AND memory with accumulator.
+            REG_ACC = REG_ACC & load(addr);
             F_SIGN = (REG_ACC>>7)&1;
             F_ZERO = REG_ACC;
-
-          }else{
-
-            temp = load(addr);
-            F_CARRY = (temp>>7)&1;
-            temp = (temp<<1)&255;
-            F_SIGN = (temp>>7)&1;
-            F_ZERO = temp;
-            write(addr,temp);
-
-          }
-          break;
-
-        }case 3:{
-
-          // *******
-          // * BCC *
-          // *******
-
-          // Branch on carry clear
-          if(F_CARRY == 0){
-            cycleCount += ((opaddr&0xFF00)!=(addr&0xFF00)?2:1);
-            REG_PC = addr;
-          }
-          break;
-
-        }case 4:{
-
-          // *******
-          // * BCS *
-          // *******
-
-          // Branch on carry set
-          if(F_CARRY == 1){
-            cycleCount += ((opaddr&0xFF00)!=(addr&0xFF00)?2:1);
-            REG_PC = addr;
-          }
-          break;
-
-        }case 5:{
-
-          // *******
-          // * BEQ *
-          // *******
-
-          // Branch on zero
-          if(F_ZERO == 0){
-            cycleCount += ((opaddr&0xFF00)!=(addr&0xFF00)?2:1);
-            REG_PC = addr;
-          }
-          break;
-
-        }case 6:{
-
-          // *******
-          // * BIT *
-          // *******
-
-          temp = load(addr);
-          F_SIGN = (temp>>7)&1;
-          F_OVERFLOW = (temp>>6)&1;
-          temp &= REG_ACC;
-          F_ZERO = temp;
-          break;
-
-        }case 7:{
-
-          // *******
-          // * BMI *
-          // *******
-
-          // Branch on negative result
-          if(F_SIGN == 1){
-            cycleCount++;
-            REG_PC = addr;
-          }
-          break;
-
-        }case 8:{
-
-          // *******
-          // * BNE *
-          // *******
-
-          // Branch on not zero
-          if(F_ZERO != 0){
-            cycleCount += ((opaddr&0xFF00)!=(addr&0xFF00)?2:1);
-            REG_PC = addr;
-          }
-          break;
-
-        }case 9:{
-
-          // *******
-          // * BPL *
-          // *******
-
-          // Branch on positive result
-          if(F_SIGN == 0){
-            cycleCount += ((opaddr&0xFF00)!=(addr&0xFF00)?2:1);
-            REG_PC = addr;
-          }
-          break;
-
-        }case 10:{
-
-          // *******
-          // * BRK *
-          // *******
-
-          REG_PC+=2;
-          push((REG_PC>>8)&255);
-          push(REG_PC&255);
-          F_BRK = 1;
-
-          push(
-            (F_CARRY)|
-            ((F_ZERO==0?1:0)<<1)|
-            (F_INTERRUPT<<2)|
-            (F_DECIMAL<<3)|
-            (F_BRK<<4)|
-            (F_NOTUSED<<5)|
-            (F_OVERFLOW<<6)|
-            (F_SIGN<<7)
-          );
-
-          F_INTERRUPT = 1;
-            //REG_PC = load(0xFFFE) | (load(0xFFFF) << 8);
-            REG_PC = load16bit(0xFFFE);
-            REG_PC--;
+            //REG_ACC = temp;
+            if(addrMode!=11)cycleCount+=cycleAdd; // PostIdxInd = 11
             break;
-
-        }case 11:{
-
-          // *******
-          // * BVC *
-          // *******
-
-          // Branch on overflow clear
-          if(F_OVERFLOW == 0){
-            cycleCount += ((opaddr&0xFF00)!=(addr&0xFF00)?2:1);
-            REG_PC = addr;
-          }
-          break;
-
-        }case 12:{
-
-          // *******
-          // * BVS *
-          // *******
-
-          // Branch on overflow set
-          if(F_OVERFLOW == 1){
-            cycleCount += ((opaddr&0xFF00)!=(addr&0xFF00)?2:1);
-            REG_PC = addr;
-          }
-          break;
-
-        }case 13:{
-
-          // *******
-          // * CLC *
-          // *******
-
-          // Clear carry flag
-          F_CARRY = 0;
-          break;
-
-        }case 14:{
-
-          // *******
-          // * CLD *
-          // *******
-
-          // Clear decimal flag
-          F_DECIMAL = 0;
-          break;
-
-        }case 15:{
-
-          // *******
-          // * CLI *
-          // *******
-
-          // Clear interrupt flag
-          F_INTERRUPT = 0;
-          break;
-
-        }case 16:{
-
-          // *******
-          // * CLV *
-          // *******
-
-          // Clear overflow flag
-          F_OVERFLOW = 0;
-          break;
-
-        }case 17:{
-
-          // *******
-          // * CMP *
-          // *******
-
-          // Compare memory and accumulator:
-          temp = REG_ACC - load(addr);
-          F_CARRY = (temp>=0?1:0);
-          F_SIGN = (temp>>7)&1;
-          F_ZERO = temp&0xFF;
-          cycleCount+=cycleAdd;
-          break;
-
-        }case 18:{
-
-          // *******
-          // * CPX *
-          // *******
-
-          // Compare memory and index X:
-          temp = REG_X - load(addr);
-          F_CARRY = (temp>=0?1:0);
-          F_SIGN = (temp>>7)&1;
-          F_ZERO = temp&0xFF;
-          break;
-
-        }case 19:{
-
-          // *******
-          // * CPY *
-          // *******
-
-          // Compare memory and index Y:
-          temp = REG_Y - load(addr);
-          F_CARRY = (temp>=0?1:0);
-          F_SIGN = (temp>>7)&1;
-          F_ZERO = temp&0xFF;
-          break;
-
-        }case 20:{
-
-          // *******
-          // * DEC *
-          // *******
-
-          // Decrement memory by one:
-          temp = (load(addr)-1)&0xFF;
-          F_SIGN = (temp>>7)&1;
-          F_ZERO = temp;
-          write(addr,temp);
-          break;
-
-        }case 21:{
-
-          // *******
-          // * DEX *
-          // *******
-
-          // Decrement index X by one:
-          REG_X = (REG_X-1)&0xFF;
-          F_SIGN = (REG_X>>7)&1;
-          F_ZERO = REG_X;
-          break;
-
-        }case 22:{
-
-          // *******
-          // * DEY *
-          // *******
-
-          // Decrement index Y by one:
-          REG_Y = (REG_Y-1)&0xFF;
-          F_SIGN = (REG_Y>>7)&1;
-          F_ZERO = REG_Y;
-          break;
-
-        }case 23:{
-
-          // *******
-          // * EOR *
-          // *******
-
-          // XOR Memory with accumulator, store in accumulator:
-          REG_ACC = (load(addr)^REG_ACC)&0xFF;
-          F_SIGN = (REG_ACC>>7)&1;
-          F_ZERO = REG_ACC;
-          cycleCount+=cycleAdd;
-          break;
-
-        }case 24:{
-
-          // *******
-          // * INC *
-          // *******
-
-          // Increment memory by one:
-          temp = (load(addr)+1)&0xFF;
-          F_SIGN = (temp>>7)&1;
-          F_ZERO = temp;
-          write(addr,(temp&0xFF));
-          break;
-
-        }case 25:{
-
-          // *******
-          // * INX *
-          // *******
-
-          // Increment index X by one:
-          REG_X = (REG_X+1)&0xFF;
-          F_SIGN = (REG_X>>7)&1;
-          F_ZERO = REG_X;
-          break;
-
-        }case 26:{
-
-          // *******
-          // * INY *
-          // *******
-
-          // Increment index Y by one:
-          REG_Y++;
-          REG_Y &= 0xFF;
-          F_SIGN = (REG_Y>>7)&1;
-          F_ZERO = REG_Y;
-          break;
-
-        }case 27:{
-
-          // *******
-          // * JMP *
-          // *******
-
-          // Jump to new location:
-          REG_PC = addr-1;
-          break;
-
-        }case 28:{
-
-          // *******
-          // * JSR *
-          // *******
-
-          // Jump to new location, saving return address.
-          // Push return address on stack:
-          push((REG_PC>>8)&255);
-          push(REG_PC&255);
-          REG_PC = addr-1;
-          break;
-
-        }case 29:{
-
-          // *******
-          // * LDA *
-          // *******
-
-          // Load accumulator with memory:
-          REG_ACC = load(addr);
-          F_SIGN = (REG_ACC>>7)&1;
-          F_ZERO = REG_ACC;
-          cycleCount+=cycleAdd;
-          break;
-
-        }case 30:{
-
-          // *******
-          // * LDX *
-          // *******
-
-          // Load index X with memory:
-          REG_X = load(addr);
-          F_SIGN = (REG_X>>7)&1;
-          F_ZERO = REG_X;
-          cycleCount+=cycleAdd;
-          break;
-
-        }case 31:{
-
-          // *******
-          // * LDY *
-          // *******
-
-          // Load index Y with memory:
-          REG_Y = load(addr);
-          F_SIGN = (REG_Y>>7)&1;
-          F_ZERO = REG_Y;
-          cycleCount+=cycleAdd;
-          break;
-
-        }case 32:{
-
-          // *******
-          // * LSR *
-          // *******
-
-          // Shift right one bit:
-          if(addrMode == 4){ // ADDR_ACC
-
-            temp = (REG_ACC & 0xFF);
-            F_CARRY = temp&1;
-            temp >>= 1;
-            REG_ACC = temp;
-
-          }else{
-
-            temp = load(addr) & 0xFF;
-            F_CARRY = temp&1;
-            temp >>= 1;
-            write(addr,temp);
-
-          }
-          F_SIGN = 0;
-          F_ZERO = temp;
-          break;
-
-        }case 33:{
-
-          // *******
-          // * NOP *
-          // *******
-
-          // No OPeration.
-          // Ignore.
-          break;
-
-        }case 34:{
-
-          // *******
-          // * ORA *
-          // *******
-
-          // OR memory with accumulator, store in accumulator.
-          temp = (load(addr)|REG_ACC)&255;
-          F_SIGN = (temp>>7)&1;
-          F_ZERO = temp;
-          REG_ACC = temp;
-          if(addrMode!=11)cycleCount+=cycleAdd; // PostIdxInd = 11
-          break;
-
-        }case 35:{
-
-          // *******
-          // * PHA *
-          // *******
-
-          // Push accumulator on stack
-          push(REG_ACC);
-          break;
-
-        }case 36:{
-
-          // *******
-          // * PHP *
-          // *******
-
-          // Push processor status on stack
-          F_BRK = 1;
-          push(
-            (F_CARRY)|
-            ((F_ZERO==0?1:0)<<1)|
-            (F_INTERRUPT<<2)|
-            (F_DECIMAL<<3)|
-            (F_BRK<<4)|
-            (F_NOTUSED<<5)|
-            (F_OVERFLOW<<6)|
-            (F_SIGN<<7)
-          );
-          break;
-
-        }case 37:{
-
-          // *******
-          // * PLA *
-          // *******
-
-          // Pull accumulator from stack
-          REG_ACC = pull();
-          F_SIGN = (REG_ACC>>7)&1;
-          F_ZERO = REG_ACC;
-          break;
-
-        }case 38:{
-
-          // *******
-          // * PLP *
-          // *******
-
-          // Pull processor status from stack
-          temp = pull();
-          F_CARRY     = (temp   )&1;
-          F_ZERO      = (((temp>>1)&1)==1)?0:1;
-          F_INTERRUPT = (temp>>2)&1;
-          F_DECIMAL   = (temp>>3)&1;
-          F_BRK       = (temp>>4)&1;
-          F_NOTUSED   = (temp>>5)&1;
-          F_OVERFLOW  = (temp>>6)&1;
-          F_SIGN      = (temp>>7)&1;
-
-          F_NOTUSED = 1;
-          break;
-
-        }case 39:{
-
-          // *******
-          // * ROL *
-          // *******
-
-          // Rotate one bit left
-          if(addrMode == 4){ // ADDR_ACC = 4
-
-            temp = REG_ACC;
-            add = F_CARRY;
-            F_CARRY = (temp>>7)&1;
-            temp = ((temp<<1)&0xFF)+add;
-            REG_ACC = temp;
-
-          }else{
-
+  
+          }case 2:{
+  
+            // *******
+            // * ASL *
+            // *******
+  
+            // Shift left one bit
+            if(addrMode == 4){ // ADDR_ACC = 4
+  
+              F_CARRY = (REG_ACC>>7)&1;
+              REG_ACC = (REG_ACC<<1)&255;
+              F_SIGN = (REG_ACC>>7)&1;
+              F_ZERO = REG_ACC;
+  
+            }else{
+  
+              temp = load(addr);
+              F_CARRY = (temp>>7)&1;
+              temp = (temp<<1)&255;
+              F_SIGN = (temp>>7)&1;
+              F_ZERO = temp;
+              write(addr,temp);
+  
+            }
+            break;
+  
+          }case 3:{
+  
+            // *******
+            // * BCC *
+            // *******
+  
+            // Branch on carry clear
+            if(F_CARRY == 0){
+              cycleCount += ((opaddr&0xFF00)!=(addr&0xFF00)?2:1);
+              REG_PC = addr;
+            }
+            break;
+  
+          }case 4:{
+  
+            // *******
+            // * BCS *
+            // *******
+  
+            // Branch on carry set
+            if(F_CARRY == 1){
+              cycleCount += ((opaddr&0xFF00)!=(addr&0xFF00)?2:1);
+              REG_PC = addr;
+            }
+            break;
+  
+          }case 5:{
+  
+            // *******
+            // * BEQ *
+            // *******
+  
+            // Branch on zero
+            if(F_ZERO == 0){
+              cycleCount += ((opaddr&0xFF00)!=(addr&0xFF00)?2:1);
+              REG_PC = addr;
+            }
+            break;
+  
+          }case 6:{
+  
+            // *******
+            // * BIT *
+            // *******
+  
             temp = load(addr);
-            add = F_CARRY;
-            F_CARRY = (temp>>7)&1;
-            temp = ((temp<<1)&0xFF)+add;  
-            write(addr,temp);
-
+            F_SIGN = (temp>>7)&1;
+            F_OVERFLOW = (temp>>6)&1;
+            temp &= REG_ACC;
+            F_ZERO = temp;
+            break;
+  
+          }case 7:{
+  
+            // *******
+            // * BMI *
+            // *******
+  
+            // Branch on negative result
+            if(F_SIGN == 1){
+              cycleCount++;
+              REG_PC = addr;
+            }
+            break;
+  
+          }case 8:{
+  
+            // *******
+            // * BNE *
+            // *******
+  
+            // Branch on not zero
+            if(F_ZERO != 0){
+              cycleCount += ((opaddr&0xFF00)!=(addr&0xFF00)?2:1);
+              REG_PC = addr;
+            }
+            break;
+  
+          }case 9:{
+  
+            // *******
+            // * BPL *
+            // *******
+  
+            // Branch on positive result
+            if(F_SIGN == 0){
+              cycleCount += ((opaddr&0xFF00)!=(addr&0xFF00)?2:1);
+              REG_PC = addr;
+            }
+            break;    
           }
-          F_SIGN = (temp>>7)&1;
-          F_ZERO = temp;
-          break;
-
-        }case 40:{
-
-          // *******
-          // * ROR *
-          // *******
-
-          // Rotate one bit right
-          if(addrMode == 4){ // ADDR_ACC = 4
-
-            add = F_CARRY<<7;
-            F_CARRY = REG_ACC&1;
-            temp = (REG_ACC>>1)+add;  
-            REG_ACC = temp;
-
-          }else{
-
-            temp = load(addr);
-            add = F_CARRY<<7;
-            F_CARRY = temp&1;
-            temp = (temp>>1)+add;
-            write(addr,temp);
-
-          }
-          F_SIGN = (temp>>7)&1;
-          F_ZERO = temp;
-          break;
-
-        }case 41:{
-
-          // *******
-          // * RTI *
-          // *******
-
-          // Return from interrupt. Pull status and PC from stack.
-          
-          temp = pull();
-          F_CARRY     = (temp   )&1;
-          F_ZERO      = ((temp>>1)&1)==0?1:0;
-          F_INTERRUPT = (temp>>2)&1;
-          F_DECIMAL   = (temp>>3)&1;
-          F_BRK       = (temp>>4)&1;
-          F_NOTUSED   = (temp>>5)&1;
-          F_OVERFLOW  = (temp>>6)&1;
-          F_SIGN      = (temp>>7)&1;
-
-          REG_PC = pull();
-          REG_PC += (pull()<<8);
-          if(REG_PC==0xFFFF){
-            return;
-          }
-          REG_PC--;
-          F_NOTUSED = 1;
-          break;
-
-        }case 42:{
-
-          // *******
-          // * RTS *
-          // *******
-
-          // Return from subroutine. Pull PC from stack.
-          
-          REG_PC = pull();
-          REG_PC += (pull()<<8);
-          
-          if(REG_PC==0xFFFF){
-            return;
-          }
-          break;
-
-        }case 43:{
-
-          // *******
-          // * SBC *
-          // *******
-
-          temp = REG_ACC-load(addr)-(1-F_CARRY);
-          F_SIGN = (temp>>7)&1;
-          F_ZERO = temp&0xFF;
-          F_OVERFLOW = ((((REG_ACC^temp)&0x80)!=0 && ((REG_ACC^load(addr))&0x80)!=0)?1:0);
-          F_CARRY = (temp<0?0:1);
-          REG_ACC = (temp&0xFF);
-          if(addrMode!=11)cycleCount+=cycleAdd; // PostIdxInd = 11
-          break;
-
-        }case 44:{
-
-          // *******
-          // * SEC *
-          // *******
-
-          // Set carry flag
-          F_CARRY = 1;
-          break;
-
-        }case 45:{
-
-          // *******
-          // * SED *
-          // *******
-
-          // Set decimal mode
-          F_DECIMAL = 1;
-          break;
-
-        }case 46:{
-
-          // *******
-          // * SEI *
-          // *******
-
-          // Set interrupt disable status
-          F_INTERRUPT = 1;
-          break;
-
-        }case 47:{
-
-          // *******
-          // * STA *
-          // *******
-
-          // Store accumulator in memory
-          write(addr,REG_ACC);
-          break;
-
-        }case 48:{
-
-          // *******
-          // * STX *
-          // *******
-
-          // Store index X in memory
-          write(addr,REG_X);
-          break;
-
-        }case 49:{
-
-          // *******
-          // * STY *
-          // *******
-
-          // Store index Y in memory:
-          write(addr,REG_Y);
-          break;
-
-        }case 50:{
-
-          // *******
-          // * TAX *
-          // *******
-
-          // Transfer accumulator to index X:
-          REG_X = REG_ACC;
-          F_SIGN = (REG_ACC>>7)&1;
-          F_ZERO = REG_ACC;
-          break;
-
-        }case 51:{
-
-          // *******
-          // * TAY *
-          // *******
-
-          // Transfer accumulator to index Y:
-          REG_Y = REG_ACC;
-          F_SIGN = (REG_ACC>>7)&1;
-          F_ZERO = REG_ACC;
-          break;
-
-        }case 52:{
-
-          // *******
-          // * TSX *
-          // *******
-
-          // Transfer stack pointer to index X:
-          REG_X = (REG_SP-0x0100);
-          F_SIGN = (REG_SP>>7)&1;
-          F_ZERO = REG_X;
-          break;
-
-        }case 53:{
-
-          // *******
-          // * TXA *
-          // *******
-
-          // Transfer index X to accumulator:
-          REG_ACC = REG_X;
-          F_SIGN = (REG_X>>7)&1;
-          F_ZERO = REG_X;
-          break;
-
-        }case 54:{
-
-          // *******
-          // * TXS *
-          // *******
-
-          // Transfer index X to stack pointer:
-          REG_SP = (REG_X+0x0100);
-          stackWrap();
-          break;
-
-        }case 55:{
-
-          // *******
-          // * TYA *
-          // *******
-
-          // Transfer index Y to accumulator:
-          REG_ACC = REG_Y;
-          F_SIGN = (REG_Y>>7)&1;
-          F_ZERO = REG_Y;
-          break;
-
-        }default:{
-
-          // *******
-          // * ??? *
-          // *******
-
-          // Illegal opcode!
-          if(!crash){
-            crash = true;
-            stopRunning = true;
-            nes.gui.showErrorMsg("Game crashed, invalid opcode");
-          }
-          break;
-
         }
+      } else if (opcode < 20) {
+        switch(opcode) {
+          case 10:{
+  
+            // *******
+            // * BRK *
+            // *******
+  
+            REG_PC+=2;
+            push((REG_PC>>8)&255);
+            push(REG_PC&255);
+            F_BRK = 1;
+  
+            push(
+              (F_CARRY)|
+              ((F_ZERO==0?1:0)<<1)|
+              (F_INTERRUPT<<2)|
+              (F_DECIMAL<<3)|
+              (F_BRK<<4)|
+              (F_NOTUSED<<5)|
+              (F_OVERFLOW<<6)|
+              (F_SIGN<<7)
+            );
+  
+            F_INTERRUPT = 1;
+              //REG_PC = load(0xFFFE) | (load(0xFFFF) << 8);
+              REG_PC = load16bit(0xFFFE);
+              REG_PC--;
+              break;
+  
+          }case 11:{
+  
+            // *******
+            // * BVC *
+            // *******
+  
+            // Branch on overflow clear
+            if(F_OVERFLOW == 0){
+              cycleCount += ((opaddr&0xFF00)!=(addr&0xFF00)?2:1);
+              REG_PC = addr;
+            }
+            break;
+  
+          }case 12:{
+  
+            // *******
+            // * BVS *
+            // *******
+  
+            // Branch on overflow set
+            if(F_OVERFLOW == 1){
+              cycleCount += ((opaddr&0xFF00)!=(addr&0xFF00)?2:1);
+              REG_PC = addr;
+            }
+            break;
+  
+          }case 13:{
+  
+            // *******
+            // * CLC *
+            // *******
+  
+            // Clear carry flag
+            F_CARRY = 0;
+            break;
+  
+          }case 14:{
+  
+            // *******
+            // * CLD *
+            // *******
+  
+            // Clear decimal flag
+            F_DECIMAL = 0;
+            break;
+  
+          }case 15:{
+  
+            // *******
+            // * CLI *
+            // *******
+  
+            // Clear interrupt flag
+            F_INTERRUPT = 0;
+            break;
+  
+          }case 16:{
+  
+            // *******
+            // * CLV *
+            // *******
+  
+            // Clear overflow flag
+            F_OVERFLOW = 0;
+            break;
+  
+          }case 17:{
+  
+            // *******
+            // * CMP *
+            // *******
+  
+            // Compare memory and accumulator:
+            temp = REG_ACC - load(addr);
+            F_CARRY = (temp>=0?1:0);
+            F_SIGN = (temp>>7)&1;
+            F_ZERO = temp&0xFF;
+            cycleCount+=cycleAdd;
+            break;
+  
+          }case 18:{
+  
+            // *******
+            // * CPX *
+            // *******
+  
+            // Compare memory and index X:
+            temp = REG_X - load(addr);
+            F_CARRY = (temp>=0?1:0);
+            F_SIGN = (temp>>7)&1;
+            F_ZERO = temp&0xFF;
+            break;
+  
+          }case 19:{
+  
+            // *******
+            // * CPY *
+            // *******
+  
+            // Compare memory and index Y:
+            temp = REG_Y - load(addr);
+            F_CARRY = (temp>=0?1:0);
+            F_SIGN = (temp>>7)&1;
+            F_ZERO = temp&0xFF;
+            break;
+  
+          }
+        }
+      } else if (opcode < 30) {
+        switch(opcode){
+          case 20:{
+    
+              // *******
+              // * DEC *
+              // *******
+    
+              // Decrement memory by one:
+              temp = (load(addr)-1)&0xFF;
+              F_SIGN = (temp>>7)&1;
+              F_ZERO = temp;
+              write(addr,temp);
+              break;
+    
+            }case 21:{
+    
+              // *******
+              // * DEX *
+              // *******
+    
+              // Decrement index X by one:
+              REG_X = (REG_X-1)&0xFF;
+              F_SIGN = (REG_X>>7)&1;
+              F_ZERO = REG_X;
+              break;
+    
+            }case 22:{
+    
+              // *******
+              // * DEY *
+              // *******
+    
+              // Decrement index Y by one:
+              REG_Y = (REG_Y-1)&0xFF;
+              F_SIGN = (REG_Y>>7)&1;
+              F_ZERO = REG_Y;
+              break;
+    
+            }case 23:{
+    
+              // *******
+              // * EOR *
+              // *******
+    
+              // XOR Memory with accumulator, store in accumulator:
+              REG_ACC = (load(addr)^REG_ACC)&0xFF;
+              F_SIGN = (REG_ACC>>7)&1;
+              F_ZERO = REG_ACC;
+              cycleCount+=cycleAdd;
+              break;
+    
+            }case 24:{
+    
+              // *******
+              // * INC *
+              // *******
+    
+              // Increment memory by one:
+              temp = (load(addr)+1)&0xFF;
+              F_SIGN = (temp>>7)&1;
+              F_ZERO = temp;
+              write(addr,(temp&0xFF));
+              break;
+    
+            }case 25:{
+    
+              // *******
+              // * INX *
+              // *******
+    
+              // Increment index X by one:
+              REG_X = (REG_X+1)&0xFF;
+              F_SIGN = (REG_X>>7)&1;
+              F_ZERO = REG_X;
+              break;
+    
+            }case 26:{
+    
+              // *******
+              // * INY *
+              // *******
+    
+              // Increment index Y by one:
+              REG_Y++;
+              REG_Y &= 0xFF;
+              F_SIGN = (REG_Y>>7)&1;
+              F_ZERO = REG_Y;
+              break;
+    
+            }case 27:{
+    
+              // *******
+              // * JMP *
+              // *******
+    
+              // Jump to new location:
+              REG_PC = addr-1;
+              break;
+    
+            }case 28:{
+    
+              // *******
+              // * JSR *
+              // *******
+    
+              // Jump to new location, saving return address.
+              // Push return address on stack:
+              push((REG_PC>>8)&255);
+              push(REG_PC&255);
+              REG_PC = addr-1;
+              break;
+    
+            }case 29:{
+    
+              // *******
+              // * LDA *
+              // *******
+    
+              // Load accumulator with memory:
+              REG_ACC = load(addr);
+              F_SIGN = (REG_ACC>>7)&1;
+              F_ZERO = REG_ACC;
+              cycleCount+=cycleAdd;
+              break;
+    
+            }
+          }
+        } else if (opcode < 30) {
+          switch(opcode){
+            case 30:{
+    
+              // *******
+              // * LDX *
+              // *******
+    
+              // Load index X with memory:
+              REG_X = load(addr);
+              F_SIGN = (REG_X>>7)&1;
+              F_ZERO = REG_X;
+              cycleCount+=cycleAdd;
+              break;
+    
+            }case 31:{
+    
+              // *******
+              // * LDY *
+              // *******
+    
+              // Load index Y with memory:
+              REG_Y = load(addr);
+              F_SIGN = (REG_Y>>7)&1;
+              F_ZERO = REG_Y;
+              cycleCount+=cycleAdd;
+              break;
+    
+            }case 32:{
+    
+              // *******
+              // * LSR *
+              // *******
+    
+              // Shift right one bit:
+              if(addrMode == 4){ // ADDR_ACC
+    
+                temp = (REG_ACC & 0xFF);
+                F_CARRY = temp&1;
+                temp >>= 1;
+                REG_ACC = temp;
+    
+              }else{
+    
+                temp = load(addr) & 0xFF;
+                F_CARRY = temp&1;
+                temp >>= 1;
+                write(addr,temp);
+    
+              }
+              F_SIGN = 0;
+              F_ZERO = temp;
+              break;
+    
+            }case 33:{
+    
+              // *******
+              // * NOP *
+              // *******
+    
+              // No OPeration.
+              // Ignore.
+              break;
+    
+            }case 34:{
+    
+              // *******
+              // * ORA *
+              // *******
+    
+              // OR memory with accumulator, store in accumulator.
+              temp = (load(addr)|REG_ACC)&255;
+              F_SIGN = (temp>>7)&1;
+              F_ZERO = temp;
+              REG_ACC = temp;
+              if(addrMode!=11)cycleCount+=cycleAdd; // PostIdxInd = 11
+              break;
+    
+            }case 35:{
+    
+              // *******
+              // * PHA *
+              // *******
+    
+              // Push accumulator on stack
+              push(REG_ACC);
+              break;
+    
+            }case 36:{
+    
+              // *******
+              // * PHP *
+              // *******
+    
+              // Push processor status on stack
+              F_BRK = 1;
+              push(
+                (F_CARRY)|
+                ((F_ZERO==0?1:0)<<1)|
+                (F_INTERRUPT<<2)|
+                (F_DECIMAL<<3)|
+                (F_BRK<<4)|
+                (F_NOTUSED<<5)|
+                (F_OVERFLOW<<6)|
+                (F_SIGN<<7)
+              );
+              break;
+    
+            }case 37:{
+    
+              // *******
+              // * PLA *
+              // *******
+    
+              // Pull accumulator from stack
+              REG_ACC = pull();
+              F_SIGN = (REG_ACC>>7)&1;
+              F_ZERO = REG_ACC;
+              break;
+    
+            }case 38:{
+    
+              // *******
+              // * PLP *
+              // *******
+    
+              // Pull processor status from stack
+              temp = pull();
+              F_CARRY     = (temp   )&1;
+              F_ZERO      = (((temp>>1)&1)==1)?0:1;
+              F_INTERRUPT = (temp>>2)&1;
+              F_DECIMAL   = (temp>>3)&1;
+              F_BRK       = (temp>>4)&1;
+              F_NOTUSED   = (temp>>5)&1;
+              F_OVERFLOW  = (temp>>6)&1;
+              F_SIGN      = (temp>>7)&1;
+    
+              F_NOTUSED = 1;
+              break;
+    
+            }case 39:{
+    
+              // *******
+              // * ROL *
+              // *******
+    
+              // Rotate one bit left
+              if(addrMode == 4){ // ADDR_ACC = 4
+    
+                temp = REG_ACC;
+                add = F_CARRY;
+                F_CARRY = (temp>>7)&1;
+                temp = ((temp<<1)&0xFF)+add;
+                REG_ACC = temp;
+    
+              }else{
+    
+                temp = load(addr);
+                add = F_CARRY;
+                F_CARRY = (temp>>7)&1;
+                temp = ((temp<<1)&0xFF)+add;  
+                write(addr,temp);
+    
+              }
+              F_SIGN = (temp>>7)&1;
+              F_ZERO = temp;
+              break;
+            }
+          }
+        } else if (opcode < 50) {
+          switch(opcode){
+            case 40:{
+    
+              // *******
+              // * ROR *
+              // *******
+    
+              // Rotate one bit right
+              if(addrMode == 4){ // ADDR_ACC = 4
+    
+                add = F_CARRY<<7;
+                F_CARRY = REG_ACC&1;
+                temp = (REG_ACC>>1)+add;  
+                REG_ACC = temp;
+    
+              }else{
+    
+                temp = load(addr);
+                add = F_CARRY<<7;
+                F_CARRY = temp&1;
+                temp = (temp>>1)+add;
+                write(addr,temp);
+    
+              }
+              F_SIGN = (temp>>7)&1;
+              F_ZERO = temp;
+              break;
+    
+            }case 41:{
+    
+              // *******
+              // * RTI *
+              // *******
+    
+              // Return from interrupt. Pull status and PC from stack.
+              
+              temp = pull();
+              F_CARRY     = (temp   )&1;
+              F_ZERO      = ((temp>>1)&1)==0?1:0;
+              F_INTERRUPT = (temp>>2)&1;
+              F_DECIMAL   = (temp>>3)&1;
+              F_BRK       = (temp>>4)&1;
+              F_NOTUSED   = (temp>>5)&1;
+              F_OVERFLOW  = (temp>>6)&1;
+              F_SIGN      = (temp>>7)&1;
+    
+              REG_PC = pull();
+              REG_PC += (pull()<<8);
+              if(REG_PC==0xFFFF){
+                return;
+              }
+              REG_PC--;
+              F_NOTUSED = 1;
+              break;
+    
+            }case 42:{
+    
+              // *******
+              // * RTS *
+              // *******
+    
+              // Return from subroutine. Pull PC from stack.
+              
+              REG_PC = pull();
+              REG_PC += (pull()<<8);
+              
+              if(REG_PC==0xFFFF){
+                return;
+              }
+              break;
+    
+            }case 43:{
+    
+              // *******
+              // * SBC *
+              // *******
+    
+              temp = REG_ACC-load(addr)-(1-F_CARRY);
+              F_SIGN = (temp>>7)&1;
+              F_ZERO = temp&0xFF;
+              F_OVERFLOW = ((((REG_ACC^temp)&0x80)!=0 && ((REG_ACC^load(addr))&0x80)!=0)?1:0);
+              F_CARRY = (temp<0?0:1);
+              REG_ACC = (temp&0xFF);
+              if(addrMode!=11)cycleCount+=cycleAdd; // PostIdxInd = 11
+              break;
+    
+            }case 44:{
+    
+              // *******
+              // * SEC *
+              // *******
+    
+              // Set carry flag
+              F_CARRY = 1;
+              break;
+    
+            }case 45:{
+    
+              // *******
+              // * SED *
+              // *******
+    
+              // Set decimal mode
+              F_DECIMAL = 1;
+              break;
+    
+            }case 46:{
+    
+              // *******
+              // * SEI *
+              // *******
+    
+              // Set interrupt disable status
+              F_INTERRUPT = 1;
+              break;
+    
+            }case 47:{
+    
+              // *******
+              // * STA *
+              // *******
+    
+              // Store accumulator in memory
+              write(addr,REG_ACC);
+              break;
+    
+            }case 48:{
+    
+              // *******
+              // * STX *
+              // *******
+    
+              // Store index X in memory
+              write(addr,REG_X);
+              break;
+    
+            }case 49:{
+    
+              // *******
+              // * STY *
+              // *******
+    
+              // Store index Y in memory:
+              write(addr,REG_Y);
+              break;
+            }
+          }
+        } else {
+          switch(opcode){
+            case 50:{
+    
+              // *******
+              // * TAX *
+              // *******
+    
+              // Transfer accumulator to index X:
+              REG_X = REG_ACC;
+              F_SIGN = (REG_ACC>>7)&1;
+              F_ZERO = REG_ACC;
+              break;
+    
+            }case 51:{
+    
+              // *******
+              // * TAY *
+              // *******
+    
+              // Transfer accumulator to index Y:
+              REG_Y = REG_ACC;
+              F_SIGN = (REG_ACC>>7)&1;
+              F_ZERO = REG_ACC;
+              break;
+    
+            }case 52:{
+    
+              // *******
+              // * TSX *
+              // *******
+    
+              // Transfer stack pointer to index X:
+              REG_X = (REG_SP-0x0100);
+              F_SIGN = (REG_SP>>7)&1;
+              F_ZERO = REG_X;
+              break;
+    
+            }case 53:{
+    
+              // *******
+              // * TXA *
+              // *******
+    
+              // Transfer index X to accumulator:
+              REG_ACC = REG_X;
+              F_SIGN = (REG_X>>7)&1;
+              F_ZERO = REG_X;
+              break;
+    
+            }case 54:{
+    
+              // *******
+              // * TXS *
+              // *******
+    
+              // Transfer index X to stack pointer:
+              REG_SP = (REG_X+0x0100);
+              stackWrap();
+              break;
+    
+            }case 55:{
+    
+              // *******
+              // * TYA *
+              // *******
+    
+              // Transfer index Y to accumulator:
+              REG_ACC = REG_Y;
+              F_SIGN = (REG_Y>>7)&1;
+              F_ZERO = REG_Y;
+              break;
+    
+            }default:{
+    
+              // *******
+              // * ??? *
+              // *******
+    
+              // Illegal opcode!
+              if(!crash){
+                crash = true;
+                stopRunning = true;
+                nes.gui.showErrorMsg("Game crashed, invalid opcode");
+              }
+              break;
+    
+            }
+          }
 
       }// end of switch
 
