@@ -104,7 +104,7 @@ class CPU {
   bool emulateSound = false;
   bool asApplet = false;
 
-  var opcode_table;
+  var _opcode_table;
   var addressModeLookup;
   var irqTypeSwitch;
 
@@ -114,8 +114,8 @@ class CPU {
     active = false;
 
     // Build the opcode jump table
-    opcode_table = [];
-    opcode_table[0] = () {
+    _opcode_table = [];
+    _opcode_table[0] = () {
       // *******
       // * ADC *
       // *******
@@ -129,8 +129,7 @@ class CPU {
       REG_ACC = (temp&255);
       cycleCount+=cycleAdd;
     };
-    
-    opcode_table[1] = () { 
+    _opcode_table[1] = () { 
 
       // *******
       // * AND *
@@ -143,7 +142,7 @@ class CPU {
       //REG_ACC = temp;
       if(addrMode!=11)cycleCount+=cycleAdd; // PostIdxInd = 11
     };
-    opcode_table[2] = () {
+    _opcode_table[2] = () {
 
       // *******
       // * ASL *
@@ -169,7 +168,7 @@ class CPU {
       }
 
     };
-    opcode_table[3] = () {
+    _opcode_table[3] = () {
 
       // *******
       // * BCC *
@@ -182,7 +181,7 @@ class CPU {
       }
 
     };
-    opcode_table[4] = () {
+    _opcode_table[4] = () {
 
       // *******
       // * BCS *
@@ -195,7 +194,7 @@ class CPU {
       }
 
     };
-    opcode_table[5] = () {
+    _opcode_table[5] = () {
 
       // *******
       // * BEQ *
@@ -209,7 +208,7 @@ class CPU {
 
     };
 
-    opcode_table[6] = () {
+    _opcode_table[6] = () {
 
       // *******
       // * BIT *
@@ -222,8 +221,7 @@ class CPU {
       F_ZERO = temp;
 
     };
-    
-    opcode_table[7] = () {
+    _opcode_table[7] = () {
 
       // *******
       // * BMI *
@@ -236,7 +234,7 @@ class CPU {
       }
 
     };
-    opcode_table[8] = () {
+    _opcode_table[8] = () {
 
       // *******
       // * BNE *
@@ -249,7 +247,7 @@ class CPU {
       }
 
     };
-    opcode_table[9] = () {
+    _opcode_table[9] = () {
 
       // *******
       // * BPL *
@@ -261,7 +259,7 @@ class CPU {
         REG_PC = addr;
       }
     };
-    opcode_table[10] = () {
+    _opcode_table[10] = () {
 
       // *******
       // * BRK *
@@ -289,7 +287,7 @@ class CPU {
       REG_PC--;
 
     };
-    opcode_table[11] = () {
+    _opcode_table[11] = () {
 
       // *******
       // * BVC *
@@ -302,7 +300,7 @@ class CPU {
       }
 
     };
-    opcode_table[12] = () {
+    _opcode_table[12] = () {
 
       // *******
       // * BVS *
@@ -315,7 +313,7 @@ class CPU {
       }
 
     };
-    opcode_table[13] = () {
+    _opcode_table[13] = () {
 
       // *******
       // * CLC *
@@ -325,7 +323,7 @@ class CPU {
       F_CARRY = 0;
 
     };
-    opcode_table[14] = () {
+    _opcode_table[14] = () {
 
       // *******
       // * CLD *
@@ -335,7 +333,7 @@ class CPU {
       F_DECIMAL = 0;
 
     };
-    opcode_table[15] = () {
+    _opcode_table[15] = () {
 
       // *******
       // * CLI *
@@ -345,7 +343,7 @@ class CPU {
       F_INTERRUPT = 0;
 
     };
-    opcode_table[16] = () {
+    _opcode_table[16] = () {
 
       // *******
       // * CLV *
@@ -355,7 +353,7 @@ class CPU {
       F_OVERFLOW = 0;
 
     };
-    opcode_table[17] = () {
+    _opcode_table[17] = () {
 
       // *******
       // * CMP *
@@ -369,7 +367,7 @@ class CPU {
       cycleCount+=cycleAdd;
 
     };
-    opcode_table[18] = () {
+    _opcode_table[18] = () {
 
       // *******
       // * CPX *
@@ -382,7 +380,7 @@ class CPU {
       F_ZERO = temp&0xFF;
 
     };
-    opcode_table[19] = () {
+    _opcode_table[19] = () {
 
       // *******
       // * CPY *
@@ -395,7 +393,7 @@ class CPU {
       F_ZERO = temp&0xFF;
 
     };
-    opcode_table[20] = () {
+    _opcode_table[20] = () {
 
       // *******
       // * DEC *
@@ -407,8 +405,8 @@ class CPU {
       F_ZERO = temp;
       write(addr,temp);
 
-    }; 
-    opcode_table[21] = () {
+    };
+    _opcode_table[21] = () {
 
       // *******
       // * DEX *
@@ -419,8 +417,8 @@ class CPU {
       F_SIGN = (REG_X>>7)&1;
       F_ZERO = REG_X;
 
-    }; 
-    opcode_table[22] = () {
+    };
+    _opcode_table[22] = () {
 
       // *******
       // * DEY *
@@ -431,8 +429,8 @@ class CPU {
       F_SIGN = (REG_Y>>7)&1;
       F_ZERO = REG_Y;
 
-    }; 
-    opcode_table[23] = () {
+    };
+    _opcode_table[23] = () {
 
       // *******
       // * EOR *
@@ -444,8 +442,8 @@ class CPU {
       F_ZERO = REG_ACC;
       cycleCount+=cycleAdd;
 
-    }; 
-    opcode_table[24] = () {
+    };
+    _opcode_table[24] = () {
 
       // *******
       // * INC *
@@ -457,8 +455,8 @@ class CPU {
       F_ZERO = temp;
       write(addr,(temp&0xFF));
 
-    }; 
-    opcode_table[25] = () {
+    };
+    _opcode_table[25] = () {
       // *******
       // * INX *
       // *******
@@ -468,8 +466,8 @@ class CPU {
       F_SIGN = (REG_X>>7)&1;
       F_ZERO = REG_X;
 
-    }; 
-    opcode_table[26] = () {
+    };
+    _opcode_table[26] = () {
 
       // *******
       // * INY *
@@ -482,7 +480,7 @@ class CPU {
       F_ZERO = REG_Y;
 
     };
-    opcode_table[27] = () {
+    _opcode_table[27] = () {
 
       // *******
       // * JMP *
@@ -491,9 +489,8 @@ class CPU {
       // Jump to new location:
       REG_PC = addr-1;
 
-    }; 
-    
-    opcode_table[28] = () {
+    };
+    _opcode_table[28] = () {
 
       // *******
       // * JSR *
@@ -505,9 +502,8 @@ class CPU {
       push(REG_PC&255);
       REG_PC = addr-1;
 
-    }; 
-    
-    opcode_table[29] = () {
+    };
+    _opcode_table[29] = () {
 
       // *******
       // * LDA *
@@ -520,8 +516,7 @@ class CPU {
       cycleCount+=cycleAdd;
 
     };
-    
-    opcode_table[30] = () {
+    _opcode_table[30] = () {
 
       // *******
       // * LDX *
@@ -533,9 +528,8 @@ class CPU {
       F_ZERO = REG_X;
       cycleCount+=cycleAdd;
 
-    }; 
-    
-    opcode_table[31] = () {
+    };
+    _opcode_table[31] = () {
 
       // *******
       // * LDY *
@@ -547,9 +541,8 @@ class CPU {
       F_ZERO = REG_Y;
       cycleCount+=cycleAdd;
 
-    }; 
-    
-    opcode_table[32] = () {
+    };
+    _opcode_table[32] = () {
 
       // *******
       // * LSR *
@@ -574,9 +567,8 @@ class CPU {
       F_SIGN = 0;
       F_ZERO = temp;
 
-    }; 
-    
-    opcode_table[33] = () {
+    };
+    _opcode_table[33] = () {
 
       // *******
       // * NOP *
@@ -587,7 +579,7 @@ class CPU {
 
     }; 
     
-    opcode_table[34] = () {
+    _opcode_table[34] = () {
 
       // *******
       // * ORA *
@@ -602,7 +594,7 @@ class CPU {
 
     }; 
     
-    opcode_table[35] = () {
+    _opcode_table[35] = () {
 
       // *******
       // * PHA *
@@ -613,7 +605,7 @@ class CPU {
 
     }; 
     
-    opcode_table[36] = () {
+    _opcode_table[36] = () {
 
       // *******
       // * PHP *
@@ -634,7 +626,7 @@ class CPU {
 
     }; 
     
-    opcode_table[37] = () {
+    _opcode_table[37] = () {
 
       // *******
       // * PLA *
@@ -647,7 +639,7 @@ class CPU {
 
     }; 
     
-    opcode_table[38] = () {
+    _opcode_table[38] = () {
 
       // *******
       // * PLP *
@@ -668,7 +660,7 @@ class CPU {
 
     }; 
     
-    opcode_table[39] = () {
+    _opcode_table[39] = () {
 
       // *******
       // * ROL *
@@ -695,7 +687,7 @@ class CPU {
       F_SIGN = (temp>>7)&1;
       F_ZERO = temp;
     };
-    opcode_table[40] = () {
+    _opcode_table[40] = () {
 
       // *******
       // * ROR *
@@ -723,7 +715,7 @@ class CPU {
 
     }; 
     
-    opcode_table[41] = () {
+    _opcode_table[41] = () {
 
       // *******
       // * RTI *
@@ -751,7 +743,7 @@ class CPU {
 
     }; 
     
-    opcode_table[42] = () {
+    _opcode_table[42] = () {
 
       // *******
       // * RTS *
@@ -768,7 +760,7 @@ class CPU {
 
     }; 
     
-    opcode_table[43] = () {
+    _opcode_table[43] = () {
 
       // *******
       // * SBC *
@@ -784,7 +776,7 @@ class CPU {
 
     }; 
     
-    opcode_table[44] = () {
+    _opcode_table[44] = () {
 
       // *******
       // * SEC *
@@ -795,7 +787,7 @@ class CPU {
 
     }; 
     
-    opcode_table[45] = () {
+    _opcode_table[45] = () {
 
       // *******
       // * SED *
@@ -806,7 +798,7 @@ class CPU {
 
     }; 
     
-    opcode_table[46] = () {
+    _opcode_table[46] = () {
 
       // *******
       // * SEI *
@@ -817,7 +809,7 @@ class CPU {
 
     }; 
     
-    opcode_table[47] = () {
+    _opcode_table[47] = () {
 
       // *******
       // * STA *
@@ -828,7 +820,7 @@ class CPU {
 
     }; 
     
-    opcode_table[48] = () {
+    _opcode_table[48] = () {
 
       // *******
       // * STX *
@@ -839,7 +831,7 @@ class CPU {
 
     }; 
     
-    opcode_table[49] = () {
+    _opcode_table[49] = () {
 
       // *******
       // * STY *
@@ -848,7 +840,7 @@ class CPU {
       // Store index Y in memory:
       write(addr,REG_Y);
     };
-    opcode_table[50] = () {
+    _opcode_table[50] = () {
 
       // *******
       // * TAX *
@@ -861,7 +853,7 @@ class CPU {
 
     }; 
     
-    opcode_table[51] = () {
+    _opcode_table[51] = () {
 
       // *******
       // * TAY *
@@ -874,7 +866,7 @@ class CPU {
 
     }; 
     
-    opcode_table[52] = () {
+    _opcode_table[52] = () {
 
       // *******
       // * TSX *
@@ -887,7 +879,7 @@ class CPU {
 
     }; 
     
-    opcode_table[53] = () {
+    _opcode_table[53] = () {
 
       // *******
       // * TXA *
@@ -900,7 +892,7 @@ class CPU {
 
     }; 
     
-    opcode_table[54] = () {
+    _opcode_table[54] = () {
 
       // *******
       // * TXS *
@@ -912,7 +904,7 @@ class CPU {
 
     }; 
     
-    opcode_table[55] = () {
+    _opcode_table[55] = () {
 
       // *******
       // * TYA *
@@ -1258,17 +1250,16 @@ class CPU {
 
     // Build a jump table
     final int opcode = opinf & 0xFF;
-    if (opcode > opcode_table.length) {
+    if (opcode < _opcode_table.length) {
+     _opcode_table[opcode]();
+    } else {
       // Illegal opcode!
       if(!crash) {
         crash = true;
         stopRunning = true;
         print("CPU.emulate(): ERROR: Game crashed, invalid opcode.");
       }
-    };
-    
-    opcode_table[opcode]();
-
+    }
 
     // ----------------------------------------------------------------------------------------------------
 

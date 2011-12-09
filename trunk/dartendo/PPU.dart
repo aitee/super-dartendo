@@ -2,9 +2,9 @@ class PPU {
   NES nes;
   Memory ppuMem;
   Memory sprMem;
-  
+
   bool debugMe = false;
-  
+
   // Rendering Options:
   bool _showSpr0Hit = false;
   bool showSoundBuffer = false;
@@ -18,7 +18,7 @@ class PPU {
   int f_spPatternTable = 0; // Sprite Pattern Table address. 0=0x0000,1=0x1000
   int f_addrInc = 0;        // PPU Address Increment. 0=1,1=32
   int f_nTblAddress = 0;    // Name Table Address. 0=0x2000,1=0x2400,2=0x2800,3=0x2C00
-  
+
   // Control Flags Register 2:
   int f_color = 0;          // Background color. 0=black, 1=blue, 2=green, 4=red
   int f_spVisibility = 0;   // Sprite visibility. 0=not displayed,1=displayed
@@ -26,7 +26,7 @@ class PPU {
   int f_spClipping = 0;     // Sprite clipping. 0=Sprites invisible in left 8-pixel column,1=No clipping
   int f_bgClipping = 0;     // Background clipping. 0=BG invisible in left 8-pixel column, 1=No clipping
   int f_dispType = 0;       // Display type. 0=color, 1=monochrome
-  
+
   // Status flags:
   static final int _STATUS_VRAMWRITE = 4;
   static final int _STATUS_SLSPRITECOUNT = 5;
@@ -66,7 +66,7 @@ class PPU {
   int scanline = 0;
   int lastRenderedScanline = 0;
   int mapperIrqCounter = 0;
-  
+
   // Sprite data:
   List<int> sprX;        // X coordinate
   List<int> sprY;        // Y coordinate
@@ -75,14 +75,14 @@ class PPU {
   List<bool> vertFlip;    // Vertical Flip
   List<bool> horiFlip;    // Horizontal Flip
   List<bool> bgPriority;  // Background priority
-  
+
   int spr0HitX = 0;  // Sprite #0 hit X coordinate
   int spr0HitY = 0;  // Sprite #0 hit Y coordinate
   bool hitSpr0 = false;
 
   // Tiles:
   List<Tile> ptTile;
-  
+
   // Name table data:
   List<int> _ntable1;
   List<NameTable> _nameTable;
@@ -91,12 +91,12 @@ class PPU {
   // Palette data:
   List<int> _sprPalette;
   List<int> _imgPalette;
-    
+
   // Misc:
   bool _scanlineAlreadyRendered = false;
   bool _requestEndFrame = false;
   bool _nmiOk = false;
-  
+
   int _nmiCounter = 0;
   int _tmp = 0;
   bool _dummyCycleToggle = false;
@@ -105,15 +105,15 @@ class PPU {
   int _address = 0;
   int _b1 = 0;
   int _b2 = 0;
-    
+
   // Variables used when rendering:
   List<int> buffer;
-  List<int> _tpix;
-  
+  //List<int> _tpix;
+
   bool requestRenderAll = false;
   bool _validTileData = false;  
-  int _att = 0;
-  
+  //int _att = 0;
+
   List<Tile> _scantile;
   List<int> _attrib;
   List<int> _bgbuffer;
@@ -122,34 +122,27 @@ class PPU {
   List<int> _dummyPixPriTable;
   List<int> _oldFrame;
   List<bool> _scanlineChanged;
-  Tile _t;
+  //Tile _t;
 
-  // These are temporary variables used in rendering and sound procedures.
-  // Their states outside of those procedures can be ignored.
-  int _curNt = 0;
-  int _destIndex = 0;
-  int _x = 0;
-  int _y = 0;
-  int _sx = 0;
-  int _si = 0;
-  int _ei = 0;
-  int _tile = 0;
-  int _col = 0;
-  int _baseTile = 0;
-  int _tscanoffset = 0;
-  int _srcy1 = 0;
-  int _srcy2 = 0;
-  int bufferSize = 0;
-  int _available = 0; 
-  int _scale = 0;
+  List<int> _bgColor_table;
+
   int cycles = 0;
 
   PPU(this.nes) {
+    // Build the bgColor lookup table.
+    _bgColor_table = [];
+
+    _bgColor_table[0] = 0x000000;
+    _bgColor_table[1] = 0x00FF00;
+    _bgColor_table[2] = 0xFF0000;
+    _bgColor_table[3] = 0x000000;
+    _bgColor_table[4] = 0x0000FF;
+
     _ntable1 = Util.newIntList(4,0);
-    
+
     _sprPalette = Util.newIntList(16,0);
     _imgPalette = Util.newIntList(16,0);
-    
+
     _scantile = new List<Tile>(32);
     _attrib = Util.newIntList(32,0);
     _bgbuffer = Util.newIntList(256 * 240,0);
@@ -158,7 +151,7 @@ class PPU {
     _dummyPixPriTable = Util.newIntList(256 * 240,0);
     _oldFrame = Util.newIntList(256 * 240,0);
     _scanlineChanged = Util.newBoolList(240, false);
-    
+
     buffer = Util.newIntList(256*240,0);
   }
 
@@ -172,7 +165,7 @@ class PPU {
 
     // Initialize misc vars:
     scanline = 0;
-    
+
     // Create sprite arrays:
     sprX = Util.newIntList(64, 0);
     sprY = Util.newIntList(64, 0);
@@ -209,7 +202,7 @@ class PPU {
     for (int i = 0; i < _oldFrame.length; i++) {
       _oldFrame[i] = -1;
     }
-    
+
     //Util.printDebug('PPU.init(): initialized', debugMe);
   }
 
@@ -252,7 +245,7 @@ class PPU {
       _ntable1[1] = 1;
       _ntable1[2] = 0;
       _ntable1[3] = 1;
-            
+
       defineMirrorRegion(0x2800, 0x2000, 0x400);      
       defineMirrorRegion(0x2c00, 0x2400, 0x400);
     } else if (mirroring == ROM.SINGLESCREEN_MIRRORING) {
@@ -310,8 +303,7 @@ class PPU {
           startVBlank();
         }
       }
-      
-      curX++;
+      ++curX;
       if (curX == 341) {
         curX = 0;
         endScanline();
@@ -398,7 +390,7 @@ class PPU {
           renderBgScanline(_bgbuffer, scanline + 1 - 21);
         }
         _scanlineAlreadyRendered = false;
-        
+
         // Check for sprite 0 (next scanline):
         if (!hitSpr0 && f_spVisibility == 1) {
           if (sprX[0] >= -7 && sprX[0] < 256 && sprY[0] + 1 <= (scanline - _vblankAdd + 1 - 21) && (sprY[0] + 1 + (f_spriteSize == 0 ? 8 : 16)) >= (scanline - _vblankAdd + 1 - 21)) {
@@ -409,7 +401,7 @@ class PPU {
           }
         }
       }
-       
+
       if (f_bgVisibility == 1 || f_spVisibility == 1) {
         // Clock mapper IRQ Counter:
         nes.memMapper.clockIrqCounter();
@@ -441,34 +433,11 @@ class PPU {
       bgColor = _imgPalette[0];
     } else {
       // Monochrome display.
+      bgColor = 0x0;
       // f_color determines the bg color.
-      switch (f_color) {
-        case 0: {
-          // Black
-          bgColor = 0x00000;
-          break;
-        }
-        case 1: {
-          // Green
-          bgColor = 0x00FF00;
-        }
-        case 2: {
-          // Blue
-          bgColor = 0xFF0000;
-        }
-        case 3: {
-          // Invalid. Use black.
-          bgColor = 0x000000;
-        }
-        case 4: {
-          // Red
-          bgColor = 0x0000FF;
-        }
-        default: {
-          // Invalid. Use black.
-          bgColor = 0x0;
-        }
-      }
+      if (f_color < _bgColor_table.length)
+        bgColor = _bgColor_table[f_color];
+
     }
 
     for (int i = 0; i < buffer.length; i++)
@@ -484,16 +453,16 @@ class PPU {
       // Spr 0 position:
       if (sprX[0] >= 0 && sprX[0] < 256 && sprY[0] >= 0 && sprY[0] < 240) {
         for (int i = 0; i < 256; i++)
-            buffer[(sprY[0] << 8) + i] = 0xFF5555;
+          buffer[(sprY[0] << 8) + i] = 0xFF5555;
         for (int i = 0; i < 240; i++)
-            buffer[(i << 8) + sprX[0]] = 0xFF5555;
+          buffer[(i << 8) + sprX[0]] = 0xFF5555;
       }
       // Hit position:
       if (spr0HitX >= 0 && spr0HitX < 256 && spr0HitY >= 0 && spr0HitY < 240) {
         for (int i = 0; i < 256; i++)
-            buffer[(spr0HitY << 8) + i] = 0x55FF55;
+          buffer[(spr0HitY << 8) + i] = 0x55FF55;
         for (int i = 0; i < 240; i++)
-            buffer[(i << 8) + spr0HitX] = 0x55FF55;
+          buffer[(i << 8) + spr0HitX] = 0x55FF55;
       }
     }
 
@@ -530,14 +499,14 @@ class PPU {
 
     // Show sound buffer:
     if (showSoundBuffer && nes.getPapu().getLine() != null) {
-      bufferSize = nes.getPapu().getLine().getBufferSize();
-      _available = nes.getPapu().getLine().available();
-      _scale = bufferSize ~/ 256;
+      final int bufferSize = nes.getPapu().getLine().getBufferSize();
+      final int available = nes.getPapu().getLine().available();
+      final int scale = bufferSize ~/ 256;
 
       for (int y = 0; y < 4; y++) {
         _scanlineChanged[y] = true;
         for (int x = 0; x < 256; x++) {
-          if (x >= (_available / _scale)) {
+          if (x >= (available / scale)) {
             buffer[y * 256 + x] = 0xFFFFFF;
           } else {
             buffer[y * 256 + x] = 0;
@@ -573,7 +542,7 @@ class PPU {
     f_dispType = value & 1;
 
     if (f_dispType == 0) {
-        nes.palTable.setEmphasis(f_color);
+      nes.palTable.setEmphasis(f_color);
     }
     updatePalettes();
   }
@@ -612,10 +581,10 @@ class PPU {
   int sramLoad() {
     int tmp = sprMem.load(_sramAddress);
     /*_sramAddress++; // Increment address
-    _sramAddress%=0x100;*/
+      _sramAddress%=0x100;*/
     return tmp;
   }
-   
+
   // CPU Register $2004 (W):
   // Write to SPR-RAM (Sprite RAM).
   // The address should be set first.
@@ -881,20 +850,15 @@ class PPU {
   }
 
   void renderFramePartially(List<int> buffer, int startScan, int scanCount) {
-    if (f_spVisibility == 1 && !Globals.disableSprites) {
+    if (f_spVisibility == 1 /*&& !Globals.disableSprites*/)
       renderSpritesPartially(startScan, scanCount, true);
-    }
-     
+
     if (f_bgVisibility == 1) {
-      _si = startScan << 8;
-      _ei = (startScan + scanCount) << 8;
-      if (_ei > 0xF000) {
-        _ei = 0xF000;
-      }
-      for (_destIndex = _si; _destIndex < _ei; _destIndex++) {
-        if (_pixrendered[_destIndex] > 0xFF) {
-          buffer[_destIndex] = _bgbuffer[_destIndex];
-        }
+      final int si = startScan << 8;
+      final int ei = Math.min((startScan + scanCount) << 8, 0xF000);
+      for (int destIndex = si; destIndex < ei; ++destIndex) {
+        if (_pixrendered[destIndex] > 0xFF)
+          buffer[destIndex] = _bgbuffer[destIndex];
       }
     }
 
@@ -906,68 +870,70 @@ class PPU {
   }
 
   void renderBgScanline(List<int> buffer, int scan) {
-    _baseTile = (_regS == 0 ? 0 : 256);
-    _destIndex = (scan << 8) - _regFH;
-    _curNt = _ntable1[_cntV + _cntV + _cntH];
+    final int baseTile = (_regS == 0 ? 0 : 256);
+    int destIndex = (scan << 8) - _regFH;
 
     _cntHT = _regHT;
     _cntH = _regH;
-    _curNt = _ntable1[_cntV + _cntV + _cntH];
+    int curNt = _ntable1[(_cntV << 1) + _cntH];
 
     if (scan < 240 && (scan - _cntFV) >= 0) {
-      _tscanoffset = _cntFV << 3;
-      _y = scan - _cntFV;
-      for (_tile = 0; _tile < 32; _tile++) {
+      final int tscanoffset = _cntFV << 3;
+      //_y = scan - _cntFV;
+      for (int tile = 0; tile < 32; ++tile) {
         if (scan >= 0) {
           // Fetch tile & attrib data:
+          Tile t;
+          List<int> tpix;
+          int att;
           if (_validTileData) {
             // Get data from array:
-            _t = _scantile[_tile];
-            _tpix = _t.pix;
-            _att = _attrib[_tile];
+            t = _scantile[tile];
+            tpix = t.pix;
+            att = _attrib[tile];
           } else {
             // Fetch data:
-            _t = ptTile[_baseTile + _nameTable[_curNt].getTileIndex(_cntHT, _cntVT)];
-            _tpix = _t.pix;
-            _att = _nameTable[_curNt].getAttrib(_cntHT, _cntVT);
-            _scantile[_tile] = _t;
-            _attrib[_tile] = _att;
+            t = ptTile[baseTile + _nameTable[curNt].getTileIndex(_cntHT, _cntVT)];
+            tpix = t.pix;
+            att = _nameTable[curNt].getAttrib(_cntHT, _cntVT);
+            _scantile[tile] = t;
+            _attrib[tile] = att;
           }
 
           // Render tile scanline:
-          _sx = 0;
-          _x = (_tile << 3) - _regFH;
-          if (_x > -8) {
-            if (_x < 0) {
-              _destIndex -= _x;
-              _sx = -_x;
+          int sx = 0;
+          int x = (tile << 3) - _regFH;
+          if (x > -8) {
+            if (x < 0) {
+              destIndex -= x;
+              sx = -x;
             }
-            if (_t.opaque[_cntFV]) {
-              for (; _sx < 8; _sx++) {
-                buffer[_destIndex] = _imgPalette[_tpix[_tscanoffset + _sx] + _att];
-                _pixrendered[_destIndex] |= 256;
-                _destIndex++;
+            if (t.opaque[_cntFV]) {
+              for (; sx < 8; ++sx) {
+                buffer[destIndex] = _imgPalette[tpix[tscanoffset + sx] + att];
+                _pixrendered[destIndex] |= 256;
+                ++destIndex;
               }
             } else {
-              for (; _sx < 8; _sx++) {
-                  _col = _tpix[_tscanoffset + _sx];
-                  if (_col != 0) {
-                    buffer[_destIndex] = _imgPalette[_col + _att];
-                    _pixrendered[_destIndex] |= 256;
-                  }
-                _destIndex++;
+              for (; sx < 8; ++sx) {
+                final int col = tpix[tscanoffset + sx];
+                if (col != 0) {
+                  buffer[destIndex] = _imgPalette[col + att];
+                  _pixrendered[destIndex] |= 256;
+                }
+                ++destIndex;
               }
             }
           }
         }
 
         // Increase Horizontal Tile Counter:
-        _cntHT++;
+        ++_cntHT;
         if (_cntHT == 32) {
           _cntHT = 0;
-          _cntH++;
+          ++_cntH;
           _cntH %= 2;
-          _curNt = _ntable1[(_cntV << 1) + _cntH];
+          curNt = _ntable1[(_cntV << 1) + _cntH];
         }
       }
       // Tile data for one row should now have been fetched,
@@ -976,15 +942,15 @@ class PPU {
     }
 
     // update vertical scroll:
-    _cntFV++;
+    ++_cntFV;
     if (_cntFV == 8) {
       _cntFV = 0;
-      _cntVT++;
+      ++_cntVT;
       if (_cntVT == 30) {
         _cntVT = 0;
-        _cntV++;
+        ++_cntV;
         _cntV %= 2;
-        _curNt = _ntable1[(_cntV << 1) + _cntH];
+        curNt = _ntable1[(_cntV << 1) + _cntH];
       } else if (_cntVT == 32) {
         _cntVT = 0;
       }
@@ -1003,21 +969,19 @@ class PPU {
           // Show sprite.
           if (f_spriteSize == 0) {
             // 8x8 sprites
-            _srcy1 = 0;
-            _srcy2 = 8;
+            int srcy1 = 0;
+            int srcy2 = 8;
 
-            if (sprY[i] < startscan) {
-              _srcy1 = startscan - sprY[i] - 1;
-            }
+            if (sprY[i] < startscan)
+              srcy1 = startscan - sprY[i] - 1;
 
-            if (sprY[i] + 8 > startscan + scancount) {
-              _srcy2 = startscan + scancount - sprY[i] + 1;
-            }
+            if (sprY[i] + 8 > startscan + scancount)
+              srcy2 = startscan + scancount - sprY[i] + 1;
 
             if (f_spPatternTable == 0) {
-              ptTile[sprTile[i]].render(0, _srcy1, 8, _srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
+              ptTile[sprTile[i]].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
             } else {
-              ptTile[sprTile[i] + 256].render(0, _srcy1, 8, _srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
+              ptTile[sprTile[i] + 256].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
             }
           } else {
             // 8x16 sprites
@@ -1026,31 +990,27 @@ class PPU {
               top = sprTile[i] - 1 + 256;
             }
 
-            _srcy1 = 0;
-            _srcy2 = 8;
+            int srcy1 = 0;
+            int srcy2 = 8;
 
-            if (sprY[i] < startscan) {
-              _srcy1 = startscan - sprY[i] - 1;
-            }
+            if (sprY[i] < startscan)
+              srcy1 = startscan - sprY[i] - 1;
 
-            if (sprY[i] + 8 > startscan + scancount) {
-              _srcy2 = startscan + scancount - sprY[i];
-            }
+            if (sprY[i] + 8 > startscan + scancount)
+              srcy2 = startscan + scancount - sprY[i];
 
-            ptTile[top + (vertFlip[i] ? 1 : 0)].render(0, _srcy1, 8, _srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
+            ptTile[top + (vertFlip[i] ? 1 : 0)].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
 
-            _srcy1 = 0;
-            _srcy2 = 8;
+            srcy1 = 0;
+            srcy2 = 8;
 
-            if (sprY[i] + 8 < startscan) {
-              _srcy1 = startscan - (sprY[i] + 8 + 1);
-            }
+            if (sprY[i] + 8 < startscan) 
+              srcy1 = startscan - (sprY[i] + 8 + 1);
 
-            if (sprY[i] + 16 > startscan + scancount) {
-              _srcy2 = startscan + scancount - (sprY[i] + 8);
-            }
+            if (sprY[i] + 16 > startscan + scancount) 
+              srcy2 = startscan + scancount - (sprY[i] + 8);
 
-            ptTile[top + (vertFlip[i] ? 0 : 1)].render(0, _srcy1, 8, _srcy2, sprX[i], sprY[i] + 1 + 8, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
+            ptTile[top + (vertFlip[i] ? 0 : 1)].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1 + 8, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
           }
         }
       }
@@ -1123,7 +1083,7 @@ class PPU {
       }
     } else {
       // 8x16 sprites:
-      
+
       // Check range:
       if (y <= scan && y + 16 > scan && x >= -7 && x < 256) {
         // Sprite is in range.
@@ -1252,17 +1212,17 @@ class PPU {
       Expect.isTrue(value is List<int>);
       Expect.isTrue(offset !== null);
       Expect.isTrue(length !== null);
-      
+
       List<int> valueList = value;
-      
+
       for (int i = 0; i < length; i++) {
         int tileIndex = (address + i) >> 4;
         int leftOver = (address + i) % 16;
 
         if (leftOver < 8) {
-            ptTile[tileIndex].setScanline(leftOver, valueList[offset + i], ppuMem.load(address + 8 + i));
+          ptTile[tileIndex].setScanline(leftOver, valueList[offset + i], ppuMem.load(address + 8 + i));
         } else {
-            ptTile[tileIndex].setScanline(leftOver - 8, ppuMem.load(address - 8 + i), valueList[offset + i]);
+          ptTile[tileIndex].setScanline(leftOver - 8, ppuMem.load(address - 8 + i), valueList[offset + i]);
         }
       }
     }
@@ -1332,17 +1292,17 @@ class PPU {
   int statusRegsToInt() {
     int ret = 0;
     ret = (f_nmiOnVblank) |
-            (f_spriteSize << 1) |
-            (f_bgPatternTable << 2) |
-            (f_spPatternTable << 3) |
-            (f_addrInc << 4) |
-            (f_nTblAddress << 5) |
-            (f_color << 6) |
-            (f_spVisibility << 7) |
-            (f_bgVisibility << 8) |
-            (f_spClipping << 9) |
-            (f_bgClipping << 10) |
-            (f_dispType << 11);
+      (f_spriteSize << 1) |
+      (f_bgPatternTable << 2) |
+      (f_spPatternTable << 3) |
+      (f_addrInc << 4) |
+      (f_nTblAddress << 5) |
+      (f_color << 6) |
+      (f_spVisibility << 7) |
+      (f_bgVisibility << 8) |
+      (f_spClipping << 9) |
+      (f_bgClipping << 10) |
+      (f_dispType << 11);
 
     return ret;
   }
@@ -1548,7 +1508,7 @@ class PPU {
     _validTileData = false;
     _nmiCounter = 0;
     _tmp = 0;
-    _att = 0;
+    //_att = 0;
 
     // Control Flags Register 1:
     f_nmiOnVblank = 0;    // NMI on VBlank. 0=disable, 1=enable
