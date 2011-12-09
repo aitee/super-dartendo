@@ -35,7 +35,8 @@ class Input {
     
     // Default ROM
     String defaultRom = 'roms/SuperMario3.json';
-    if (Controller.getQueryValue('rom').length > 0) {
+    String romParameter = Controller.getQueryValue('rom');
+    if (romParameter != null && romParameter.length > 0) {
       defaultRom = 'roms/' + Controller.getQueryValue('rom') + '.json';
     }
     
@@ -44,32 +45,34 @@ class Input {
     req.send();
     
     romBytes = JSON.parse(req.responseText); 
-
       
     // Add dragging events
-//    content.on.dragEnter.add((Event event) {
-//      Util.printDebug("Input.init(): content.on.dragEnter Event fired.", debugMe);
-//      unwrapDomObject(event).preventDefault();
-//      content.style.border = '4px solid #b1ecb3';
-//      return false;
-//    });
-//  
-//    content.on.dragOver.add((Event event) {
-//      unwrapDomObject(event).preventDefault();
-//      return false;
-//    });
-//  
-//    content.on.dragLeave.add((Event event) {
-//      unwrapDomObject(event).preventDefault();
-//      return false;
-//    });
-//  
-//    content.on.drop.add((Event event) {
-//      unwrapDomObject(event).preventDefault();
-//      content.style.border = '4px solid transparent';
-//      loadFile(unwrapDomObject(event).dataTransfer.files[0]);
-//      return false;
-//    });
+    content.on.dragEnter.add((EventWrappingImplementation event) {
+      print("dragEnter");
+      unwrapDomObject(event).preventDefault();
+      content.style.border = '4px solid #b1ecb3';
+      return false;
+    });
+  
+    content.on.dragOver.add((EventWrappingImplementation event) {
+      print("dragOver");
+      unwrapDomObject(event).preventDefault();
+      return false;
+    });
+  
+    content.on.dragLeave.add((EventWrappingImplementation event) {
+      print("dragLeave");
+      unwrapDomObject(event).preventDefault();
+      return false;
+    });
+  
+    content.on.drop.add((EventWrappingImplementation event) {
+      print("drop");
+      unwrapDomObject(event).preventDefault();
+      content.style.border = '4px solid transparent';
+      loadFile(unwrapDomObject(event).dataTransfer.files[0]);
+      return false;
+    });
   }
 
   void loadFile(FileWrappingImplementation file) {
