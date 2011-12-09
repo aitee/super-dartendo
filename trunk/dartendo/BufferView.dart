@@ -2,8 +2,8 @@ class BufferView {
 
      bool debugMe = false;
      
-     var canvas;
-     var context;
+     CanvasElement canvas;
+     CanvasRenderingContext2D context;
      
      // Scale modes:
      static final int SCALE_NONE = 0;
@@ -85,13 +85,13 @@ class BufferView {
           return;
         
         //Util.printDebug('BufferView.paint: Getting imagedata', debugMe);
-        var arr = context.getImageData(0,0,256,240);
-        var data = arr.data;
+        ImageData imageData = context.getImageData(0,0,256,240);
+        CanvasPixelArray data = imageData.data;
         //Util.printDebug('BufferView.paint: data.length = ' + data.length, debugMe);
 
-        var ppu_buffer = nes.ppu.buffer;       
+        List<int> ppu_buffer = nes.ppu.buffer;       
  
-        var ppui = 0;
+        int ppui = 0;
         //Util.printDebug('BufferView.paint: setting pixels', debugLoop);
         for (var i = 0; i < 256*240*4;) {
           //Util.printDebug('BufferView.paint: Setting pixels, i = ' + i, debugMe);
@@ -105,7 +105,7 @@ class BufferView {
           data[i++] = 255; // a
         }
         //Util.printDebug('Blitting imagedata', debugMe);
-        context.putImageData(arr, 0, 0, 0,   0, 256, 240);
+        context.putImageData(imageData, 0, 0, 0,   0, 256, 240);
 
     }
 
