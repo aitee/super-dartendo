@@ -1,8 +1,7 @@
 class Input {
   
-  bool debugMe = false;
-  List<int> romBytes;
   Controller controller;
+  List<int> romBytes;
   Element menuElement;
   
   Input(this.controller) {
