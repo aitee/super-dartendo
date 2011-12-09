@@ -154,7 +154,7 @@ class PAPU {
         }
 
         bufferIndex = 0;
-        line = new SourceDataLine(bufferSize, nes.gui.applet);
+        line = new SourceDataLine(nes.gui.applet);
 /*        
          //List<Mixer.Info> mixerInfo = AudioSystem.getMixerInfo();
         var mixerInfo = null;

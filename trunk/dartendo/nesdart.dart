@@ -111,7 +111,7 @@ class Controller {
     canvas = document.query("#webGlCanvas");
     context = canvas.getContext('2d');
     scale = false;
-    sound = false;
+    sound = true;
     fps = false;
     stereo = false;
     timeemulation = false;

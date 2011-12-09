@@ -36,14 +36,17 @@ class SourceDataLine {
   List<int> soundBuffer;
   
   int availableCount = 0;
+  int writeOffset = 0;
+  int readOffset = 0;
   
-  SourceDataLine(int bufferSize, Controller controllerIn) {
+  // 
+  SourceDataLine(Controller controllerIn) {
     controller = controllerIn;
     
-    soundBuffer = Util.newIntList(bufferSize, 0);
+    soundBufferSize = (0xFFFF + 1);
+    soundBuffer = Util.newIntList(soundBufferSize, 0);
     
-    soundBufferSize = bufferSize;
-    availableCount = bufferSize;
+    availableCount = soundBufferSize;
     
     Util.printDebug('SoundDataLine.Constructor(): soundBufferSize = ' + soundBufferSize, debugMe);
     
@@ -65,8 +68,11 @@ class SourceDataLine {
       
       Util.printDebug('SourceDataLine.newGenerator.handler: buffer.length = ' + buffer.length, debugMe);
       for (var i = 0; i < buffer.length; i++) {
-        // buffer[i] = (soundBuffer[i] / 128.0);
-         buffer[i] = (Math.random() < 0.5) ? 1.0 : -1.0;
+         buffer[i] = (soundBuffer[readOffset] / 32768.0) - 1.0;
+         if (readOffset != writeOffset) {
+           readOffset = (readOffset + 1) & 0xFFFF;
+         }
+         // buffer[i] = (Math.random() < 0.5) ? 1.0 : -1.0;
       }
     }
 
@@ -94,8 +100,10 @@ class SourceDataLine {
   int write(List<int> sampleBuffer, int off, int len)
   {
      // Util.printDebug('SourceDataLine.write(): len = ' + len, debugMe);
-     for (int i = 0; i < len; ++i) {
-       soundBuffer[off + i] = sampleBuffer[i];
+     for (int i = 0; i < len; i += 2) {
+       soundBuffer[writeOffset] = (sampleBuffer[i + 1] | (sampleBuffer[i] << 8));
+       writeOffset = (writeOffset + 1) & 0xFFFF;
+       //++availableCount++;
      }
      
      return len;
