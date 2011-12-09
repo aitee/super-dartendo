@@ -71,34 +71,34 @@
 
     if (id == 0) {
       switch (ke.keyIdentifier) {
-      case 'F5': {
-      Util.printDebug('KbInputHandler.keyReleased: Resetting game IF running.', debugMe);
-      // Reset game:
-      if (nes.isRunning()) {
-          Util.printDebug('KbInputHandler.keyReleased: nes is Running', debugMe);
-          nes.stopEmulation();
-          nes.reset();
-          nes.reloadRom();
-          nes.startEmulation();
+        case 'F5': {
+        Util.printDebug('KbInputHandler.keyReleased: Resetting game IF running.', debugMe);
+        // Reset game:
+        if (nes.isRunning()) {
+            Util.printDebug('KbInputHandler.keyReleased: nes is Running', debugMe);
+            nes.stopEmulation();
+            nes.reset();
+            nes.reloadRom();
+            nes.startEmulation();
+        }
+        break;
       }
-      break;
-    }
     
-    case 'F10': {
-      Util.printDebug('KbInputHandler.keyReleased: Closing ROM', debugMe); 
-      // Just using this to display the battery RAM contents to user.
-      if (nes.rom != null)
-        nes.rom.closeRom();
-      break;
-    }
+      case 'F10': {
+        Util.printDebug('KbInputHandler.keyReleased: Closing ROM', debugMe); 
+        // Just using this to display the battery RAM contents to user.
+        if (nes.rom != null)
+          nes.rom.closeRom();
+        break;
+      }
     
-    case 'F12':
-      // TODO
-      // JOptionPane.showInputDialog("Save Code for Resuming Game.", "Test");
-      break;
-    }
-  }
-  }
+      case 'F12':
+        // TODO
+        // JOptionPane.showInputDialog("Save Code for Resuming Game.", "Test");
+        break;
+      }// Ends switch (ke.keyIdentifier)
+    }// Ends if (id == 0)
+  }// Ends void keyReleased(KeyboardEvent ke)
 
   void keyTyped(KeyboardEvent ke) {
     // Ignore.

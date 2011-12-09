@@ -7,7 +7,7 @@ class Input {
     // Content section used a lot
 //    Element content = document.query('#content');
     InputElement input = document.query('#input-file');
-    
+    /*
     // Input handler
     input.on.change.add((EventWrappingImplementation event) {
       print("onchange");
@@ -17,6 +17,36 @@ class Input {
 //      loadFile(inputFile);
     });
 
+    // Add dragging events
+    content.on.dragEnter.add((Event event) {
+      Util.printDebug("Input.init(): content.on.dragEnter Event fired.", debugMe);
+      unwrapDomObject(event).preventDefault();
+      content.style.border = '4px solid #b1ecb3';
+      return false;
+    });
+  
+    content.on.dragOver.add((Event event) {
+      unwrapDomObject(event).preventDefault();
+      return false;
+    });
+  
+    content.on.dragLeave.add((Event event) {
+      unwrapDomObject(event).preventDefault();
+      return false;
+    });
+  
+    content.on.drop.add((Event event) {
+      unwrapDomObject(event).preventDefault();
+      content.style.border = '4px solid transparent';
+      loadFile(unwrapDomObject(event).dataTransfer.files[0]);
+      return false;
+    });
+    */
+    /*
+    inputLoadRom.on.click.add((Event event) {
+      print('trying to load: ' + input.files.item(0).fileName);
+    }); 
+    */
 //    content.on.drop.add((Event event) {
 //      print("onadd");
 //      unwrapDomObject(event).preventDefault();
@@ -39,5 +69,5 @@ class Input {
 //        window.setTimeout(handler, 100);
 //      }
 //    })();
-//  }        
+//  }
 }

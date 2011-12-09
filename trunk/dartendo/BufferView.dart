@@ -81,13 +81,13 @@ class BufferView {
 
         skipFrame = (skipFrame+1)%100;
         
-        if(nes.gui.applet.sleepTime<=-16) { //We are too far behind, skip the frame
+        if(nes.gui.applet.sleepTime <= -16) { //We are too far behind, skip the frame
           //print("Skipping render");
           return;
         }
         
-        //if(skipFrame%2!=0)
-          //return;
+        //if(skipFrame%2 != 0)
+        //  return;
         
         //Util.printDebug('BufferView.paint: Getting imagedata', debugMe);
         ImageData imageData = context.getImageData(0,0,256,240);
@@ -101,17 +101,16 @@ class BufferView {
         for (var i = 0; i < 256*240*4;) {
           //Util.printDebug('BufferView.paint: Setting pixels, i = ' + i, debugMe);
           
-          int val = (ppu_buffer[ppui]);
+          int val = ppu_buffer[ppui];
           
-          data[i++] = val&0xFF; // r
-          data[i++] = (val>>8)&0xFF; // g
-          data[i++] = (val>>16)&0xFF; // b
+          data[i++] = val & 0xFF; // r
+          data[i++] = (val>>8)  & 0xFF; // g
+          data[i++] = (val>>16) & 0xFF; // b
           ppui++;
           data[i++] = 255; // a
         }
-        //Util.printDebug('Blitting imagedata', debugMe);
+        //Util.printDebug('BufferView.paint(): Blitting imagedata', debugMe);
         context.putImageData(imageData, 0, 0, 0,   0, 256, 240);
-
     }
 
      void setFPSEnabled(bool val) {
