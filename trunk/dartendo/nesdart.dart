@@ -106,6 +106,7 @@ class Controller {
     Globals = new SGlobals();
     Util = new CUtil();
     Misc = new MiscClass();
+    input = new Input(this);
     canvas = document.query("#webGlCanvas");
     context = canvas.getContext('2d');
     scale = false;
@@ -141,14 +142,13 @@ class Controller {
 
     Globals.appletMode = true;
     Globals.memoryFlushValue = 0x00; // make SMB1 hacked version work.
-
+    
     nes = gui.getNES();
     nes.enableSound(sound);
     nes.reset();
     window.setInterval(_updateFps, 1000);
-     
-     input = new Input(nes);
-     input.init();
+
+    input.init();
   }
 
   void _updateFps() {

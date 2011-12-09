@@ -2,9 +2,9 @@ class Input {
   
   bool debugMe = false;
   List<int> romBytes;
-  NES nes;
+  Controller controller;
   
-  Input(this.nes);
+  Input(this.controller);
 
   void init() {
     // Content section used a lot
@@ -21,7 +21,7 @@ class Input {
     
     // Default ROM
     String defaultRom = 'roms/SuperMario3.json';
-    if (window.location.getParameter('rom').length >= 0) {
+    if (window.location.getParameter('rom').length > 0) {
       defaultRom = 'roms/' + window.location.getParameter('rom') + '.json';
     }
     
@@ -67,9 +67,9 @@ class Input {
 
     (handler() {
       if (reader.readyState == 2) {
-        document.query('#file-content').text = reader.result;
-        romBytes = new dom.Int8Array.fromBuffer(reader.result);
-        nes.loadRom(romBytes);
+        List<int> fromFileBytes = new dom.Uint8Array.fromBuffer(reader.result);
+        romBytes = fromFileBytes;
+        controller.run();
       } else {
         window.setTimeout(handler, 100);
       }
