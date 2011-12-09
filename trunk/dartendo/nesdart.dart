@@ -340,15 +340,15 @@ class Controller {
     
     //canvas.width = canvas.width;
     
-    sleepTime -= 16;
-
     if (nes.getCpu().stopRunning) {
               print('NOT RUNNING');
               nes.getCpu().finishRun();
               return;
             }
 
-    if(sleepTime<=0) {
+    if(lastTime>0) { //Skip one frame to set lastTime
+    while(sleepTime<=0) {
+      //print('SLEEP TIME'+sleepTime);
     while(true) {
             nes.getCpu().emulate();
             if(nes.getGui().getScreenView().frameFinished) {
@@ -356,6 +356,10 @@ class Controller {
               break;
             }
     }
+    sleepTime += 16;
+    }
+    sleepTime -= (time-lastTime);
+    //print("FRAME TIME: "+(time-lastTime));
     }
     lastTime = time;
     window.webkitRequestAnimationFrame(animate, canvas);

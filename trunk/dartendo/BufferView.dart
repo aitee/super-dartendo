@@ -81,8 +81,11 @@ class BufferView {
 
         skipFrame = (skipFrame+1)%100;
         
-        if(skipFrame%2!=0)
+        if(nes.gui.applet.sleepTime<=-16)  //We are too far behind, skip the frame
           return;
+        
+        //if(skipFrame%2!=0)
+          //return;
         
         //Util.printDebug('BufferView.paint: Getting imagedata', debugMe);
         ImageData imageData = context.getImageData(0,0,256,240);
