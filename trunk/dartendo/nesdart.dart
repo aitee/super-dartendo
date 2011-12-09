@@ -69,7 +69,8 @@ class Controller {
   
   CanvasElement canvas;
   CanvasRenderingContext context;
-
+  Input input;
+  
   bool scale = false;
   bool sound = false;
   bool fps = false;
@@ -84,7 +85,6 @@ class Controller {
   AppletUI gui;
   NES nes;
   BufferView panelScreen;
-  String rom;
   Color bgColor;
   bool started;
   
@@ -107,17 +107,18 @@ class Controller {
      samplerate = 0;
      romSize = 0;
      progress = 0;
-     rom = "";
      bgColor = new Color(0,0,0);
      started = false;
      lastTime = 0;
      sleepTime=0;
+     input = new Input();
      init();
   }
 
   void init() {
      Util.printDebug("nesdart.init(): begins", debugMe);
      PaletteTable.init();
+     input.init();
      readParams();
 
      gui = new AppletUI(this);
@@ -152,7 +153,7 @@ class Controller {
     print("For updates, see www.thatsanderskid.com");
     print("Use of this program subject to GNU GPL, Version 3.");
 
-    nes.loadRom(rom);
+    nes.loadRom(input.romBytes);
 
     if (nes.rom.isValid()) {
       // Add the screen buffer:
@@ -167,7 +168,7 @@ class Controller {
       nes.getCpu().beginExecution();
     } else {
       // ROM file was invalid.
-      print("vNES was unable to find (" + rom + ").");
+      print("vNES was unable to find ROM.");
     }
     
     Util.printDebug("nesdart.run(): ROM LOADED", debugMe);
@@ -270,20 +271,7 @@ class Controller {
   }
 
  void readParams() {
-    String tmp = 'roms/SuperMario3.json';
-    
-    if(window.location.href.indexOf('rom=')>=0) {
-      tmp = 'roms/'+window.location.href.substring(
-        window.location.href.indexOf('rom=')+4)+'.json';
-    }
-    
-    if (tmp == null || tmp == ("")) {
-        rom = "vnes.nes";
-    } else {
-        rom = tmp;
-    }
-
-    tmp = "";
+    String tmp = "";
     if (tmp == null || tmp == ("")) {
         scale = false;
     } else {
@@ -363,7 +351,5 @@ class Controller {
 }
 
 void main() {
-  Input input = new Input();
-  input.init();
   new Controller().run();
 }

@@ -15,14 +15,16 @@ class NES {
     PaletteTable palTable;
     ROM rom;
     int cc = 0;
-    String romFile;
     bool isRunningFlag = false;
+    
+    List<int> romBytes;
 
     // Creates the NES system.
      NES(AppletUI gui) {
 
         Globals.nes = this;
         this.gui = gui;
+        this.romBytes = null;
 
         // Create memory:
         cpuMem = new Memory(this, 0x10000); // Main memory (internal to CPU)
@@ -157,11 +159,9 @@ class NES {
     }
 
      void reloadRom() {
-
-        if (romFile != null) {
-            loadRom(romFile);
-        }
-
+      if (romBytes != null) {
+        loadRom(romBytes);
+      }
     }
 
      void clearCPUMemory() {
@@ -233,9 +233,8 @@ class NES {
 
     // Loads a ROM file into the CPU and PPU.
     // The ROM file is validated first.
-     bool loadRom(String file) {
-        
-       Util.printDebug('NES.loadRom( file = ' + file + '): begins.', debugMe);
+     bool loadRom(List<int> romBytes) {
+//       Util.printDebug('NES.loadRom( file = ' + file + '): begins.', debugMe);
        
         // Can't load ROM while still running.
         if (isRunningFlag) {
@@ -246,7 +245,7 @@ class NES {
             // Load ROM file:
 
             rom = new ROM(this);
-            rom.load(file);
+            rom.load(romBytes);
             if (rom.isValid()) {
 
                 // The CPU will load
@@ -261,8 +260,7 @@ class NES {
                 memMapper.loadROM(rom);
                 ppu.setMirroring(rom.getMirroringType());
 
-                this.romFile = file;
-
+                this.romBytes = romBytes;
             }
             return rom.isValid();
         }

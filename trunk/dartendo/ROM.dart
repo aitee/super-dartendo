@@ -161,11 +161,7 @@ class ROM {
       mapperSupported[232] = true; // Camerica /Quattro
    }//ends Constructor ROM(NES _nes)
 
-     void load(String fileName) {
-
-        this.fileName = fileName;
-        
-        List<int> b = FileLoader.loadFile(fileName);
+     void load(List<int> b) {
 
         if (b == null || b.length == 0) {
 

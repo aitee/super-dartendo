@@ -1,7 +1,7 @@
 class Input {
   
   bool debugMe = false;
-  var fileBytes;
+  List<int> romBytes;
   
   void init() {
     // Content section used a lot
@@ -15,7 +15,21 @@ class Input {
       File inputFile = input.files.item(0);
       loadFile(inputFile);
     });
+    
+    // Default ROM
+    String defaultRom = 'roms/SuperMario3.json';
+    if (window.location.href.indexOf('rom=') >= 0) {
+      defaultRom = 'roms/' + window.location.href.substring(
+        window.location.href.indexOf('rom=')+4)+'.json';
+    }
+    
+    final req = new XMLHttpRequest();
+    req.open('GET', '${FileLoader.home}/$defaultRom', false);
+    req.send();    
+    
+    romBytes = JSON.parse(req.responseText); 
 
+      
     // Add dragging events
 //    content.on.dragEnter.add((Event event) {
 //      Util.printDebug("Input.init(): content.on.dragEnter Event fired.", debugMe);
@@ -47,12 +61,12 @@ class Input {
     document.query('#size').text = file.fileSize;
 
     dom.FileReader reader = new dom.FileReader();
-    reader.readAsText(unwrapDomObject(file));
+    reader.readAsArrayBuffer(unwrapDomObject(file));
 
     (handler() {
       if (reader.readyState == 2) {
         document.query('#file-content').text = reader.result;
-        fileBytes = reader.result;
+        romBytes = reader.result;
       } else {
         window.setTimeout(handler, 100);
       }
