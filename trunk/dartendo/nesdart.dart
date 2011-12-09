@@ -93,11 +93,11 @@ class Controller {
   int sleepTime = 0;
   
   Controller() {
-    Globals = new SGlobals();
-    Util = new CUtil();
-    Misc = new MiscClass();
-    canvas = document.query("#webGlCanvas");
-    context = canvas.getContext('2d');
+     Globals = new SGlobals();
+     Util = new CUtil();
+     Misc = new MiscClass();
+     canvas = document.query("#webGlCanvas");
+     context = canvas.getContext('2d');
      scale = false;
      sound = false;
      fps = false;
@@ -115,24 +115,23 @@ class Controller {
      init();
   }
 
-   void init() {
+  void init() {
      Util.printDebug("nesdart.init(): begins", debugMe);
      PaletteTable.init();
-    readParams();
+     readParams();
 
-    gui = new AppletUI(this);
-    gui.init(false);
+     gui = new AppletUI(this);
+     gui.init(false);
 
-    Globals.appletMode = true;
-    Globals.memoryFlushValue = 0x00; // make SMB1 hacked version work.
+     Globals.appletMode = true;
+     Globals.memoryFlushValue = 0x00; // make SMB1 hacked version work.
 
-    nes = gui.getNES();
-    nes.enableSound(sound);
-    nes.reset();
-    
-}
-
- void addScreenView() {
+     nes = gui.getNES();
+     nes.enableSound(sound);
+     nes.reset();
+  }
+  
+  void addScreenView() {
     Util.printDebug("nesdart.addScreenView(): begins", debugMe);
 
     panelScreen = gui.getScreenView();
@@ -141,14 +140,10 @@ class Controller {
     if (scale) {
       Util.printDebug("nesdart.addScreenView(): SCALE NOT SUPPORTED!", debugMe);
       panelScreen.setScaleMode(BufferView.SCALE_NORMAL);
-    } else {
-
     }
+  }
 
-}
-
- void run() {
-
+  void run() {
     // Can start painting:
     started = true;
 
@@ -160,30 +155,25 @@ class Controller {
     nes.loadRom(rom);
 
     if (nes.rom.isValid()) {
+      // Add the screen buffer:
+      addScreenView();
 
-        // Add the screen buffer:
-        addScreenView();
+      // Set some properties:
+      Globals.timeEmulation = timeemulation;
+      nes.ppu.showSoundBuffer = showsoundbuffer;
 
-        // Set some properties:
-        Globals.timeEmulation = timeemulation;
-        nes.ppu.showSoundBuffer = showsoundbuffer;
-
-        // Start emulation:
-        Util.printDebug("nesdart.run(): vNES is now starting the processor.", debugMe);
-        nes.getCpu().beginExecution();
-
+      // Start emulation:
+      Util.printDebug("nesdart.run(): vNES is now starting the processor.", debugMe);
+      nes.getCpu().beginExecution();
     } else {
-
-        // ROM file was invalid.
-        print("vNES was unable to find (" + rom + ").");
-
+      // ROM file was invalid.
+      print("vNES was unable to find (" + rom + ").");
     }
     
     Util.printDebug("nesdart.run(): ROM LOADED", debugMe);
     nes.getCpu().initRun();
     nes.getCpu().active = true;
-    
-    
+        
     //var ac = window.webkitAudioContext();
     //audioContext = new AudioContext();
     
@@ -247,44 +237,39 @@ class Controller {
       //print('KEY RELEASED'); }); 
 
     window.webkitRequestAnimationFrame(animate, canvas);
-}
+  }
+  
+   void stop() {
+     nes.getCpu().active = false;
+     nes.stopEmulation();
+     print("vNES has stopped the processor.");
+     nes.getPapu().stop();
+     this.destroy();
+  }
 
- void stop() {
-   nes.getCpu().active = false;
-    nes.stopEmulation();
-    print("vNES has stopped the processor.");
-    nes.getPapu().stop();
-    this.destroy();
-
-}
-
- void destroy() {
-
+  void destroy() {
     if (nes != null && nes.getCpu().isRunning()) {
-        stop();
+      stop();
     }
     
     if (nes != null) {
-        nes.destroy();
+      nes.destroy();
     }
     if (gui != null) {
-        gui.destroy();
+      gui.destroy();
     }
 
     gui = null;
     nes = null;
     panelScreen = null;
     rom = null;
+  }
 
-}
-
- void showLoadProgress(int percentComplete) {
-
+  void showLoadProgress(int percentComplete) {
     progress = percentComplete;
-}
+  }
 
  void readParams() {
-
     String tmp = 'roms/SuperMario3.json';
     
     if(window.location.href.indexOf('rom=')>=0) {
@@ -336,7 +321,7 @@ class Controller {
     }
 
     romSize = -1;
-}
+  }
 
   void animate(int time) {
     bool debugLocal = false;
@@ -345,27 +330,28 @@ class Controller {
     //canvas.width = canvas.width;
     
     if (nes.getCpu().stopRunning) {
-              print('NOT RUNNING');
-              nes.getCpu().finishRun();
-              return;
-            }
+      print('NOT RUNNING');
+      nes.getCpu().finishRun();
+      return;
+    }
 
-    if((time-lastTime)<1000) { //Skip one frame to set lastTime and skip if too much time has passed since the last frame.
-    while(sleepTime<=0) {
-      //print('SLEEP TIME'+sleepTime);
-    while(true) {
-            nes.getCpu().emulate();
-            if(nes.getGui().getScreenView().frameFinished) {
-              nes.getGui().getScreenView().finishFrame();
-              break;
-            }
-    }
-    sleepTime += 16;
-    }
-    sleepTime -= (time-lastTime);
-    //print("FRAME TIME: "+(time-lastTime));
+    // Skip one frame to set lastTime and skip if too much time has passed since the last frame.
+    if ((time-lastTime) < 1000) { 
+      while(sleepTime<=0) {
+        //print('SLEEP TIME'+sleepTime);
+        while(true) {
+          nes.getCpu().emulate();
+          if (nes.getGui().getScreenView().frameFinished) {
+            nes.getGui().getScreenView().finishFrame();
+            break;
+          }
+        }
+        sleepTime += 16;
+      }
+      sleepTime -= (time-lastTime);
+      //print("FRAME TIME: "+(time-lastTime));
     } else {
-      Util.printDebug('SKIPPING FRAME',debugLocal);
+      Util.printDebug('SKIPPING FRAME', debugLocal);
     }
     lastTime = time;
     window.webkitRequestAnimationFrame(animate, canvas);
