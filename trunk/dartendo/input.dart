@@ -7,9 +7,23 @@ class Input {
   Input(this.controller);
 
   void init() {
-    // Content section used a lot
-    Element content = document.query('#content');
+    // Menu handler
+    Element menuLabel = document.query('#roms-label');
+    Element menu = document.query('#menu');
+    Element content = document.query('#roms-content');
     InputElement input = document.query('#input-file');
+
+    menuLabel.on.click.add((EventWrappingImplementation event) {
+      print("menu click");
+      unwrapDomObject(event).preventDefault();
+      if (menu.style.bottom == '0px') {
+        menu.style.transition = 'bottom 0.2s';
+        menu.style.bottom = '-21ex';
+      } else {
+        menu.style.transition = 'bottom 0.2s';
+        menu.style.bottom = '0';
+      }
+    });
 
     // Input handler
     input.on.change.add((EventWrappingImplementation event) {

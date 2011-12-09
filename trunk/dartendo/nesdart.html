@@ -6,7 +6,7 @@
 
       .container {
         width: 800px;
-        height: 850px;
+        height: 760px;
         margin: 0 auto;
         position: relative;
         overflow: hidden;
@@ -73,6 +73,32 @@
         width: 100px;
         height: 20px;
       }
+
+      #menu {
+        position: fixed;
+        bottom: -21ex;
+        z-index: 5;
+        width: 80%;
+      }
+            
+      #roms-label {
+        padding: 2px 4px 2px 4px;
+        border: 4px solid #ccc;
+        border-bottom: 0;
+        background-color: #ccc;
+        border-radius: 4px 4px 0 0;
+        width: 10em;
+        cursor: pointer;
+      }
+      
+      #roms-content {
+        padding: 2px 4px 2px 4px;
+        border-left: 1ex solid #ccc;
+        border-right: 1ex solid #ccc;
+        border-top: 1ex solid #ccc;
+        background-color: #ddd;
+        height: 20ex;
+      }
     </style>
   </head>
   <body>
@@ -85,16 +111,22 @@
       <canvas id="webGlCanvas" width="256" height="240"></canvas>
     </div>
 
-    <div id="content">
-      <p>
-        Select a ROM or drag one into this area<br>
-        <input type="file" id="input-file" />
-      </p>
-      <p>
-        <b>Name:</b> <span id="name"></span><br>
-        <b>File Size:</b> <span id="size"></span><br>
-        <b>Content:</b> <br><br> <pre id="file-content"></pre>
-      </p>
+    
+    <div id="menu">
+      <div id="roms-label">
+        roms
+      </div>
+      <div id="roms-content">
+	    <p>
+	      Select a ROM or drag one into this area<br>
+	      <input type="file" id="input-file" />
+	    </p>
+	    <p>
+	      <b>Name:</b> <span id="name"></span><br>
+	      <b>File Size:</b> <span id="size"></span><br>
+	      <b>Content:</b> <br><br> <pre id="file-content"></pre>
+	    </p>
+	  </div>
     </div>
 
     <script type="text/javascript">

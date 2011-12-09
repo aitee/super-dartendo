@@ -443,5 +443,5 @@ class Controller {
 }
 
 void main() {
-  new Controller().run();
+  new Controller();
 }
