@@ -419,7 +419,7 @@ class Controller {
     frameStatus['select'] = joy.getKeyState(KbInputHandler.KEY_SELECT);
     frameStatus['start'] = joy.getKeyState(KbInputHandler.KEY_START);
     print('netplay: adding for frame $frameCount');
-    _sendNetStatus[frameCount] = frameStatus;
+    _sendNetStatus[(frameCount+10)] = frameStatus;
   }
 
   bool _handleRemoteInput() {
@@ -443,5 +443,5 @@ class Controller {
 }
 
 void main() {
-  new Controller();
+  new Controller().run();
 }

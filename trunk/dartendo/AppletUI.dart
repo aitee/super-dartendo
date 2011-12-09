@@ -1,6 +1,6 @@
  class AppletUI {
 
-   bool debugMe = true;
+   bool debugMe = false;
    
     Controller applet;
     NES nes;

@@ -9,7 +9,8 @@ class HelloWorld(object):
         return "Hello World!"
     index.exposed = True
 
-    def sendStatus(self, **args):
+    def sendStatus(self, status = None):
+        args = json.loads(status)
         if int(args['matchid']) not in matchPlayerTimeInputs:
             matchPlayerTimeInputs[int(args['matchid'])] = {}
         playerTimeInputs = matchPlayerTimeInputs[int(args['matchid'])]
