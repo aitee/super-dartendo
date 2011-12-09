@@ -99,8 +99,9 @@ class Controller {
   int sleepTime = 0;
   int frameCount = 0;
   int _lastFrameCount = 0;
-
-  Map<int, Map<String, int>> _netStatus;
+  
+  Map<int, Map<String, int>> _recvNetStatus;
+  Map<int, Map<String, int>> _sendNetStatus;
 
   Controller() {
     Globals = new SGlobals();
@@ -129,8 +130,9 @@ class Controller {
     playerid = 0;
     _lastFrameCount = 0;
     frameCount = 0;
-    _netStatus = new Map<int, Map<String, int>>();     
-     
+    _recvNetStatus = new Map<int, Map<String, int>>();
+    _sendNetStatus = new Map<int, Map<String, int>>();
+
     init();
   }
 
@@ -270,11 +272,21 @@ class Controller {
     progress = percentComplete;
   }
 
- void readParams() {
+  static String getQueryValue(String key) { 
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split("=");
+      if (pair[0] == key) {
+        return pair[1];
+      }
+    }
+    return null;
+  }
 
-    Util.printDebug('nesdart.readParams(): begins', debugMe);    
-//    print("READING PARAMS");
-//    print(window.location.getParameter('rom'));
+  void readParams() {
+    print("READING PARAMS");
+    
     String tmp = "";
     if (tmp == null || tmp == ("")) {
       scale = false;
@@ -306,7 +318,7 @@ class Controller {
       showsoundbuffer = tmp == ("on");
     }
 
-    tmp = window.location.getParameter('netplay');
+    tmp = getQueryValue('netplay');
     if (tmp == null || tmp == ('')) {
       _netplay = false;
     } else {
@@ -314,14 +326,14 @@ class Controller {
     }
     print('NETPLAY: '+_netplay);
 
-    tmp = window.location.getParameter('matchid');
+    tmp = getQueryValue('matchid');
     if (tmp == null || tmp == ('')) {
       matchid = 0;
     } else {
       matchid = Math.parseInt(tmp);
     }
 
-    tmp = window.location.getParameter('playerid');
+    tmp = getQueryValue('playerid');
     if (tmp == null || tmp == ('')) {
       playerid = 0;
     } else {
@@ -349,15 +361,17 @@ class Controller {
       while(sleepTime <= 0) {
         //print('SLEEP TIME'+sleepTime);
         while(true) {
-          if (_netplay)
-            _sendStatus();
-          if (!_netplay || _handleRemoteInput()) {
-            cpu.emulate();
-            if(screen.frameFinished) {
-              ++frameCount;
-              screen.finishFrame();
-              break;
+          cpu.emulate();
+          if (screen.frameFinished) {
+            if (_netplay) {
+              _buildLocalStatus();
+              _sendStatus();
             }
+            ++frameCount;
+            screen.finishFrame();
+            if (_netplay)
+              _handleRemoteInput();
+            break;
           }
         }
         sleepTime += 16;
@@ -373,31 +387,43 @@ class Controller {
 
   void _sendStatus() {
     final req = new XMLHttpRequest();
-    String url = _sendUrl + '?matchid=' + matchid;
-    url += '&playerid=' + playerid;
-    url += '&framecount=' + frameCount;
+
+    String resp = '';
+
+    while (!_recvNetStatus.containsKey(frameCount + 1)) {
+      String jsonStatus = JSON.stringify(_sendNetStatus);
+      print('netplay: Sending... $jsonStatus');
+      String url = _sendUrl + '?status=' + jsonStatus;
+      req.open('GET', url, false);
+      req.send();
+      _sendNetStatus.clear();
+      resp = req.responseText;
+      Map<String, Map<String, int>> resp_map = JSON.parse(resp);
+      resp_map.forEach((k, v) => _recvNetStatus[Math.parseInt(k)] = v);
+    }
+  }
+
+  void _buildLocalStatus() {
+    Map<String, int> frameStatus = new Map<String, int>();
+    frameStatus['matchid'] = matchid;
+    frameStatus['playerid'] = playerid;
 
     KbInputHandler joy = (playerid == 1 ? gui.kbJoy1 : gui.kbJoy2);
 
-    url += '&left=' + joy.getKeyState(KbInputHandler.KEY_LEFT);
-    url += '&right=' + joy.getKeyState(KbInputHandler.KEY_RIGHT);
-    url += '&up=' + joy.getKeyState(KbInputHandler.KEY_UP);
-    url += '&down=' + joy.getKeyState(KbInputHandler.KEY_DOWN);
-    url += '&a=' + joy.getKeyState(KbInputHandler.KEY_A);
-    url += '&b=' + joy.getKeyState(KbInputHandler.KEY_B);
-    url += '&select=' + joy.getKeyState(KbInputHandler.KEY_SELECT);
-    url += '&start=' + joy.getKeyState(KbInputHandler.KEY_START);
-    req.open('GET', url, false);
-    req.send();
-
-    Map<String, Map<String, int>> resp = JSON.parse(req.responseText);
-    resp.forEach((k, v) => _netStatus[Math.parseInt(k)] = v);
+    frameStatus['left'] = joy.getKeyState(KbInputHandler.KEY_LEFT);
+    frameStatus['right'] = joy.getKeyState(KbInputHandler.KEY_RIGHT);
+    frameStatus['up'] = joy.getKeyState(KbInputHandler.KEY_UP);
+    frameStatus['down'] = joy.getKeyState(KbInputHandler.KEY_DOWN);
+    frameStatus['a'] = joy.getKeyState(KbInputHandler.KEY_A);
+    frameStatus['b'] = joy.getKeyState(KbInputHandler.KEY_B);
+    frameStatus['select'] = joy.getKeyState(KbInputHandler.KEY_SELECT);
+    frameStatus['start'] = joy.getKeyState(KbInputHandler.KEY_START);
+    print('netplay: adding for frame $frameCount');
+    _sendNetStatus[frameCount] = frameStatus;
   }
 
   bool _handleRemoteInput() {
-    if (!_netStatus.containsKey(frameCount))
-      return false;
-    Map<String, int> status = _netStatus[frameCount];
+    Map<String, int> status = _recvNetStatus[frameCount];
     KbInputHandler joy = (playerid == 1 ? gui.kbJoy2 : gui.kbJoy1);
     joy.setKeyState(KbInputHandler.KEY_LEFT, status['left']);
     joy.setKeyState(KbInputHandler.KEY_RIGHT, status['right']);
@@ -407,6 +433,8 @@ class Controller {
     joy.setKeyState(KbInputHandler.KEY_B, status['b']);
     joy.setKeyState(KbInputHandler.KEY_SELECT, status['select']);
     joy.setKeyState(KbInputHandler.KEY_START, status['start']);
+
+    // TODO: discard older frames.
   }
 
   void addSleepTime(int timeToAdd) {
