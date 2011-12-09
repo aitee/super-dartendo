@@ -1,6 +1,5 @@
 #import('dart:html');
 #import('dart:json');
-//#import('dart:html', prefix:'html');
 #import('dart:htmlimpl');
 #import('dart:dom', prefix:'dom');
 
@@ -16,6 +15,7 @@
 #source('CpuInfo.dart');
 #source('FileLoader.dart');
 #source('Globals.dart');
+#source('input.dart');
 #source('KbInputHandler.dart');
 #source('MemoryMapper.dart');
 #source('Mapper001.dart');
@@ -374,5 +374,7 @@ class Controller {
 }
 
 void main() {
+  Input input = new Input();
+  input.init();
   new Controller().run();
 }
