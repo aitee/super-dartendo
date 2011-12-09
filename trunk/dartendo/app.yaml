@@ -15,10 +15,16 @@ handlers:
   upload: nesdart.html
   login: admin
 
-- url: /(.*\.(html|css|js|png|json|dart|nes|jpg|gif))
+- url: /(.*\.(html|css|js|png|json|nes|jpg|gif))
   static_files: \1
-  upload: (.*\.(html|css|js|png|json|dart|nes|jpg|gif))
+  upload: (.*\.(html|css|js|png|json|nes|jpg|gif))
   login: admin
+
+- url: /(.*\.dart)
+  static_files: \1
+  upload: (.*\.dart)
+  login: admin
+  mime_type: application/dart
 
 - url: (.*)
   script: main.app
