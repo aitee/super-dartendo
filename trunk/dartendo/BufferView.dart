@@ -71,7 +71,9 @@ class BufferView {
      }
      
      void paint() {
-
+        
+       bool debugLoop = debugMe;
+       
         // Skip if not needed:
         if (usingMenu) {
             return;
@@ -82,11 +84,13 @@ class BufferView {
         Util.printDebug('BufferView.paint: Getting imagedata', debugMe);
         var arr = context.getImageData(0,0,256,240);
         var data = arr.data;
-        //print(data.length);
-        var ppui=0;
-        print('setting pixels');
-        for (var i=0;i<256*240*4;) {
-          //print('Setting pixels');
+        Util.printDebug('BufferView.paint: data.length = ' + data.length, debugMe);
+        
+        var ppui = 0;
+        Util.printDebug('BufferView.paint: setting pixels', debugLoop);
+        for (var i = 0; i < 256*240*4;) {
+          Util.printDebug('BufferView.paint: Setting pixels, i = ' + i, debugMe);
+          
           data[i] = (nes.ppu.buffer[ppui])&0xFF; // r
           i++;
           data[i] = (nes.ppu.buffer[ppui]>>8)&0xFF; // g
@@ -98,10 +102,6 @@ class BufferView {
           i++;
         }
         Util.printDebug('Blitting imagedata', debugMe);
-        var a = 1;
-        var b = 2;
-        var c = a ~/ b;
-        print('BufferView.paint: c = ' + c);
         context.putImageData(arr, 0, 0, 0,   0, 256, 240);
 
     }

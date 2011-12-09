@@ -1,17 +1,19 @@
 class ROM {
 
-    // Mirroring types:
-   static final int VERTICAL_MIRRORING = 0;
-   static final int HORIZONTAL_MIRRORING = 1;
-   static final int FOURSCREEN_MIRRORING = 2;
-   static final int SINGLESCREEN_MIRRORING = 3;
-   static final int SINGLESCREEN_MIRRORING2 = 4;
-   static final int SINGLESCREEN_MIRRORING3 = 5;
-   static final int SINGLESCREEN_MIRRORING4 = 6;
-   static final int CHRROM_MIRRORING = 7;
+  bool debugMe = false;
+  
+  // Mirroring types:
+  static final int VERTICAL_MIRRORING = 0;
+  static final int HORIZONTAL_MIRRORING = 1;
+  static final int FOURSCREEN_MIRRORING = 2;
+  static final int SINGLESCREEN_MIRRORING = 3;
+  static final int SINGLESCREEN_MIRRORING2 = 4;
+  static final int SINGLESCREEN_MIRRORING3 = 5;
+  static final int SINGLESCREEN_MIRRORING4 = 6;
+  static final int CHRROM_MIRRORING = 7;
    
-    bool failedSaveFile = false;
-    bool saveRamUpToDate = true;
+  bool failedSaveFile = false;
+  bool saveRamUpToDate = true;
     
     List<int> header;
     List<List<int>> rom;
@@ -167,7 +169,7 @@ class ROM {
         if (b == null || b.length == 0) {
 
             // Unable to load file.
-            nes.gui.showErrorMsg("Unable to load ROM file.");
+            Util.printDebug("Unable to load ROM file.", debugMe);
             valid = false;
 
         }
@@ -465,7 +467,7 @@ class ROM {
         }
 
         // If the mapper wasn't supported, create the standard one:
-        nes.gui.showErrorMsg("Warning: Mapper not supported yet.");
+        Util.printDebug("Warning: Mapper not supported yet.", debugMe);
         return new MapperDefault();
 
     }

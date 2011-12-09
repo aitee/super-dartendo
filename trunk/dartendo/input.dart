@@ -1,5 +1,6 @@
 class Input {
   
+  bool debugMe = false;
   var fileBytes;
   
   void init() {
@@ -12,14 +13,15 @@ class Input {
   
     // Input handler
     input.on.change.add((Event event) {
-      print("change");
+      Util.printDebug("Input.init(): input.on.change Event fired.", debugMe);
+      
       unwrapDomObject(event).preventDefault();
       loadFile(input.files.item(0));
     });
     
     // Add dragging events
     content.on.dragEnter.add((Event event) {
-      print("dragEnter");
+      Util.printDebug("Input.init(): content.on.dragEnter Event fired.", debugMe);
       unwrapDomObject(event).preventDefault();
       content.style.border = '4px solid #b1ecb3';
       return false;
@@ -52,7 +54,8 @@ class Input {
     reader.readAsText(unwrapDomObject(file));
 
     (handler() {
-      print(reader.readyState);
+      Util.printDebug("Input.loadFile: reader.readyState = " + reader.readyState, debugMe);
+      
       if (reader.readyState == 2) {
         document.query('#file-content').text = reader.result;
         fileBytes = reader.result;
