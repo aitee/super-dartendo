@@ -884,7 +884,7 @@ class CPU {
     
             }
           }
-        } else if (opcode < 30) {
+        } else if (opcode < 40) {
           switch(opcode){
             case 30:{
     
