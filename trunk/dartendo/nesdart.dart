@@ -397,6 +397,9 @@ class Controller {
       req.open('GET', url, false);
       req.send();
       _sendNetStatus.clear();
+      _sendNetStatus[-1] = new Map<String, int>();
+      _sendNetStatus[-1]['matchid'] = matchid;
+      _sendNetStatus[-1]['playerid'] = playerid;
       resp = req.responseText;
       Map<String, Map<String, int>> resp_map = JSON.parse(resp);
       resp_map.forEach((k, v) => _recvNetStatus[Math.parseInt(k)] = v);
