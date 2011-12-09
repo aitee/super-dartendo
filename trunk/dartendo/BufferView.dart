@@ -25,6 +25,8 @@ class BufferView {
      int fpsCounter = 0;
      bool notifyImageReady = false;
      bool frameFinished = false;
+     
+     int skipFrame = 0;
 
      // Constructor
      BufferView(NES nes, int width, int height) {
@@ -77,6 +79,11 @@ class BufferView {
         if (usingMenu)
             return;
 
+        skipFrame = (skipFrame+1)%100;
+        
+        if(skipFrame%2!=0)
+          return;
+        
         //Util.printDebug('BufferView.paint: Getting imagedata', debugMe);
         var arr = context.getImageData(0,0,256,240);
         var data = arr.data;

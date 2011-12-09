@@ -17,7 +17,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class MapperDefault implements MemoryMapper
 {
-    bool debug = true;
+    bool debug = false;
     
     // Set at constructor
     NES nes;

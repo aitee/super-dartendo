@@ -335,10 +335,12 @@ class Controller {
 }
 
   void animate(int time) {
-    bool debugLocal = debugMe;
+    bool debugLocal = false;
     //Util.printDebug("nesdart.animate(" + time + ") begins.", debugLocal);
     
     //canvas.width = canvas.width;
+    
+    sleepTime -= 16;
 
     if (nes.getCpu().stopRunning) {
               print('NOT RUNNING');
@@ -346,12 +348,14 @@ class Controller {
               return;
             }
 
+    if(sleepTime<=0) {
     while(true) {
             nes.getCpu().emulate();
             if(nes.getGui().getScreenView().frameFinished) {
               nes.getGui().getScreenView().finishFrame();
               break;
             }
+    }
     }
     lastTime = time;
     window.webkitRequestAnimationFrame(animate, canvas);
