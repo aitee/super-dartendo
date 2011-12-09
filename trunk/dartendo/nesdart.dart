@@ -404,9 +404,13 @@ class Controller {
   }
 
   void _buildLocalStatus() {
+    if (!_sendNetStatus.containsKey(-1)) {
+      _sendNetStatus[-1] = new Map<String, int>();
+      _sendNetStatus[-1]['matchid'] = matchid;
+      _sendNetStatus[-1]['playerid'] = playerid;
+    }
+
     Map<String, int> frameStatus = new Map<String, int>();
-    frameStatus['matchid'] = matchid;
-    frameStatus['playerid'] = playerid;
 
     KbInputHandler joy = (playerid == 1 ? gui.kbJoy1 : gui.kbJoy2);
 
@@ -419,7 +423,7 @@ class Controller {
     frameStatus['select'] = joy.getKeyState(KbInputHandler.KEY_SELECT);
     frameStatus['start'] = joy.getKeyState(KbInputHandler.KEY_START);
     print('netplay: adding for frame $frameCount');
-    _sendNetStatus[(frameCount+10)] = frameStatus;
+    _sendNetStatus[frameCount+10] = frameStatus;
   }
 
   bool _handleRemoteInput() {
