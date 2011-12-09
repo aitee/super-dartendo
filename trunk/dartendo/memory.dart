@@ -68,7 +68,10 @@ class Memory{
   // iainmcgin: formerly known as write
   void writeListWithOffset(int address, List<int> array, int arrayoffset, int length) {
     if(address + length > mem.length) return;
-    mem.setRange(address, length, array, arrayoffset);
+    //mem.setRange(address, length, array, arrayoffset);
+    for (var i = 0 ; i < length ; i++) {
+      mem[address+i] = array[arrayoffset+i];
+    }
   }
   
   void destroy() {

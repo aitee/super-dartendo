@@ -122,6 +122,10 @@
 
      void setWindowCaption(String s) {
     }
+     
+     void showErrorMsg(String s) {
+       print(s);
+     }
 
      void setTitle(String s) {
     }

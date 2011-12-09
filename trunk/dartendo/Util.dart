@@ -56,7 +56,7 @@ class CUtil {
   
   void printDebug(String content, bool toPrint) {
     if (toPrint) {
-      print(content);
+      //print(content);
     }
   }
   

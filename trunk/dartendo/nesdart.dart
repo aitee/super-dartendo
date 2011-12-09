@@ -300,7 +300,7 @@ class Controller {
 
     String tmp;
 
-    tmp = "IceHockey.json";
+    tmp = "roms/SuperMario3.json";
     if (tmp == null || tmp == ("")) {
         rom = "vnes.nes";
     } else {
@@ -374,7 +374,7 @@ class Controller {
 }
 
 void main() {
-  Input input = new Input();
+  //Input input = new Input();
 //  input.init();
   new Controller().run();
 }
