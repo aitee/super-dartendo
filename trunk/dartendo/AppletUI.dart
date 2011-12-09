@@ -23,18 +23,21 @@
         kbJoy1 = new KbInputHandler(nes, 0);
         kbJoy2 = new KbInputHandler(nes, 1);
 
-        /*
         // Grab Controller Setting for Player 1:
-        kbJoy1.mapKey(InputHandler.KEY_A, 88);
-        kbJoy1.mapKey(InputHandler.KEY_B, 90);
-        kbJoy1.mapKey(InputHandler.KEY_START, 13);
-        kbJoy1.mapKey(InputHandler.KEY_SELECT, 32);
-        kbJoy1.mapKey(InputHandler.KEY_UP, 38);
-        kbJoy1.mapKey(InputHandler.KEY_DOWN, 40);
-        kbJoy1.mapKey(InputHandler.KEY_LEFT, 37);
-        kbJoy1.mapKey(InputHandler.KEY_RIGHT, 39);
-        vScreen.addKeyListener(kbJoy1);
+        kbJoy1.mapKey(KbInputHandler.KEY_A, 88);
+        kbJoy1.mapKey(KbInputHandler.KEY_B, 90);
+        kbJoy1.mapKey(KbInputHandler.KEY_START, 13);
+        kbJoy1.mapKey(KbInputHandler.KEY_SELECT, 32);
+        //kbJoy1.mapKey(KbInputHandler.KEY_UP, 38);
+        //kbJoy1.mapKey(KbInputHandler.KEY_DOWN, 40);
+        //kbJoy1.mapKey(KbInputHandler.KEY_LEFT, 37);
+        //kbJoy1.mapKey(KbInputHandler.KEY_RIGHT, 39);
+        kbJoy1.mapKey(KbInputHandler.KEY_UP, 73);
+        kbJoy1.mapKey(KbInputHandler.KEY_DOWN, 75);
+        kbJoy1.mapKey(KbInputHandler.KEY_LEFT, 74);
+        kbJoy1.mapKey(KbInputHandler.KEY_RIGHT, 76);
 
+        /*
         // Grab Controller Setting for Player 2:
         kbJoy2.mapKey(InputHandler.KEY_A, 0);
         kbJoy2.mapKey(InputHandler.KEY_B, 0);
@@ -44,7 +47,6 @@
         kbJoy2.mapKey(InputHandler.KEY_DOWN, 0);
         kbJoy2.mapKey(InputHandler.KEY_LEFT, 0);
         kbJoy2.mapKey(InputHandler.KEY_RIGHT, 0);
-        vScreen.addKeyListener(kbJoy2);
         */
     }
 

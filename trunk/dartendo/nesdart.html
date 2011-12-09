@@ -2,6 +2,11 @@
 <html>
   <head>
     <title>nes</title>
+    <style type="text/css">
+      #webGlCanvas {
+        height: 480px; width: 512px; border: 1px solid black;
+      }
+    </style>
   </head>
   <body>
     <h1>nes</h1>
@@ -17,7 +22,7 @@
         <b>Content:</b> <br><br> <pre id="file-content"></pre>
       </p>
     </div>
-
+    
     <canvas id="webGlCanvas" style="border: 1px solid green" width="256" height="240"></canvas>
     <script type="text/javascript" src="nesdart.dart.js"></script>
     <!-- FROG version: <script type="text/javascript" src="nesdart.dart.js"></script> -->
