@@ -44,10 +44,10 @@ class NES {
         }
 
         // Load NTSC palette:
-        //if (!palTable.loadNTSCPalette()) {
+        if (!palTable.loadNTSCPalette()) {
             //System.out.println("Unable to load palette file. Using default.");
             palTable.loadDefaultPalette();
-        //}
+        }
 
         // Initialize units:
         cpu.init();

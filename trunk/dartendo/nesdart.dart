@@ -374,7 +374,7 @@ class Controller {
 }
 
 void main() {
-  Input input = new Input();
-  input.init();
+  //Input input = new Input();
+  //input.init();
   new Controller().run();
 }
