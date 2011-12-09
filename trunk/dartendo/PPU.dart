@@ -294,7 +294,7 @@ class PPU {
 
   // Emulates PPU cycles
   void emulateCycles() {
-    //int n = (!_requestEndFrame && curX+cycles<341 && (scanline-20 < spr0HitY || scanline-22 > spr0HitY))?cycles:1;
+    // int n = (!_requestEndFrame && curX+cycles<341 && (scanline-20 < spr0HitY || scanline-22 > spr0HitY))?cycles:1;
     for (; cycles > 0; cycles--) {
       if (scanline - 21 == spr0HitY) {
         if ((curX == spr0HitX) && (f_spVisibility == 1)) {
@@ -302,6 +302,7 @@ class PPU {
           setStatusFlag(_STATUS_SPRITE0HIT, true);
         }
       }
+      
       if (_requestEndFrame) {
         _nmiCounter--;
         if (_nmiCounter == 0) {
@@ -309,6 +310,7 @@ class PPU {
           startVBlank();
         }
       }
+      
       curX++;
       if (curX == 341) {
         curX = 0;

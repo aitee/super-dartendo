@@ -18,7 +18,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 class Mapper068 extends MapperDefault {
 
     int r1 = 0;
-    int r2 = 0; 
+    int r2 = 0;
     int r3 = 0; 
     int r4 = 0;
 
