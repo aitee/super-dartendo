@@ -127,6 +127,7 @@ class CPU {
       REG_ACC = (temp&255);
       cycleCount+=cycleAdd;
     };
+    
     opcode_table[1] = () { 
 
       // *******
@@ -219,6 +220,7 @@ class CPU {
       F_ZERO = temp;
 
     };
+    
     opcode_table[7] = () {
 
       // *******
@@ -403,7 +405,8 @@ class CPU {
       F_ZERO = temp;
       write(addr,temp);
 
-    }; opcode_table[21] = () {
+    }; 
+    opcode_table[21] = () {
 
       // *******
       // * DEX *
@@ -414,7 +417,8 @@ class CPU {
       F_SIGN = (REG_X>>7)&1;
       F_ZERO = REG_X;
 
-    }; opcode_table[22] = () {
+    }; 
+    opcode_table[22] = () {
 
       // *******
       // * DEY *
@@ -425,7 +429,8 @@ class CPU {
       F_SIGN = (REG_Y>>7)&1;
       F_ZERO = REG_Y;
 
-    }; opcode_table[23] = () {
+    }; 
+    opcode_table[23] = () {
 
       // *******
       // * EOR *
@@ -437,7 +442,8 @@ class CPU {
       F_ZERO = REG_ACC;
       cycleCount+=cycleAdd;
 
-    }; opcode_table[24] = () {
+    }; 
+    opcode_table[24] = () {
 
       // *******
       // * INC *
@@ -449,8 +455,8 @@ class CPU {
       F_ZERO = temp;
       write(addr,(temp&0xFF));
 
-    }; opcode_table[25] = () {
-
+    }; 
+    opcode_table[25] = () {
       // *******
       // * INX *
       // *******
@@ -460,7 +466,8 @@ class CPU {
       F_SIGN = (REG_X>>7)&1;
       F_ZERO = REG_X;
 
-    }; opcode_table[26] = () {
+    }; 
+    opcode_table[26] = () {
 
       // *******
       // * INY *
@@ -472,7 +479,8 @@ class CPU {
       F_SIGN = (REG_Y>>7)&1;
       F_ZERO = REG_Y;
 
-    }; opcode_table[27] = () {
+    };
+    opcode_table[27] = () {
 
       // *******
       // * JMP *
@@ -481,7 +489,9 @@ class CPU {
       // Jump to new location:
       REG_PC = addr-1;
 
-    }; opcode_table[28] = () {
+    }; 
+    
+    opcode_table[28] = () {
 
       // *******
       // * JSR *
@@ -493,7 +503,9 @@ class CPU {
       push(REG_PC&255);
       REG_PC = addr-1;
 
-    }; opcode_table[29] = () {
+    }; 
+    
+    opcode_table[29] = () {
 
       // *******
       // * LDA *
@@ -506,6 +518,7 @@ class CPU {
       cycleCount+=cycleAdd;
 
     };
+    
     opcode_table[30] = () {
 
       // *******
@@ -518,7 +531,9 @@ class CPU {
       F_ZERO = REG_X;
       cycleCount+=cycleAdd;
 
-    }; opcode_table[31] = () {
+    }; 
+    
+    opcode_table[31] = () {
 
       // *******
       // * LDY *
@@ -530,7 +545,9 @@ class CPU {
       F_ZERO = REG_Y;
       cycleCount+=cycleAdd;
 
-    }; opcode_table[32] = () {
+    }; 
+    
+    opcode_table[32] = () {
 
       // *******
       // * LSR *
@@ -555,7 +572,9 @@ class CPU {
       F_SIGN = 0;
       F_ZERO = temp;
 
-    }; opcode_table[33] = () {
+    }; 
+    
+    opcode_table[33] = () {
 
       // *******
       // * NOP *
@@ -564,7 +583,9 @@ class CPU {
       // No OPeration.
       // Ignore.
 
-    }; opcode_table[34] = () {
+    }; 
+    
+    opcode_table[34] = () {
 
       // *******
       // * ORA *
@@ -577,7 +598,9 @@ class CPU {
       REG_ACC = temp;
       if(addrMode!=11)cycleCount+=cycleAdd; // PostIdxInd = 11
 
-    }; opcode_table[35] = () {
+    }; 
+    
+    opcode_table[35] = () {
 
       // *******
       // * PHA *
@@ -586,7 +609,9 @@ class CPU {
       // Push accumulator on stack
       push(REG_ACC);
 
-    }; opcode_table[36] = () {
+    }; 
+    
+    opcode_table[36] = () {
 
       // *******
       // * PHP *
@@ -605,7 +630,9 @@ class CPU {
           (F_SIGN<<7)
           );
 
-    }; opcode_table[37] = () {
+    }; 
+    
+    opcode_table[37] = () {
 
       // *******
       // * PLA *
@@ -616,7 +643,9 @@ class CPU {
       F_SIGN = (REG_ACC>>7)&1;
       F_ZERO = REG_ACC;
 
-    }; opcode_table[38] = () {
+    }; 
+    
+    opcode_table[38] = () {
 
       // *******
       // * PLP *
@@ -635,7 +664,9 @@ class CPU {
 
       F_NOTUSED = 1;
 
-    }; opcode_table[39] = () {
+    }; 
+    
+    opcode_table[39] = () {
 
       // *******
       // * ROL *
@@ -688,7 +719,9 @@ class CPU {
       F_SIGN = (temp>>7)&1;
       F_ZERO = temp;
 
-    }; opcode_table[41] = () {
+    }; 
+    
+    opcode_table[41] = () {
 
       // *******
       // * RTI *
@@ -714,7 +747,9 @@ class CPU {
       REG_PC--;
       F_NOTUSED = 1;
 
-    }; opcode_table[42] = () {
+    }; 
+    
+    opcode_table[42] = () {
 
       // *******
       // * RTS *
@@ -729,7 +764,9 @@ class CPU {
         return;
       }
 
-    }; opcode_table[43] = () {
+    }; 
+    
+    opcode_table[43] = () {
 
       // *******
       // * SBC *
@@ -743,7 +780,9 @@ class CPU {
       REG_ACC = (temp&0xFF);
       if(addrMode!=11)cycleCount+=cycleAdd; // PostIdxInd = 11
 
-    }; opcode_table[44] = () {
+    }; 
+    
+    opcode_table[44] = () {
 
       // *******
       // * SEC *
@@ -752,7 +791,9 @@ class CPU {
       // Set carry flag
       F_CARRY = 1;
 
-    }; opcode_table[45] = () {
+    }; 
+    
+    opcode_table[45] = () {
 
       // *******
       // * SED *
@@ -761,7 +802,9 @@ class CPU {
       // Set decimal mode
       F_DECIMAL = 1;
 
-    }; opcode_table[46] = () {
+    }; 
+    
+    opcode_table[46] = () {
 
       // *******
       // * SEI *
@@ -770,7 +813,9 @@ class CPU {
       // Set interrupt disable status
       F_INTERRUPT = 1;
 
-    }; opcode_table[47] = () {
+    }; 
+    
+    opcode_table[47] = () {
 
       // *******
       // * STA *
@@ -779,7 +824,9 @@ class CPU {
       // Store accumulator in memory
       write(addr,REG_ACC);
 
-    }; opcode_table[48] = () {
+    }; 
+    
+    opcode_table[48] = () {
 
       // *******
       // * STX *
@@ -788,7 +835,9 @@ class CPU {
       // Store index X in memory
       write(addr,REG_X);
 
-    }; opcode_table[49] = () {
+    }; 
+    
+    opcode_table[49] = () {
 
       // *******
       // * STY *
@@ -808,7 +857,9 @@ class CPU {
       F_SIGN = (REG_ACC>>7)&1;
       F_ZERO = REG_ACC;
 
-    }; opcode_table[51] = () {
+    }; 
+    
+    opcode_table[51] = () {
 
       // *******
       // * TAY *
@@ -819,7 +870,9 @@ class CPU {
       F_SIGN = (REG_ACC>>7)&1;
       F_ZERO = REG_ACC;
 
-    }; opcode_table[52] = () {
+    }; 
+    
+    opcode_table[52] = () {
 
       // *******
       // * TSX *
@@ -830,7 +883,9 @@ class CPU {
       F_SIGN = (REG_SP>>7)&1;
       F_ZERO = REG_X;
 
-    }; opcode_table[53] = () {
+    }; 
+    
+    opcode_table[53] = () {
 
       // *******
       // * TXA *
@@ -841,7 +896,9 @@ class CPU {
       F_SIGN = (REG_X>>7)&1;
       F_ZERO = REG_X;
 
-    }; opcode_table[54] = () {
+    }; 
+    
+    opcode_table[54] = () {
 
       // *******
       // * TXS *
@@ -851,7 +908,9 @@ class CPU {
       REG_SP = (REG_X+0x0100);
       stackWrap();
 
-    }; opcode_table[55] = () {
+    }; 
+    
+    opcode_table[55] = () {
 
       // *******
       // * TYA *
@@ -863,11 +922,10 @@ class CPU {
       F_ZERO = REG_Y;
 
     };
-
-  }
+  } // Ends Constructor CPU(NES nes)
 
   // Initialize:
-  void init(){
+  void init() {
     // Get Op data:
     opdata = CpuInfo.getOpData();
 
@@ -1022,7 +1080,7 @@ class CPU {
   }
 
   // Emulates cpu instructions until stopped.
-  void emulate(){
+  void emulate() {
 
     if(stopRunning)return;
 
@@ -1225,13 +1283,14 @@ class CPU {
     final int opcode = opinf & 0xFF;
     if (opcode > opcode_table.length) {
       // Illegal opcode!
-      if(!crash){
+      if(!crash) {
         crash = true;
         stopRunning = true;
-        Util.printDebug("Game crashed, invalid opcode", debugMe);
+        print("CPU.emulate(): ERROR: Game crashed, invalid opcode.");
       }
     };
-    opcode_table[opinf & 0xFF]();
+    
+    opcode_table[opcode]();
 
 
     // ----------------------------------------------------------------------------------------------------
@@ -1392,3 +1451,4 @@ class CPU {
     mmap = null;
   }
 }
+
