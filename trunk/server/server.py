@@ -10,41 +10,49 @@ class HelloWorld(object):
     index.exposed = True
 
     def sendStatus(self, status = None):
-        args = json.loads(status)
-        if int(args['matchid']) not in matchPlayerTimeInputs:
-            matchPlayerTimeInputs[int(args['matchid'])] = {}
-        playerTimeInputs = matchPlayerTimeInputs[int(args['matchid'])]
-        if int(args['playerid']) not in playerTimeInputs:
-            playerTimeInputs[int(args['playerid'])] = {}
-        timeInputs = playerTimeInputs[int(args['playerid'])]
-        timeInputs[int(args['framecount'])] = {
-            'left':int(args['left']),
-            'right':int(args['right']),
-            'up':int(args['up']),
-            'down':int(args['down']),
-            'a':int(args['a']),
-            'b':int(args['b']),
-            'select':int(args['select']),
-            'start':int(args['start']),
-            }
-        print timeInputs
+        frames = json.loads(status)
+        #print frames
+        playerid = int(frames['-1']['playerid'])
+        matchid = int(frames['-1']['matchid'])
+        for key,value in frames.iteritems():
+          if key == '-1': continue
+          #print "STATUS:",status
+          args = value
+          framecount = int(key)
+          #print "ARGS:",args
+          if matchid not in matchPlayerTimeInputs:
+              matchPlayerTimeInputs[matchid] = {}
+          playerTimeInputs = matchPlayerTimeInputs[matchid]
+          if playerid not in playerTimeInputs:
+              playerTimeInputs[playerid] = {}
+          timeInputs = playerTimeInputs[playerid]
+          timeInputs[framecount] = {
+              'left':int(args[u'left']),
+              'right':int(args[u'right']),
+              'up':int(args[u'up']),
+              'down':int(args[u'down']),
+              'a':int(args[u'a']),
+              'b':int(args[u'b']),
+              'select':int(args[u'select']),
+              'start':int(args[u'start']),
+              }
+          #print timeInputs
 
-        playerid = int(args['playerid'])
         if playerid==1: lookupplayerid=2
         else: lookupplayerid=1
-        if int(args['matchid']) not in matchPlayerTimeInputs:
-            matchPlayerTimeInputs[int(args['matchid'])] = {}
-        playerTimeInputs = matchPlayerTimeInputs[int(args['matchid'])]
+        if matchid not in matchPlayerTimeInputs:
+            matchPlayerTimeInputs[matchid] = {}
+        playerTimeInputs = matchPlayerTimeInputs[matchid]
         if int(lookupplayerid) not in playerTimeInputs:
             playerTimeInputs[int(lookupplayerid)] = {}
             
         prevFrame = cherrypy.session.get('framecount',-1)
-        print "PREVFRAME",prevFrame
-        timeInputs = matchPlayerTimeInputs[int(args['matchid'])][lookupplayerid]
-        print timeInputs
+        #print "PREVFRAME",prevFrame
+        timeInputs = matchPlayerTimeInputs[matchid][lookupplayerid]
+        #print timeInputs
         retval = {}
         for framecount,inputs in timeInputs.iteritems():
-            print framecount,inputs
+            #print framecount,inputs
             cherrypy.session['framecount'] = max(cherrypy.session.get('framecount',-1),framecount)
             if framecount>prevFrame:
                 retval[int(framecount)] = inputs

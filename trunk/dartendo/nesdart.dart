@@ -390,7 +390,7 @@ class Controller {
 
     String resp = '';
 
-    while (!_recvNetStatus.containsKey(frameCount + 1)) {
+    //while (!_recvNetStatus.containsKey(frameCount + 1)) {
       String jsonStatus = JSON.stringify(_sendNetStatus);
       String url = _sendUrl + '?status=' + jsonStatus;
       req.open('GET', url, false);
@@ -402,7 +402,7 @@ class Controller {
       resp = req.responseText;
       Map<String, Map<String, int>> resp_map = JSON.parse(resp);
       resp_map.forEach((k, v) => _recvNetStatus[Math.parseInt(k)] = v);
-    }
+    //}
   }
 
   void _buildLocalStatus() {
@@ -424,12 +424,13 @@ class Controller {
     frameStatus['b'] = joy.getKeyState(KbInputHandler.KEY_B);
     frameStatus['select'] = joy.getKeyState(KbInputHandler.KEY_SELECT);
     frameStatus['start'] = joy.getKeyState(KbInputHandler.KEY_START);
-    print('netplay: adding for frame $frameCount');
-    _sendNetStatus[frameCount+10] = frameStatus;
+    //print('netplay: adding for frame $frameCount');
+    _sendNetStatus[frameCount] = frameStatus;
   }
 
-  bool _handleRemoteInput() {
+  void _handleRemoteInput() {
     Map<String, int> status = _recvNetStatus[frameCount];
+    if (status==null) return;
     KbInputHandler joy = (playerid == 1 ? gui.kbJoy2 : gui.kbJoy1);
     joy.setKeyState(KbInputHandler.KEY_LEFT, status['left']);
     joy.setKeyState(KbInputHandler.KEY_RIGHT, status['right']);
