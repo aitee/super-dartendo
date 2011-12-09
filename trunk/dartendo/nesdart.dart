@@ -392,7 +392,6 @@ class Controller {
 
     while (!_recvNetStatus.containsKey(frameCount + 1)) {
       String jsonStatus = JSON.stringify(_sendNetStatus);
-      print('netplay: Sending... $jsonStatus');
       String url = _sendUrl + '?status=' + jsonStatus;
       req.open('GET', url, false);
       req.send();
