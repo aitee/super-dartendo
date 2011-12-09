@@ -111,7 +111,8 @@
       }
 
       var script = document.createElement("script");
-      if(getQueryVariable("native")) {
+      if(getQueryVariable("native") 
+          && document.implementation.hasFeature("dart")) {
         script.setAttribute("type", "application/dart");
         script.setAttribute("src", "nesdart.dart");
       } else {
