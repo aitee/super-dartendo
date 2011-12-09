@@ -21,9 +21,8 @@ class Input {
     
     // Default ROM
     String defaultRom = 'roms/SuperMario3.json';
-    if (window.location.href.indexOf('rom=') >= 0) {
-      defaultRom = 'roms/' + window.location.href.substring(
-        window.location.href.indexOf('rom=')+4)+'.json';
+    if (window.location.getParameter('rom').length >= 0) {
+      defaultRom = 'roms/' + window.location.getParameter('rom') + '.json';
     }
     
     final req = new XMLHttpRequest();

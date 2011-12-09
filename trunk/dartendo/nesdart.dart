@@ -272,6 +272,8 @@ class Controller {
   }
 
   void readParams() {
+    print("READING PARAMS");
+    print(window.location.getParameter('rom'));
     String tmp = "";
     if (tmp == null || tmp == ("")) {
       scale = false;
@@ -309,18 +311,22 @@ class Controller {
       showsoundbuffer = tmp == ("on");
     }
 
+    tmp = window.location.getParameter('netplay');
     if (tmp == null || tmp == ('')) {
       _netplay = false;
     } else {
-      _netplay = tmp == ('on');
+      _netplay = (tmp == ('on'));
     }
+    print('NETPLAY: '+_netplay);
 
+    tmp = window.location.getParameter('matchid');
     if (tmp == null || tmp == ('')) {
       matchid = 0;
     } else {
       matchid = Math.parseInt(tmp);
     }
 
+    tmp = window.location.getParameter('playerid');
     if (tmp == null || tmp == ('')) {
       playerid = 0;
     } else {

@@ -27,9 +27,7 @@ class HelloWorld(object):
             'start':int(args['start']),
             }
         print timeInputs
-    sendstatus.exposed = True
 
-    def getstatus(self,**args):
         playerid = int(args['playerid'])
         if playerid==1: lookupplayerid=2
         else: lookupplayerid=1
@@ -51,7 +49,7 @@ class HelloWorld(object):
                 retval[int(framecount)] = inputs
         return json.dumps(retval)
         #return "HELLO WORLD"
-    getstatus.exposed = True
+    sendstatus.exposed = True
         
     
 conf = {
