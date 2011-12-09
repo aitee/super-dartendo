@@ -60,6 +60,10 @@ class CUtil {
     }
   }
   
+  void printDebugImage(String content) {
+    //print(content);
+  }
+  
   void printVerbose(String content, bool toPrint) {
     if (toPrint) {
       print(content);

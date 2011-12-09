@@ -1,5 +1,7 @@
 class BufferView {
 
+     bool debugMe = false;
+     
      var canvas;
      var context;
      
@@ -36,7 +38,7 @@ class BufferView {
 
      void setScaleMode(int newMode) {
        if (newMode != SCALE_NONE) {
-       print('SCALE NOT SUPPORTED, USING NO SCALE');
+       Util.printDebug('SCALE NOT SUPPORTED, USING NO SCALE', debugMe);
        }
     }
 
@@ -77,7 +79,7 @@ class BufferView {
 
         //JJG: TODO: DRAW NES HERE
         
-        //print('Getting imagedata');
+        Util.printDebug('BufferView.paint: Getting imagedata', debugMe);
         var arr = context.getImageData(0,0,256,240);
         var data = arr.data;
         //print(data.length);
@@ -95,11 +97,11 @@ class BufferView {
           data[i] = 255; // a
           i++;
         }
-        //print('Blitting imagedata');
+        Util.printDebug('Blitting imagedata', debugMe);
         var a = 1;
         var b = 2;
         var c = a ~/ b;
-        //print(c);
+        print('BufferView.paint: c = ' + c);
         context.putImageData(arr, 0, 0, 0,   0, 256, 240);
 
     }

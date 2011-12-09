@@ -1,5 +1,7 @@
  class AppletUI {
 
+   bool debugMe = false;
+   
     Controller applet;
     NES nes;
     KbInputHandler kbJoy1;
@@ -130,12 +132,5 @@
 
      int getHeight() {
         return 240;
-    }
-
-     void println(String s) {
-    }
-
-     void showErrorMsg(String msg) {
-        print(msg);
     }
 }

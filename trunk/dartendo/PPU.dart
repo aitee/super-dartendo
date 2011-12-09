@@ -3,6 +3,8 @@ class PPU {
   Memory ppuMem;
   Memory sprMem;
   
+  bool debugPPU = false;
+  
   // Rendering Options:
   bool _showSpr0Hit = false;
   bool showSoundBuffer = false;

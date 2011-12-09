@@ -350,10 +350,8 @@ class Controller {
   void animate(int time) {
     //print("test: " + time);
     //canvas.width = canvas.width;
-    
-    
-    
-            if (nes.getCpu().stopRunning) {
+
+    if (nes.getCpu().stopRunning) {
               print('NOT RUNNING');
               nes.getCpu().finishRun();
               return;

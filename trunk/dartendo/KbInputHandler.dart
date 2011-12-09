@@ -1,8 +1,11 @@
  class KbInputHandler {
+   
+   bool debug = true;
+   
   // Joypad keys:
   static final int KEY_A = 0;
   static final int KEY_B = 1;
-  static final int KEY_START = 2;
+  static final int KEY_START = 13;
   static final int KEY_SELECT = 3;
   static final int KEY_UP = 4;
   static final int KEY_DOWN = 5;
@@ -34,7 +37,7 @@
   }
 
   void mapKey(int padKey, int kbKeycode) {
-    print('[KbInputHandler] Mapping $padKey to $kbKeycode');
+    Util.printDebug('KbInputHandler.mapKey: Mapping $padKey to $kbKeycode', debug);
     keyMapping[padKey] = kbKeycode;
   }
 
@@ -60,18 +63,20 @@
   void keyReleased(KeyboardEvent ke) {
     //print('[KbInputHandler] keyReleased: ${ke.keyIdentifier} (${ke.keyCode})');
 
-  int kc = ke.keyCode;
-  if (kc >= allKeysState.length)
-    return;
+    int kc = ke.keyCode;
+    if (kc >= allKeysState.length)
+      return;
 
-  allKeysState[kc] = false;
+    allKeysState[kc] = false;
 
-  if (id == 0) {
-    switch (ke.keyIdentifier) {
-    case 'F5': {
-      print('[KbInputHandler] Resetting game');
+    if (id == 0) {
+      switch (ke.keyIdentifier) {
+      case 'F5': {
+      Util.printDebug('[KbInputHandler] Resetting game', debug);
       // Reset game:
-      if (nes.isRunning()) {
+      //if (nes.isRunning()) {
+      if (true) {
+          Util.printDebug('KnInputHandler.keyReleased: nes is Running', debug);
           nes.stopEmulation();
           nes.reset();
           nes.reloadRom();

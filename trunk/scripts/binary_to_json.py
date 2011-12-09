@@ -1,6 +1,6 @@
 
 
-f = open('../vNES/src/vnes/IceHockey.nes','rb')
+f = open(r'./dartendo/BattleCity.nes', 'rb')
 
 bytes = f.read()
 print '[',
@@ -11,3 +11,5 @@ for byte in bytes:
     first = False
     print (str(ord(byte))),
 print ']'
+
+
