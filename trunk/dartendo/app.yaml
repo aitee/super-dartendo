@@ -8,14 +8,18 @@ handlers:
 - url: /favicon\.ico
   static_files: favicon.ico
   upload: favicon\.ico
+  login: required
 
 - url: /
   static_files: nesdart.html
   upload: nesdart.html
+  login: required
 
-- url: /(.*\.(html|css|js|png|json|dart))
+- url: /(.*\.(html|css|js|png|json|dart|nes|jpg|gif))
   static_files: \1
-  upload: (.*\.(html|css|js|png|json|dart))
+  upload: (.*\.(html|css|js|png|json|dart|nes|jpg|gif))
+  login: required
 
 - url: (.*)
   script: main.app
+  login: required
