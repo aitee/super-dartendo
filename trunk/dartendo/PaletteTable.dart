@@ -27,11 +27,14 @@ class PaletteTable {
 
     // Load a palette file:
     bool loadPalette(String file) {
-      bool debugMe = false;
+      bool debugMe = true;
               
       if (debugMe) print("Entering PaletteTable.loadPalette try block.");        
       try {
-          origTable = FileLoader.loadFile(file);
+          List<int> rawTable = FileLoader.loadFile(file);
+          for(var i=0;i<origTable.length;i++) {
+            origTable[i] = getRgb(rawTable[(i*3)], rawTable[(i*3)+1], rawTable[(i*3)+2]);
+          }
           
           if (debugMe) print("PaletteTable.loadPalette: Finished loading palette.");            
   
@@ -75,9 +78,16 @@ class PaletteTable {
             }
 
             // Calculate table:
-            for (int i = 0; i < 64*3; i += 3) {
-                emphTable[emph][i] = getRgb(origTable[i], origTable[i+1], origTable[i+2]);
+            print('EMPH TABLE BEGIN');
+            for (int i = 0; i < 64; i ++) {
+                col = origTable[i];
+                r = (getRed(col) * rFactor).toInt();
+                g = (getGreen(col) * gFactor).toInt();
+                b = (getBlue(col) * bFactor).toInt();
+                emphTable[emph][i] = col;
+                print(emphTable[emph][i]);
             }
+            print('EMPH TABLE END');
 
         }
 
@@ -268,7 +278,10 @@ class PaletteTable {
             contrastAdd *= 4;
         }
         for (int i = 0; i < 64; i++) {
+          curTable[i] = emphTable[currentEmph][i];
+          print(curTable[i]);
 
+          /*
             hsl = packedRGBtoHSL(emphTable[currentEmph][i]);
             h = getHue(hsl) + hueAdd;
             s = (getSaturation(hsl) * (1.0 + saturationAdd / 256)).toInt();
@@ -302,6 +315,7 @@ class PaletteTable {
 
             rgb = getRgb(r, g, b);
             curTable[i] = rgb;
+            */
         }
 
         currentHue = hueAdd;

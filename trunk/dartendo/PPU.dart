@@ -208,7 +208,7 @@ class PPU {
       _oldFrame[i] = -1;
     }
     
-    print('[PPU] initialized');
+    //print('[PPU] initialized');
   }
 
   // Sets Nametable mirroring.
@@ -316,7 +316,7 @@ class PPU {
   }
 
   void startVBlank() {
-    print('[PPU] VBLANK');
+    //print('[PPU] VBLANK');
     // Start VBlank period:
     // Do VBlank.
     if (Globals.debug)
@@ -415,7 +415,7 @@ class PPU {
     } else if (scanline == 261 + _vblankAdd) {
       // Dead scanline, no rendering.
       // Set VINT:
-      print("SETTING REQUESTENDFRAME");
+      //print("SETTING REQUESTENDFRAME");
       setStatusFlag(_STATUS_VBLANK, true);
       _requestEndFrame = true;
       _nmiCounter = 9;
@@ -476,7 +476,7 @@ class PPU {
   }
 
   void endFrame() {
-    print("IN ENDFRAME");
+    //print("IN ENDFRAME");
     // Draw spr#0 hit coordinates:
     if (_showSpr0Hit) {
       // Spr 0 position:

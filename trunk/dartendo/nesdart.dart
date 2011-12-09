@@ -228,17 +228,19 @@ class Controller {
       print('GOT EVENT');
     }, true);
     */
-    window.on.keyDown.add((Event e) {
+    document.on.keyDown.add((Event e) {
       Expect.isTrue(e is KeyboardEvent);
       KeyboardEvent ke = e;
       print('GOT KEY DOWN EVENT ' + ke.keyIdentifier);
       gui.kbJoy1.keyPressed(ke);
+      return false;
     }, true);
-    window.on.keyUp.add((Event e) {
+    document.on.keyUp.add((Event e) {
       Expect.isTrue(e is KeyboardEvent);
       KeyboardEvent ke = e;
       print('GOT KEY UP EVENT ' + ke.keyIdentifier);
       gui.kbJoy1.keyReleased(ke);
+      return false;
     }, true);
     /*
     window.addEventListener('keydown', (Event e) {
