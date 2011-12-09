@@ -285,14 +285,13 @@ class Controller {
 
  void readParams() {
 
-    String tmp;
-
-    print(window.location.getParameter('rom'));
-    if (window.location.getParameter('rom').length==0) {
-      tmp = 'roms/SuperMario3.json';
-    } else {
-          tmp = 'roms/'+window.location.getParameter('rom')+'.json';
+    String tmp = 'roms/SuperMario3.json';
+    
+    if(window.location.href.indexOf('rom=')>=0) {
+      tmp = 'roms/'+window.location.href.substring(
+        window.location.href.indexOf('rom=')+4)+'.json';
     }
+    
     if (tmp == null || tmp == ("")) {
         rom = "vnes.nes";
     } else {
@@ -352,7 +351,7 @@ class Controller {
             }
 
     if((time-lastTime)<1000) { //Skip one frame to set lastTime and skip if too much time has passed since the last frame.
-    for(int a=0;a<3;a++) {
+    while(sleepTime<=0) {
       //print('SLEEP TIME'+sleepTime);
     while(true) {
             nes.getCpu().emulate();
