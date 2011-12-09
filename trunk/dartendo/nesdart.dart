@@ -111,14 +111,12 @@ class Controller {
      started = false;
      lastTime = 0;
      sleepTime=0;
-     input = new Input();
      init();
   }
 
   void init() {
      Util.printDebug("nesdart.init(): begins", debugMe);
      PaletteTable.init();
-     input.init();
      readParams();
 
      gui = new AppletUI(this);
@@ -130,6 +128,9 @@ class Controller {
      nes = gui.getNES();
      nes.enableSound(sound);
      nes.reset();
+     
+     input = new Input(nes);
+     input.init();
   }
   
   void addScreenView() {
@@ -263,7 +264,6 @@ class Controller {
     gui = null;
     nes = null;
     panelScreen = null;
-    rom = null;
   }
 
   void showLoadProgress(int percentComplete) {

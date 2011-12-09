@@ -164,23 +164,21 @@ class ROM {
      void load(List<int> b) {
 
         if (b == null || b.length == 0) {
-
-            // Unable to load file.
-            Util.printDebug("Unable to load ROM file.", debugMe);
-            valid = false;
-
+          // Unable to load file.
+          Util.printDebug("Unable to load ROM file.", debugMe);
+          valid = false;
         }
 
         // Read header:
         header = Util.newIntList(16, 0);
         for (int i = 0; i < 16; i++) {
-            header[i] = b[i];
+          header[i] = b[i];
         }
 
         // Check first four bytes:
         String fcode = new String.fromCharCodes([b[0],b[1],b[2]]);
         if (fcode != 'NES' || b[3] != 0x1A) {
-            //System.out.println("Header is incorrect.");
+            print("Header is incorrect.");
             valid = false;
             return;
         }

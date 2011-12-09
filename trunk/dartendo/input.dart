@@ -2,7 +2,10 @@ class Input {
   
   bool debugMe = false;
   List<int> romBytes;
+  NES nes;
   
+  Input(this.nes);
+
   void init() {
     // Content section used a lot
     Element content = document.query('#content');
@@ -25,7 +28,7 @@ class Input {
     
     final req = new XMLHttpRequest();
     req.open('GET', '${FileLoader.home}/$defaultRom', false);
-    req.send();    
+    req.send();
     
     romBytes = JSON.parse(req.responseText); 
 
@@ -66,7 +69,8 @@ class Input {
     (handler() {
       if (reader.readyState == 2) {
         document.query('#file-content').text = reader.result;
-        romBytes = reader.result;
+        romBytes = new dom.Int8Array.fromBuffer(reader.result);
+        nes.loadRom(romBytes);
       } else {
         window.setTimeout(handler, 100);
       }
