@@ -56,16 +56,18 @@ class CUtil {
   
   void printDebug(String content, bool toPrint) {
     if (toPrint) {
+      // Don't comment this out.  Set (debugMe = false) on the top of your file instead.
       print(content);
     }
   }
   
   void printDebugImage(String content) {
-    //print(content);
+    print(content);
   }
   
   void printVerbose(String content, bool toPrint) {
     if (toPrint) {
+      // Don't comment this out.  Set (debugMe = false) on the top of your file instead.
       print(content);
     }
   }

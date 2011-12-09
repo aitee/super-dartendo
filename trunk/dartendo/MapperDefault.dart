@@ -17,7 +17,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class MapperDefault implements MemoryMapper
 {
-    bool debug = false;
+    bool debugMe = false;
     
     // Set at constructor
     NES nes;
@@ -362,7 +362,7 @@ class MapperDefault implements MemoryMapper
     }
 
      int joy1Read() {
-        Util.printDebug('MapperDefault.joy1Read():  begins', debug);
+        Util.printDebug('MapperDefault.joy1Read():  begins', debugMe);
         
         KbInputHandler input = nes.getGui().getJoy1();
         int ret;

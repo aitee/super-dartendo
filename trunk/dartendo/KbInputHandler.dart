@@ -1,6 +1,6 @@
  class KbInputHandler {
    
-   bool debug = true;
+   bool debugMe = false;
    
   // Joypad keys:
   static final int KEY_A = 0;
@@ -23,9 +23,9 @@
   KbInputHandler(NES nes, int id) {
     this.nes = nes;
     this.id = id;
-    allKeysState = Util.newBoolList(255,false);
+    allKeysState = Util.newBoolList(255, false);
     keyMapping = Util.newIntList(KbInputHandler.NUM_KEYS, 0);
-    print('[KbInputHandler] initialized');
+    Util.printDebug('KbInputHandler.constructor(): Exits', debugMe);
   }
 
   int getKeyState(int padKey) {
@@ -37,7 +37,7 @@
   }
 
   void mapKey(int padKey, int kbKeycode) {
-    Util.printDebug('KbInputHandler.mapKey: Mapping $padKey to $kbKeycode', debug);
+    Util.printDebug('KbInputHandler.mapKey: Mapping $padKey to $kbKeycode', debugMe);
     keyMapping[padKey] = kbKeycode;
   }
 
@@ -46,7 +46,7 @@
     if (kc >= allKeysState.length)
       return;
 
-    //print('[KbInputHandler] keyPressed: ${ke.keyIdentifier} (${ke.keyCode})');
+    Util.printDebug('KbInputHandler.keyPressed(...): ${ke.keyIdentifier} (${ke.keyCode})', debugMe);
     allKeysState[kc] = true;
 
     // Can't hold both left & right or up & down at same time:
@@ -61,7 +61,7 @@
   }
    
   void keyReleased(KeyboardEvent ke) {
-    //print('[KbInputHandler] keyReleased: ${ke.keyIdentifier} (${ke.keyCode})');
+    Util.printDebug('KbInputHandler.keyReleased(...): ${ke.keyIdentifier} (${ke.keyCode})', debugMe);
 
     int kc = ke.keyCode;
     if (kc >= allKeysState.length)
@@ -72,11 +72,10 @@
     if (id == 0) {
       switch (ke.keyIdentifier) {
       case 'F5': {
-      Util.printDebug('[KbInputHandler] Resetting game', debug);
+      Util.printDebug('KbInputHandler.keyReleased: Resetting game IF running.', debugMe);
       // Reset game:
-      //if (nes.isRunning()) {
-      if (true) {
-          Util.printDebug('KnInputHandler.keyReleased: nes is Running', debug);
+      if (nes.isRunning()) {
+          Util.printDebug('KbInputHandler.keyReleased: nes is Running', debugMe);
           nes.stopEmulation();
           nes.reset();
           nes.reloadRom();
@@ -86,7 +85,7 @@
     }
     
     case 'F10': {
-      print('[KbInputHandler] Closing ROM');
+      Util.printDebug('KbInputHandler.keyReleased: Closing ROM', debugMe); 
       // Just using this to display the battery RAM contents to user.
       if (nes.rom != null)
         nes.rom.closeRom();

@@ -1,5 +1,5 @@
 class PaletteTable {
-    bool debugMe = true;
+    bool debugMe = false;
     
     static List<int> curTable;
     static List<int> origTable;
@@ -340,9 +340,11 @@ class PaletteTable {
         if (contrastAdd > 0) {
             contrastAdd *= 4;
         }
+        
+        Util.printDebug('PaletteTable.updatePaletteWith(...): Printing curTable....', debugMe);
         for (int i = 0; i < 64; i++) {
           curTable[i] = emphTable[currentEmph][i];
-          print(curTable[i]);
+          Util.printDebug(curTable[i].toString(), debugMe);
 
           /*
             hsl = packedRGBtoHSL(emphTable[currentEmph][i]);
@@ -385,7 +387,6 @@ class PaletteTable {
         currentSaturation = saturationAdd;
         currentLightness = lightnessAdd;
         currentContrast = contrastAdd;
-
     }
 
     void loadDefaultPalette() {
