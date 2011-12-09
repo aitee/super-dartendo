@@ -70,7 +70,7 @@ class Input {
       print("drop");
       unwrapDomObject(event).preventDefault();
       content.style.border = '4px solid transparent';
-      loadFile(unwrapDomObject(event).dataTransfer.files[0]);
+      loadFile(new FileWrappingImplementation._wrap(unwrapDomObject(event).dataTransfer.files[0]));
       return false;
     });
   }
