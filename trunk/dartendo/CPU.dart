@@ -105,7 +105,7 @@ class CPU {
   bool asApplet = false;
 
   var _opcode_table;
-  var addressModeLookup;
+  var _addressModeLookup;
   var irqTypeSwitch;
 
   // Constructor:
@@ -918,14 +918,14 @@ class CPU {
     };
     
     // address mode lookup
-    addressModeLookup = [];
+    _addressModeLookup = [];
     
-    addressModeLookup[0] = () {
+    _addressModeLookup[0] = () {
       // Zero Page mode. Use the address given after the opcode, but without high byte.
       addr = load(opaddr + 2);    
     };
 
-    addressModeLookup[1] = () {
+    _addressModeLookup[1] = () {
       // Relative mode.
       addr = load(opaddr + 2);
       if(addr < 0x80) {
@@ -935,38 +935,38 @@ class CPU {
       }
     };
     
-    addressModeLookup[2] = () {
+    _addressModeLookup[2] = () {
       // Ignore. Address is implied in instruction.                          
     };
     
-    addressModeLookup[3] = () {
+    _addressModeLookup[3] = () {
       // Absolute mode. Use the two bytes following the opcode as an address.
       addr = load16bit(opaddr+2);
     };
     
-    addressModeLookup[4] = () {
+    _addressModeLookup[4] = () {
       // Accumulator mode. The address is in the accumulator register.
       addr = REG_ACC;                          
     };
     
-    addressModeLookup[5] = () {
+    _addressModeLookup[5] = () {
       // Immediate mode. The value is given after the opcode.
       addr = REG_PC;
     };
     
-    addressModeLookup[6] = () {
+    _addressModeLookup[6] = () {
       // Zero Page Indexed mode, X as index. Use the address given after the opcode, then add the
       // X register to it to get the final address.
       addr = (load(opaddr+2)+REG_X) & 0xFF;                       
     };
     
-    addressModeLookup[7] = () {
+    _addressModeLookup[7] = () {
       // Zero Page Indexed mode, Y as index. Use the address given after the opcode, then add the
       // Y register to it to get the final address.
        addr = (load(opaddr+2)+REG_Y)&0xFF;
     };
     
-    addressModeLookup[8] = () {
+    _addressModeLookup[8] = () {
       // Absolute Indexed Mode, X as index. Same as zero page indexed, but with the high byte.
       addr = load16bit(opaddr+2);
       if((addr&0xFF00)!=((addr+REG_X)&0xFF00)){
@@ -975,7 +975,7 @@ class CPU {
       addr += REG_X;
     };
     
-    addressModeLookup[9] = () {
+    _addressModeLookup[9] = () {
       // Absolute Indexed Mode, Y as index. Same as zero page indexed, but with the high byte.
       addr = load16bit(opaddr+2);
       if((addr&0xFF00)!=((addr+REG_Y)&0xFF00)){
@@ -984,7 +984,7 @@ class CPU {
       addr += REG_Y;
     };
     
-    addressModeLookup[10] = () {
+    _addressModeLookup[10] = () {
       // Pre-indexed Indirect mode. Find the 16-bit address starting at the given location plus
       // the current X register. The value is the contents of that address.
       addr = load(opaddr+2);
@@ -997,7 +997,7 @@ class CPU {
       addr = load16bit(addr);
     };
     
-    addressModeLookup[11] = () {
+    _addressModeLookup[11] = () {
       // Post-indexed Indirect mode. Find the 16-bit address contained in the given location
       // (and the one following). Add to that address the contents of the Y register. Fetch the value
       // stored at that adress.
@@ -1009,7 +1009,7 @@ class CPU {
       addr += REG_Y;
     };
     
-    addressModeLookup[12] = () {
+    _addressModeLookup[12] = () {
       // Indirect Absolute mode. Find the 16-bit address contained at the given location.
       addr = load16bit(opaddr+2);// Find op
       if(addr < 0x1FFF) {
@@ -1047,9 +1047,6 @@ class CPU {
   void init() {
     // Get Op data:
     opdata = CpuInfo.getOpData();
-
-    // Get Memory Mapper:
-    this.mmap = nes.getMemoryMapper();
 
     // Reset crash flag:
     crash = false;
@@ -1200,12 +1197,10 @@ class CPU {
 
   // Emulates cpu instructions until stopped.
   void emulate() {
-
     if(stopRunning)return;
 
     // Check interrupts:
     if(irqRequested){
-
       temp =
         (F_CARRY)|
         ((F_ZERO==0?1:0)<<1)|
@@ -1225,7 +1220,6 @@ class CPU {
       F_INTERRUPT = F_INTERRUPT_NEW;
       F_BRK = F_BRK_NEW;
       irqRequested = false;
-
     }
 
     opinf = opdata[mmap.load(REG_PC+1)];
@@ -1239,7 +1233,7 @@ class CPU {
     opaddr = REG_PC;
     REG_PC += ((opinf>>16) & 0xFF);
 
-    addressModeLookup[addrMode]();
+    _addressModeLookup[addrMode]();
 
     // Wrap around for addresses above 0xFFFF:
     addr &= 0xFFFF;
@@ -1248,7 +1242,7 @@ class CPU {
     // Decode & execute instruction:
     // ----------------------------------------------------------------------------------------------------
 
-    // Build a jump table
+    // Use the opcode jump table
     final int opcode = opinf & 0xFF;
     if (opcode < _opcode_table.length) {
      _opcode_table[opcode]();
@@ -1264,22 +1258,20 @@ class CPU {
     // ----------------------------------------------------------------------------------------------------
 
     if(palEmu){
-      palCnt++;
+      ++palCnt;
       if(palCnt==5){
         palCnt=0;
-        cycleCount++;
+        ++cycleCount;
       }
     }
 
-    if(asApplet){      
+    if(asApplet){   
       ppu.cycles = cycleCount*3;
       ppu.emulateCycles();      
     }
 
-    if(emulateSound){
+    if(emulateSound)
       papu.clockFrameCounter(cycleCount);
-    }
-
   }
 
   void finishRun() {
