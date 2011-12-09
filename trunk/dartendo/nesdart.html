@@ -29,6 +29,22 @@
         z-index: 4;
       }
 
+      .container h5 {
+        position: relative;
+        top: -50px;
+        font-family: sans-serif;
+        font-size: 14pt;
+        
+        color: red;
+        display: inline-block;
+        padding: 5px 15px 5px 15px;
+        border: 5px solid red;
+        border-radius: 30px;
+        background-color: white;
+
+        z-index: 4;
+      }
+
       #tv {
         position: absolute;
         left: -100px;
@@ -54,6 +70,7 @@
   <body>
     <div class="container">
       <h1>DARTENDO</h1>
+      <h5>Up: i Left: j Down: k Right: l A: x B: z Select: m Start: Enter</h5>
       <img id="tv" src="tv.gif"></img>
       <canvas id="webGlCanvas" width="256" height="240"></canvas>
     </div>
