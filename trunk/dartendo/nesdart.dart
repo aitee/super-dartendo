@@ -65,8 +65,11 @@
 #source('Util.dart');
 
 class Controller {
+
+  static final String _sendUrl = "http://dartendo.appspot.com/sendStatus";
+
   bool debugMe = false;
-  
+
   CanvasElement canvas;
   CanvasRenderingContext context;
   Input input;
@@ -77,67 +80,88 @@ class Controller {
   bool stereo = false;
   bool timeemulation = false;
   bool showsoundbuffer = false;
-  
+  bool _netplay = false;
+
+  int matchid = 0;
+  int playerid = 0;
+
   int samplerate = 0;
   int romSize = 0;
   int progress = 0;
-  
+
   AppletUI gui;
   NES nes;
   BufferView panelScreen;
   Color bgColor;
   bool started;
-  
+
   int lastTime = 0;
-  
   int sleepTime = 0;
-  
+  int frameCount = 0;
+  int _lastFrameCount = 0;
+
+  Map<int, Map<String, int>> _netStatus;
+
   Controller() {
-     Globals = new SGlobals();
-     Util = new CUtil();
-     Misc = new MiscClass();
-     canvas = document.query("#webGlCanvas");
-     context = canvas.getContext('2d');
-     scale = false;
-     sound = false;
-     fps = false;
-     stereo = false;
-     timeemulation = false;
-     showsoundbuffer = false;
-     samplerate = 0;
-     romSize = 0;
-     progress = 0;
-     bgColor = new Color(0,0,0);
-     started = false;
-     lastTime = 0;
-     sleepTime=0;
-     init();
+    Globals = new SGlobals();
+    Util = new CUtil();
+    Misc = new MiscClass();
+    canvas = document.query("#webGlCanvas");
+    context = canvas.getContext('2d');
+    scale = false;
+    sound = false;
+    fps = false;
+    stereo = false;
+    timeemulation = false;
+    showsoundbuffer = false;
+    _netplay = false;
+    matchid = 0;
+    playerid = 0;
+    samplerate = 0;
+    romSize = 0;
+    progress = 0;
+    bgColor = new Color(0,0,0);
+    started = false;
+    lastTime = 0;
+    sleepTime=0;
+    _lastFrameCount = 0;
+    frameCount = 0;
+    _netStatus = new Map<int, Map<String, int>>();
+
+    init();
   }
 
   void init() {
-     Util.printDebug("nesdart.init(): begins", debugMe);
-     PaletteTable.init();
-     readParams();
+    Util.printDebug("nesdart.init(): begins", debugMe);
+    PaletteTable.init();
+    readParams();
 
-     gui = new AppletUI(this);
-     gui.init(false);
+    gui = new AppletUI(this);
+    gui.init(false);
 
-     Globals.appletMode = true;
-     Globals.memoryFlushValue = 0x00; // make SMB1 hacked version work.
+    Globals.appletMode = true;
+    Globals.memoryFlushValue = 0x00; // make SMB1 hacked version work.
 
-     nes = gui.getNES();
-     nes.enableSound(sound);
-     nes.reset();
+    nes = gui.getNES();
+    nes.enableSound(sound);
+    nes.reset();
+    window.setInterval(_updateFps, 1000);
      
      input = new Input(nes);
      input.init();
   }
-  
+
+  void _updateFps() {
+    document.query('#fps_counter').innerHTML =
+      (frameCount - _lastFrameCount).toString();
+    _lastFrameCount = frameCount;
+  }
+
   void addScreenView() {
     Util.printDebug("nesdart.addScreenView(): begins", debugMe);
 
     panelScreen = gui.getScreenView();
-    panelScreen.setFPSEnabled(fps);
+    //panelScreen.setFPSEnabled(fps);
 
     if (scale) {
       Util.printDebug("nesdart.addScreenView(): SCALE NOT SUPPORTED!", debugMe);
@@ -146,6 +170,7 @@ class Controller {
   }
 
   void run() {
+
     // Can start painting:
     started = true;
 
@@ -167,18 +192,21 @@ class Controller {
       // Start emulation:
       Util.printDebug("nesdart.run(): vNES is now starting the processor.", debugMe);
       nes.getCpu().beginExecution();
+
     } else {
+
       // ROM file was invalid.
       print("vNES was unable to find ROM.");
+
     }
-    
+
     Util.printDebug("nesdart.run(): ROM LOADED", debugMe);
     nes.getCpu().initRun();
     nes.getCpu().active = true;
-        
+
     //var ac = window.webkitAudioContext();
     //audioContext = new AudioContext();
-    
+
     //var src = audioContext.createBufferSource();
     //src.buffer = audioContext.createBuffer(1 /*channels*/, 2048, 44100);
     //var audioData = src.buffer.getChannelData(0);
@@ -188,72 +216,45 @@ class Controller {
     //src.connect(audioContext.destination);
 
     //src.noteOn(0);
-    
+
     //var audioElement = document.createElement('audio');
     //var ac = audioElement.context();
     //audioElement.setAttribute('src', 'sample.ogg');
     //audioElement.play();
-    
+
     List<int> intList = Util.newIntList(5, 0);
-    
+
     intList[3] = 2;
-    //Util.printDebug("nesdart.run(): initList = " + intList.toString(), debugMe);
-    
-    /*
-    canvas.addEventListener('click', (Event e) {
-      print('GOT EVENT');
-    }, true);
-    canvas.addEventListener('click', (Event e) {
-      print('GOT EVENT');
-    }, true);
-    */
+
     document.on.keyDown.add((Event e) {
-      Expect.isTrue(e is KeyboardEvent);
-      KeyboardEvent ke = e;
-      //print('GOT KEY DOWN EVENT ' + ke.keyIdentifier);
-      gui.kbJoy1.keyPressed(ke);
-      return false;
-    }, true);
+        Expect.isTrue(e is KeyboardEvent);
+        KeyboardEvent ke = e;
+        gui.kbJoy1.keyPressed(ke);
+        return false;
+        }, true);
     document.on.keyUp.add((Event e) {
-      Expect.isTrue(e is KeyboardEvent);
-      KeyboardEvent ke = e;
-      //print('GOT KEY UP EVENT ' + ke.keyIdentifier);
-      gui.kbJoy1.keyReleased(ke);
-      return false;
-    }, true);
-    /*
-    window.addEventListener('keydown', (Event e) {
-      Expect.isTrue(e is KeyboardEvent);
-      KeyboardEvent ke = e;
-      print('GOT KEY DOWN EVENT ' + ke.keyIdentifier);
-      gui.kbJoy1.keyPressed(ke);
-    }, true);
-    window.addEventListener('keyup', (Event e) {
-      Expect.isTrue(e is KeyboardEvent);
-      KeyboardEvent ke = e;
-      print('GOT KEY UP EVENT ' + ke.keyIdentifier);
-      gui.kbJoy1.keyReleased(ke);
-    }, true);
-    */
-    //element.on.keyUp.add( (EventListener event) { 
-      //print('KEY RELEASED'); }); 
+        Expect.isTrue(e is KeyboardEvent);
+        KeyboardEvent ke = e;
+        gui.kbJoy1.keyReleased(ke);
+        return false;
+        }, true);
 
     window.webkitRequestAnimationFrame(animate, canvas);
   }
-  
-   void stop() {
-     nes.getCpu().active = false;
-     nes.stopEmulation();
-     print("vNES has stopped the processor.");
-     nes.getPapu().stop();
-     this.destroy();
+
+  void stop() {
+    nes.getCpu().active = false;
+    nes.stopEmulation();
+    print("vNES has stopped the processor.");
+    nes.getPapu().stop();
+    this.destroy();
   }
 
   void destroy() {
     if (nes != null && nes.getCpu().isRunning()) {
       stop();
     }
-    
+
     if (nes != null) {
       nes.destroy();
     }
@@ -270,81 +271,143 @@ class Controller {
     progress = percentComplete;
   }
 
- void readParams() {
+  void readParams() {
     String tmp = "";
     if (tmp == null || tmp == ("")) {
-        scale = false;
+      scale = false;
     } else {
-        scale = tmp == ("on");
+      scale = tmp == ("on");
     }
 
     if (tmp == null || tmp == ("")) {
-        sound = false; //TODO: Support sound
+      sound = false; //TODO: Support sound
     } else {
-        sound = tmp == ("on");
+      sound = tmp == ("on");
     }
 
     if (tmp == null || tmp == ("")) {
-        stereo = true; // on by default
+      stereo = true; // on by default
     } else {
-        stereo = tmp == ("on");
+      stereo = tmp == ("on");
     }
 
     if (tmp == null || tmp == ("")) {
-        fps = true;
+      fps = true;
     } else {
-        fps = tmp == ("on");
+      fps = tmp == ("on");
     }
 
     if (tmp == null || tmp == ("")) {
-        timeemulation = true;
+      timeemulation = true;
     } else {
-        timeemulation = tmp == ("on");
+      timeemulation = tmp == ("on");
     }
 
     if (tmp == null || tmp == ("")) {
-        showsoundbuffer = false;
+      showsoundbuffer = false;
     } else {
-        showsoundbuffer = tmp == ("on");
+      showsoundbuffer = tmp == ("on");
+    }
+
+    if (tmp == null || tmp == ('')) {
+      _netplay = false;
+    } else {
+      _netplay = tmp == ('on');
+    }
+
+    if (tmp == null || tmp == ('')) {
+      matchid = 0;
+    } else {
+      matchid = Math.parseInt(tmp);
+    }
+
+    if (tmp == null || tmp == ('')) {
+      playerid = 0;
+    } else {
+      playerid = Math.parseInt(tmp);
     }
 
     romSize = -1;
   }
 
   void animate(int time) {
-    bool debugLocal = false;
-    Util.printDebug("nesdart.animate(" + time + ") begins.", debugLocal);
-    
-    //canvas.width = canvas.width;
-    
+    //print("nesdart.animate(" + time + ") begins.");
+
     if (nes.getCpu().stopRunning) {
       print('NOT RUNNING');
       nes.getCpu().finishRun();
       return;
     }
 
-    // Skip one frame to set lastTime and skip if too much time has passed since the last frame.
-    if ((time-lastTime) < 1000) { 
+    int frameTime = time - lastTime;
+    // Skip one frame to set lastTime and skip if too much time has passed since
+    // the last frame.
+    if(frameTime < 1000) {
+      final BufferView screen = nes.getGui().getScreenView();
+      final CPU cpu = nes.getCpu();
       while(sleepTime<=0) {
         //print('SLEEP TIME'+sleepTime);
         while(true) {
-          nes.getCpu().emulate();
-          if (nes.getGui().getScreenView().frameFinished) {
-            nes.getGui().getScreenView().finishFrame();
-            break;
+          if (_netplay)
+            _sendStatus();
+          if (!_netplay || _handleRemoteInput()) {
+            cpu.emulate();
+            if(screen.frameFinished) {
+              ++frameCount;
+              screen.finishFrame();
+              break;
+            }
           }
         }
         sleepTime += 16;
       }
-      sleepTime -= (time-lastTime);
+      sleepTime -= frameTime;
       //print("FRAME TIME: "+(time-lastTime));
     } else {
-      Util.printDebug('SKIPPING FRAME', debugLocal);
+      //print('SKIPPING FRAME');
     }
     lastTime = time;
     window.webkitRequestAnimationFrame(animate, canvas);
   }
-  
+
+  void _sendStatus() {
+    final req = new XMLHttpRequest();
+    String url = _sendUrl + '?matchid=' + matchid;
+    url += '&playerid=' + playerid;
+    url += '&framecount=' + frameCount;
+
+    KbInputHandler joy = (playerid == 1 ? gui.kbJoy1 : gui.kbJoy2);
+
+    url += '&left=' + joy.getKeyState(KbInputHandler.KEY_LEFT);
+    url += '&right=' + joy.getKeyState(KbInputHandler.KEY_RIGHT);
+    url += '&up=' + joy.getKeyState(KbInputHandler.KEY_UP);
+    url += '&down=' + joy.getKeyState(KbInputHandler.KEY_DOWN);
+    url += '&a=' + joy.getKeyState(KbInputHandler.KEY_A);
+    url += '&b=' + joy.getKeyState(KbInputHandler.KEY_B);
+    url += '&select=' + joy.getKeyState(KbInputHandler.KEY_SELECT);
+    url += '&start=' + joy.getKeyState(KbInputHandler.KEY_START);
+    req.open('GET', url, false);
+    req.send();
+
+    Map<String, Map<String, int>> resp = JSON.parse(req.responseText);
+    resp.forEach((k, v) => _netStatus[Math.parseInt(k)] = v);
+  }
+
+  bool _handleRemoteInput() {
+    if (!_netStatus.containsKey(frameCount))
+      return false;
+    Map<String, int> status = _netStatus[frameCount];
+    KbInputHandler joy = (playerid == 1 ? gui.kbJoy2 : gui.kbJoy1);
+    joy.setKeyState(KbInputHandler.KEY_LEFT, status['left']);
+    joy.setKeyState(KbInputHandler.KEY_RIGHT, status['right']);
+    joy.setKeyState(KbInputHandler.KEY_UP, status['up']);
+    joy.setKeyState(KbInputHandler.KEY_DOWN, status['down']);
+    joy.setKeyState(KbInputHandler.KEY_A, status['a']);
+    joy.setKeyState(KbInputHandler.KEY_B, status['b']);
+    joy.setKeyState(KbInputHandler.KEY_SELECT, status['select']);
+    joy.setKeyState(KbInputHandler.KEY_START, status['start']);
+  }
+
   void addSleepTime(int timeToAdd) {
     sleepTime += timeToAdd;    
   }

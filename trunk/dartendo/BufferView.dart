@@ -18,11 +18,6 @@ class BufferView {
      int width = 0;
      int height = 0;
      
-     // FPS counter variables:
-     bool showFPS = false;
-     int prevFrameTime = 0;
-     String fps;
-     int fpsCounter = 0;
      bool notifyImageReady = false;
      bool frameFinished = false;
      
@@ -88,7 +83,7 @@ class BufferView {
         
         //if(skipFrame%2 != 0)
         //  return;
-        
+      
         //Util.printDebug('BufferView.paint: Getting imagedata', debugMe);
         ImageData imageData = context.getImageData(0,0,256,240);
         CanvasPixelArray data = imageData.data;
@@ -111,11 +106,6 @@ class BufferView {
         }
         //Util.printDebug('BufferView.paint(): Blitting imagedata', debugMe);
         context.putImageData(imageData, 0, 0, 0,   0, 256, 240);
-    }
-
-     void setFPSEnabled(bool val) {
-        // Whether to show FPS count.
-        showFPS = val;
     }
 
      int getBufferWidth() {

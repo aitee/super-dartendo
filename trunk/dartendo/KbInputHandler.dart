@@ -17,6 +17,7 @@
    
   List<bool> allKeysState;
   List<int> keyMapping;
+  List<int> inverseKeyMapping;
   int id;
   NES nes;
 
@@ -34,6 +35,13 @@
     } else {
       return 0x40;
     }
+  }
+
+  void setKeyState(int padKey, int state) {
+    if (state == 0x41)
+      allKeysState[keyMapping[padKey]] = true;
+    else if (state == 0x40)
+      allKeysState[keyMapping[padKey]] = false;
   }
 
   void mapKey(int padKey, int kbKeycode) {
