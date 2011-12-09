@@ -1,6 +1,9 @@
 class PAPU {
 
+    bool debugMe = true;
+  
     NES nes;
+    Controller controller;
     Memory cpuMem;
     
     //Mixer mixer;
@@ -95,6 +98,7 @@ class PAPU {
 
         this.nes = nes;
         cpuMem = nes.getCpuMemory();
+        controller = nes.gui.applet;
 
         setSampleRate(sampleRate, false);
         sampleBuffer = Util.newIntList(bufferSize * (stereo ? 4 : 2), 0);
@@ -139,19 +143,19 @@ class PAPU {
     }
 
      void start() {
-       Globals.enableSound = false;
-       return;
+       Util.printDebug('PAPU.start(): begins', debugMe);
+       
+        Globals.enableSound = true;
        
         //System.out.println("* Starting PAPU lines.");
         if (line != null && line.isActive()) {
-            //System.out.println("* Already running.");
+            print("PAPU.start(): SourceDataLine is already running.");
             return;
         }
 
         bufferIndex = 0;
-        
-        
-        // TODO: Figure out how to properly enable audio
+        line = new SourceDataLine(bufferSize, nes.gui.applet);
+/*        
          //List<Mixer.Info> mixerInfo = AudioSystem.getMixerInfo();
         var mixerInfo = null;
         
@@ -160,7 +164,7 @@ class PAPU {
             Globals.enableSound = false;
             return;
         }
-/*
+
         mixer = AudioSystem.getMixer(mixerInfo[1]);
 
         AudioFormat audioFormat = new AudioFormat(sampleRate, 16, (stereo ? 2 : 1), true, false);
@@ -324,7 +328,12 @@ class PAPU {
     // divided by 2 for those counters that are
     // clocked at cpu speed.
      void clockFrameCounter(int nCycles) {
-
+       if(controller.sleepTime <= -16) { //We are too far behind, skip the frame
+         //print("Skipping render");
+         return;
+       }
+       
+       // Util.printDebug('PAPU.clockFrameCounter( nCycles = ' + nCycles + '): begins', debugMe);       
         if (initCounter > 0) {
             if (initingHardware) {
                 initCounter -= nCycles;
@@ -339,14 +348,10 @@ class PAPU {
         nCycles += extraCycles;
         maxCycles = sampleTimerMax - sampleTimer;
         if ((nCycles << 10) > maxCycles) {
-
             extraCycles = ((nCycles << 10) - maxCycles) >> 10;
             nCycles -= extraCycles;
-
         } else {
-
             extraCycles = 0;
-
         }
 
         // Clock DMC:
@@ -409,7 +414,6 @@ class PAPU {
             square2.squareCounter++;
             square2.squareCounter &= 0x7;
             square2.updateSampleValue();
-
         }
 
         // Clock noise channel Prog timer:
@@ -447,19 +451,14 @@ class PAPU {
                         } else {
                             noise.sampleValue = 0;
                         }
-
                     }
-
                     noise.progTimerCount += noise.progTimerMax;
-
                 }
 
                 noise.accValue += noise.sampleValue;
                 noise.accCount++;
-
             }
         }
-
 
         // Frame IRQ handling:
         if (frameIrqEnabled && frameIrqActive) {
@@ -469,18 +468,14 @@ class PAPU {
         // Clock frame counter at double CPU speed:
         masterFrameCounter += (nCycles << 1);
         if (masterFrameCounter >= frameTime) {
-
             // 240Hz tick:
             masterFrameCounter -= frameTime;
             frameCounterTick();
-
-
         }
 
 
         // Accumulate sample value:
         accSample(nCycles);
-
 
         // Clock sample timer:
         sampleTimer += nCycles << 10;
@@ -489,9 +484,7 @@ class PAPU {
             // Sample channels:
             sample();
             sampleTimer -= sampleTimerMax;
-
         }
-
     }
 
      void accSample(int cycles) {
@@ -537,7 +530,6 @@ class PAPU {
             smpSquare1 += cycles * square1.sampleValue;
             smpSquare2 += cycles * square2.sampleValue;
             accCount += cycles;
-
         }
 
     }
@@ -687,10 +679,8 @@ class PAPU {
 
             // Write:
             if (bufferIndex + 2 < sampleBuffer.length) {
-
                 sampleBuffer[bufferIndex++] = (sampleValueL) & 0xFF;
                 sampleBuffer[bufferIndex++] = (sampleValueL >> 8) & 0xFF;
-
             }
 
         }
@@ -702,13 +692,15 @@ class PAPU {
 
     }
 
-
+     //Called by AppletUI.imageReady()
     // Writes the sound buffer to the output line:
      void writeBuffer() {
 
         if (line == null) {
             return;
         }
+        
+        //Util.printDebug('PAPU.writeBuffer(): calling line.write().  bufferIndex = ' + bufferIndex, debugMe);
         bufferIndex -= (bufferIndex % (stereo ? 4 : 2));
         line.write(sampleBuffer, 0, bufferIndex);
 
@@ -717,7 +709,8 @@ class PAPU {
     }
 
      void stop() {
-
+        Util.printDebug('PAPU.stop(): begins', debugMe); 
+        
         if (line == null) {
             // No line to close. Probably lack of sound card.
             return;
@@ -729,7 +722,6 @@ class PAPU {
 
         // Lose line:
         line = null;
-
     }
 
      int getSampleRate() {
@@ -929,7 +921,6 @@ class PAPU {
         time /= (stereo ? 4 : 2);
 
         return time.toInt();
-
     }
 
      int getBufferPos() {

@@ -18,7 +18,7 @@ class BufferView {
      int width = 0;
      int height = 0;
      
-     bool notifyImageReady = false;
+     bool notifyImageReady = true;
      bool frameFinished = false;
      
      int skipFrame = 0;
@@ -58,13 +58,12 @@ class BufferView {
     
      void finishFrame() {
        if(!frameFinished) return;
-       frameFinished=false;
+       frameFinished = false;
 
          // Notify GUI, so it can write the sound buffer:
          if (notifyImageReady) {
-             nes.getGui().imageReady();
+             
          }
-      
      }
      
      void paint() {
@@ -79,6 +78,10 @@ class BufferView {
         if(nes.gui.applet.sleepTime <= -16) { //We are too far behind, skip the frame
           //print("Skipping render");
           return;
+        }
+        
+        if (nes.gui.applet.sound) {
+          nes.getGui().imageReady();
         }
         
         //if(skipFrame%2 != 0)

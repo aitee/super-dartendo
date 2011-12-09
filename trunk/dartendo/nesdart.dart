@@ -107,6 +107,7 @@ class Controller {
     Util = new CUtil();
     Misc = new MiscClass();
     input = new Input(this);
+     
     canvas = document.query("#webGlCanvas");
     context = canvas.getContext('2d');
     scale = false;
@@ -115,20 +116,21 @@ class Controller {
     stereo = false;
     timeemulation = false;
     showsoundbuffer = false;
-    _netplay = false;
-    matchid = 0;
-    playerid = 0;
     samplerate = 0;
     romSize = 0;
     progress = 0;
     bgColor = new Color(0,0,0);
     started = false;
     lastTime = 0;
-    sleepTime=0;
+    sleepTime = 0;
+     
+    _netplay = false;
+    matchid = 0;
+    playerid = 0;
     _lastFrameCount = 0;
     frameCount = 0;
-    _netStatus = new Map<int, Map<String, int>>();
-
+    _netStatus = new Map<int, Map<String, int>>();     
+     
     init();
   }
 
@@ -147,7 +149,7 @@ class Controller {
     nes.enableSound(sound);
     nes.reset();
     window.setInterval(_updateFps, 1000);
-
+     
     input.init();
   }
 
@@ -170,7 +172,6 @@ class Controller {
   }
 
   void run() {
-
     // Can start painting:
     started = true;
 
@@ -194,10 +195,8 @@ class Controller {
       nes.getCpu().beginExecution();
 
     } else {
-
       // ROM file was invalid.
       print("vNES was unable to find ROM.");
-
     }
 
     Util.printDebug("nesdart.run(): ROM LOADED", debugMe);
@@ -271,9 +270,11 @@ class Controller {
     progress = percentComplete;
   }
 
-  void readParams() {
-    print("READING PARAMS");
-    print(window.location.getParameter('rom'));
+ void readParams() {
+
+    Util.printDebug('nesdart.readParams(): begins', debugMe);    
+//    print("READING PARAMS");
+//    print(window.location.getParameter('rom'));
     String tmp = "";
     if (tmp == null || tmp == ("")) {
       scale = false;
@@ -282,13 +283,7 @@ class Controller {
     }
 
     if (tmp == null || tmp == ("")) {
-      sound = false; //TODO: Support sound
-    } else {
-      sound = tmp == ("on");
-    }
-
-    if (tmp == null || tmp == ("")) {
-      stereo = true; // on by default
+        stereo = true; // on by default
     } else {
       stereo = tmp == ("on");
     }
@@ -351,7 +346,7 @@ class Controller {
     if(frameTime < 1000) {
       final BufferView screen = nes.getGui().getScreenView();
       final CPU cpu = nes.getCpu();
-      while(sleepTime<=0) {
+      while(sleepTime <= 0) {
         //print('SLEEP TIME'+sleepTime);
         while(true) {
           if (_netplay)

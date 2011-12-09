@@ -134,16 +134,20 @@ class NES {
   }
 
   void startEmulation() {
-
-    if (Globals.enableSound && !papu.isRunning()) {
-      papu.start();
-    }
-    {
-      if (rom != null && rom.isValid() && !cpu.isRunning()) {
+       Util.printDebug('NES.stopEmulation(): begins', debugMe);
+       if (cpu.isRunning()) {
+           cpu.endExecution();
+           isRunningFlag = false;
+       }
+       
+     if (Globals.enableSound && !papu.isRunning()) {
+         papu.start();
+      }
+       
+     if (rom != null && rom.isValid() && !cpu.isRunning()) {
         cpu.beginExecution();
         isRunningFlag = true;
-      }
-    }
+     }
   }
 
   void stopEmulation() {
@@ -281,7 +285,6 @@ class NES {
     cpuMem.reset();
     ppuMem.reset();
     sprMem.reset();
-
     clearCPUMemory();
 
     cpu.reset();
@@ -296,7 +299,6 @@ class NES {
     }
 
   }
-
   // Enable or disable sound playback.
   void enableSound(bool enable) {
 
