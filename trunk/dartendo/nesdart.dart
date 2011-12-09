@@ -287,7 +287,7 @@ class Controller {
 
     String tmp;
 
-    tmp = "roms/BattleCity.json";
+    tmp = "roms/SuperMario3.json";
     if (tmp == null || tmp == ("")) {
         rom = "vnes.nes";
     } else {
@@ -336,7 +336,7 @@ class Controller {
 
   void animate(int time) {
     bool debugLocal = false;
-    //Util.printDebug("nesdart.animate(" + time + ") begins.", debugLocal);
+    Util.printDebug("nesdart.animate(" + time + ") begins.", debugLocal);
     
     //canvas.width = canvas.width;
     
@@ -346,7 +346,7 @@ class Controller {
               return;
             }
 
-    if(lastTime>0) { //Skip one frame to set lastTime
+    if((time-lastTime)<1000) { //Skip one frame to set lastTime and skip if too much time has passed since the last frame.
     while(sleepTime<=0) {
       //print('SLEEP TIME'+sleepTime);
     while(true) {
@@ -360,6 +360,8 @@ class Controller {
     }
     sleepTime -= (time-lastTime);
     //print("FRAME TIME: "+(time-lastTime));
+    } else {
+      Util.printDebug('SKIPPING FRAME',debugLocal);
     }
     lastTime = time;
     window.webkitRequestAnimationFrame(animate, canvas);

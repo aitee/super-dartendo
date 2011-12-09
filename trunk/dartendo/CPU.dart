@@ -23,7 +23,7 @@
 
 class CPU {
 
-  bool debugMe = true;
+  bool debugMe = false;
 
   // References to other parts of NES :
   NES nes;
