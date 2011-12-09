@@ -112,7 +112,7 @@ class Controller {
     canvas = document.query("#webGlCanvas");
     context = canvas.getContext('2d');
     scale = false;
-    sound = true;
+    sound = false;
     fps = false;
     stereo = false;
     timeemulation = false;
@@ -363,7 +363,7 @@ class Controller {
         while(true) {
           cpu.emulate();
           if (screen.frameFinished) {
-            if (_netplay) {
+            if (_netplay && frameCount%10==0) {
               _buildLocalStatus();
               if (frameCount % 10 == 0)
                 _sendStatus();
