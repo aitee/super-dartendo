@@ -210,7 +210,7 @@ class PPU {
       _oldFrame[i] = -1;
     }
     
-    Util.printDebug('PPU.init(): initialized', debugMe);
+    //Util.printDebug('PPU.init(): initialized', debugMe);
   }
 
   // Sets Nametable mirroring.
@@ -318,7 +318,7 @@ class PPU {
   }
 
   void startVBlank() {
-    Util.printDebug('PPU.startVBlank: VBLANK', debugMe);
+    //Util.printDebug('PPU.startVBlank: VBLANK', debugMe);
     // Start VBlank period:
     // Do VBlank.
 
@@ -415,7 +415,7 @@ class PPU {
     } else if (scanline == 261 + _vblankAdd) {
       // Dead scanline, no rendering.
       // Set VINT:
-      Util.printDebug("SETTING REQUESTENDFRAME", debugMe);     
+      //Util.printDebug("SETTING REQUESTENDFRAME", debugMe);     
       setStatusFlag(_STATUS_VBLANK, true);
       _requestEndFrame = true;
       _nmiCounter = 9;
@@ -476,7 +476,7 @@ class PPU {
   }
 
   void endFrame() {
-    Util.printDebug("PPU.endFrame(): begins", debugMe); 
+    //Util.printDebug("PPU.endFrame(): begins", debugMe); 
     // Draw spr#0 hit coordinates:
     if (_showSpr0Hit) {
       // Spr 0 position:

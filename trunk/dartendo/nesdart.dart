@@ -336,7 +336,7 @@ class Controller {
 
   void animate(int time) {
     bool debugLocal = debugMe;
-    Util.printDebug("nesdart.animate(" + time + ") begins.", debugLocal);
+    //Util.printDebug("nesdart.animate(" + time + ") begins.", debugLocal);
     
     //canvas.width = canvas.width;
 

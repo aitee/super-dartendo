@@ -72,7 +72,7 @@ class BufferView {
      
      void paint() {
         
-       bool debugLoop = debugMe;
+       //bool debugLoop = debugMe;
        
         // Skip if not needed:
         if (usingMenu) {
@@ -81,13 +81,13 @@ class BufferView {
 
         //JJG: TODO: DRAW NES HERE
         
-        Util.printDebug('BufferView.paint: Getting imagedata', debugMe);
+        //Util.printDebug('BufferView.paint: Getting imagedata', debugMe);
         var arr = context.getImageData(0,0,256,240);
         var data = arr.data;
-        Util.printDebug('BufferView.paint: data.length = ' + data.length, debugMe);
+        //Util.printDebug('BufferView.paint: data.length = ' + data.length, debugMe);
         
         var ppui = 0;
-        Util.printDebug('BufferView.paint: setting pixels', debugLoop);
+        //Util.printDebug('BufferView.paint: setting pixels', debugLoop);
         for (var i = 0; i < 256*240*4;) {
           //Util.printDebug('BufferView.paint: Setting pixels, i = ' + i, debugMe);
           
@@ -99,7 +99,7 @@ class BufferView {
           ppui++;
           data[i++] = 255; // a
         }
-        Util.printDebug('Blitting imagedata', debugMe);
+        //Util.printDebug('Blitting imagedata', debugMe);
         context.putImageData(arr, 0, 0, 0,   0, 256, 240);
 
     }
