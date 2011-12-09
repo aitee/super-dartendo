@@ -1,4 +1,6 @@
 class PaletteTable {
+    bool debugMe = true;
+    
     static List<int> curTable;
     static List<int> origTable;
     static List<List<int>> emphTable;
@@ -26,32 +28,28 @@ class PaletteTable {
     }
 
     // Load a palette file:
-    bool loadPalette(String file) {
-      bool debugMe = true;
-              
-      if (debugMe) print("Entering PaletteTable.loadPalette try block.");        
+    bool loadPalette(String file) {              
+      Util.printDebug("PaletteTable.loadPalette( file = " + file + ")", debugMe);        
       try {
           List<int> rawTable = FileLoader.loadFile(file);
           for(var i=0;i<origTable.length;i++) {
             origTable[i] = getRgb(rawTable[(i*3)], rawTable[(i*3)+1], rawTable[(i*3)+2]);
           }
           
-          if (debugMe) print("PaletteTable.loadPalette: Finished loading palette.");            
+          Util.printDebug("PaletteTable.loadPalette(...): Finished loading palette.", debugMe);            
   
           setEmphasis(0);
           makeTables();
           updatePalette();
           
-          if (debugMe) print("PaletteTable.loadPalette success!");
+          Util.printDebug("PaletteTable.loadPalette(...): success!", debugMe);
           return true;
   
       } catch (Exception e) {
-  
           // Unable to load palette.
-          print("PaletteTable: Internal Palette Loaded.");
+          print("PaletteTable.loadPalette(...): Exception.  Loading Internal Palette instead.");
           loadDefaultPalette();
           return false;
-  
       }
     }
 
@@ -78,16 +76,18 @@ class PaletteTable {
             }
 
             // Calculate table:
-            print('EMPH TABLE BEGIN');
+            Util.printDebug('PaletteTable.makeTables(): EMPH TABLE BEGIN', debugMe);
+            
             for (int i = 0; i < 64; i ++) {
                 col = origTable[i];
                 r = (getRed(col) * rFactor).toInt();
                 g = (getGreen(col) * gFactor).toInt();
                 b = (getBlue(col) * bFactor).toInt();
                 emphTable[emph][i] = col;
-                print(emphTable[emph][i]);
+                Util.printDebug(emphTable[emph][i].toString(), debugMe);
             }
-            print('EMPH TABLE END');
+            
+            Util.printDebug('PaletteTable.makeTables(): EMPH TABLE END', debugMe);
 
         }
 
