@@ -39,17 +39,18 @@
         kbJoy1.mapKey(KbInputHandler.KEY_LEFT, 74);
         kbJoy1.mapKey(KbInputHandler.KEY_RIGHT, 76);
 
-        /*
-        // Grab Controller Setting for Player 2:
-        kbJoy2.mapKey(InputHandler.KEY_A, 0);
-        kbJoy2.mapKey(InputHandler.KEY_B, 0);
-        kbJoy2.mapKey(InputHandler.KEY_START, 0);
-        kbJoy2.mapKey(InputHandler.KEY_SELECT, 0);
-        kbJoy2.mapKey(InputHandler.KEY_UP, 0);
-        kbJoy2.mapKey(InputHandler.KEY_DOWN, 0);
-        kbJoy2.mapKey(InputHandler.KEY_LEFT, 0);
-        kbJoy2.mapKey(InputHandler.KEY_RIGHT, 0);
-        */
+        kbJoy2.mapKey(KbInputHandler.KEY_A, 88);
+        kbJoy2.mapKey(KbInputHandler.KEY_B, 90);
+        kbJoy2.mapKey(KbInputHandler.KEY_START, 13);
+        kbJoy2.mapKey(KbInputHandler.KEY_SELECT, 77);
+        //kbJoy2.mapKey(KbInputHandler.KEY_UP, 38);
+        //kbJoy2.mapKey(KbInputHandler.KEY_DOWN, 40);
+        //kbJoy2.mapKey(KbInputHandler.KEY_LEFT, 37);
+        //kbJoy2.mapKey(KbInputHandler.KEY_RIGHT, 39);
+        kbJoy2.mapKey(KbInputHandler.KEY_UP, 73);
+        kbJoy2.mapKey(KbInputHandler.KEY_DOWN, 75);
+        kbJoy2.mapKey(KbInputHandler.KEY_LEFT, 74);
+        kbJoy2.mapKey(KbInputHandler.KEY_RIGHT, 76);
     }
 
      // BufferView.paint() calls AppletUI.imageReady()
