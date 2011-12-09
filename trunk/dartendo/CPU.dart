@@ -105,6 +105,7 @@ class CPU {
   bool asApplet = false;
 
   var opcode_table;
+  var addressModeLookup;
 
   // Constructor:
   CPU(NES nes){
@@ -922,6 +923,107 @@ class CPU {
       F_ZERO = REG_Y;
 
     };
+    
+    addressModeLookup = [];
+    
+    addressModeLookup[0] = () {
+      // Zero Page mode. Use the address given after the opcode, but without high byte.
+      addr = load(opaddr + 2);    
+    };
+
+    addressModeLookup[1] = () {
+      // Relative mode.
+      addr = load(opaddr + 2);
+      if(addr < 0x80) {
+        addr += REG_PC;
+      } else {
+        addr += REG_PC - 256;
+      }
+    };
+    
+    addressModeLookup[2] = () {
+      // Ignore. Address is implied in instruction.                          
+    };
+    
+    addressModeLookup[3] = () {
+      // Absolute mode. Use the two bytes following the opcode as an address.
+      addr = load16bit(opaddr+2);
+    };
+    
+    addressModeLookup[4] = () {
+      // Accumulator mode. The address is in the accumulator register.
+      addr = REG_ACC;                          
+    };
+    
+    addressModeLookup[5] = () {
+      // Immediate mode. The value is given after the opcode.
+      addr = REG_PC;
+    };
+    
+    addressModeLookup[6] = () {
+      // Zero Page Indexed mode, X as index. Use the address given after the opcode, then add the
+      // X register to it to get the final address.
+      addr = (load(opaddr+2)+REG_X) & 0xFF;                       
+    };
+    
+    addressModeLookup[7] = () {
+      // Zero Page Indexed mode, Y as index. Use the address given after the opcode, then add the
+      // Y register to it to get the final address.
+       addr = (load(opaddr+2)+REG_Y)&0xFF;
+    };
+    
+    addressModeLookup[8] = () {
+      // Absolute Indexed Mode, X as index. Same as zero page indexed, but with the high byte.
+      addr = load16bit(opaddr+2);
+      if((addr&0xFF00)!=((addr+REG_X)&0xFF00)){
+        cycleAdd = 1;
+      }
+      addr += REG_X;
+    };
+    
+    addressModeLookup[9] = () {
+      // Absolute Indexed Mode, Y as index. Same as zero page indexed, but with the high byte.
+      addr = load16bit(opaddr+2);
+      if((addr&0xFF00)!=((addr+REG_Y)&0xFF00)){
+            cycleAdd = 1;
+      }
+      addr += REG_Y;
+    };
+    
+    addressModeLookup[10] = () {
+      // Pre-indexed Indirect mode. Find the 16-bit address starting at the given location plus
+      // the current X register. The value is the contents of that address.
+      addr = load(opaddr+2);
+      if((addr&0xFF00)!=((addr+REG_X)&0xFF00)){
+         cycleAdd = 1;
+      }
+      
+      addr += REG_X;
+      addr &= 0xFF;
+      addr = load16bit(addr);
+    };
+    
+    addressModeLookup[11] = () {
+      // Post-indexed Indirect mode. Find the 16-bit address contained in the given location
+      // (and the one following). Add to that address the contents of the Y register. Fetch the value
+      // stored at that adress.
+
+      addr = load16bit(load(opaddr+2));
+      if((addr&0xFF00)!=((addr+REG_Y)&0xFF00)){
+        cycleAdd = 1;
+      }
+      addr += REG_Y;
+    };
+    
+    addressModeLookup[12] = () {
+      // Indirect Absolute mode. Find the 16-bit address contained at the given location.
+      addr = load16bit(opaddr+2);// Find op
+      if(addr < 0x1FFF) {
+        addr = mem[addr] + (mem[(addr&0xFF00)|(((addr&0xFF)+1)&0xFF)]<<8);// Read from address given in op
+      } else {
+        addr = mmap.load(addr)+(mmap.load((addr&0xFF00)|(((addr&0xFF)+1)&0xFF))<<8);
+      }
+    };    
   } // Ends Constructor CPU(NES nes)
 
   // Initialize:
@@ -971,11 +1073,11 @@ class CPU {
     F_SIGN      = F_SIGN_NEW;
 
     // Misc. variables
-    opinf=0;
-    opaddr=0;
-    addrMode=0;
-    addr=0;
-    palCnt=0;
+    opinf = 0;
+    opaddr = 0;
+    addrMode = 0;
+    addr = 0;
+    palCnt = 0;
 
     palEmu = Globals.palEmulation;
     emulateSound = Globals.enableSound;
@@ -1142,138 +1244,12 @@ class CPU {
 
     // Increment PC by number of op bytes:
     opaddr = REG_PC;
-    REG_PC+=((opinf>>16)&0xFF);
+    REG_PC += ((opinf>>16) & 0xFF);
 
-
-    switch(addrMode){
-      case 0:{
-
-               // Zero Page mode. Use the address given after the opcode, but without high byte.
-
-               addr = load(opaddr+2);
-               break;
-
-             }case 1:{
-
-               // Relative mode.
-
-               addr = load(opaddr+2);
-               if(addr<0x80){
-                 addr += REG_PC;
-               }else{
-                 addr += REG_PC - 256;
-               }
-               break;
-
-             }case 2:{
-
-               // Ignore. Address is implied in instruction.
-               break;
-
-             }case 3:{
-
-               // Absolute mode. Use the two bytes following the opcode as an address.
-
-               addr = load16bit(opaddr+2);
-               break;
-
-             }case 4:{
-
-               // Accumulator mode. The address is in the accumulator register.
-
-               addr = REG_ACC;
-               break;
-
-             }case 5:{
-
-               // Immediate mode. The value is given after the opcode.
-
-               addr = REG_PC;
-               break;
-
-             }case 6:{
-
-               // Zero Page Indexed mode, X as index. Use the address given after the opcode, then add the
-               // X register to it to get the final address.
-
-               addr = (load(opaddr+2)+REG_X)&0xFF;
-               break;
-
-             }case 7:{
-
-               // Zero Page Indexed mode, Y as index. Use the address given after the opcode, then add the
-               // Y register to it to get the final address.
-
-               addr = (load(opaddr+2)+REG_Y)&0xFF;
-               break;
-
-             }case 8:{
-
-               // Absolute Indexed Mode, X as index. Same as zero page indexed, but with the high byte.
-
-               addr = load16bit(opaddr+2);
-               if((addr&0xFF00)!=((addr+REG_X)&0xFF00)){
-                 cycleAdd = 1;
-               }
-               addr+=REG_X;
-               break;
-
-             }case 9:{
-
-               // Absolute Indexed Mode, Y as index. Same as zero page indexed, but with the high byte.
-
-               addr = load16bit(opaddr+2);
-               if((addr&0xFF00)!=((addr+REG_Y)&0xFF00)){
-                 cycleAdd = 1;
-               }
-               addr+=REG_Y;
-               break;
-
-             }case 10:{
-
-               // Pre-indexed Indirect mode. Find the 16-bit address starting at the given location plus
-               // the current X register. The value is the contents of that address.
-
-               addr = load(opaddr+2);
-               if((addr&0xFF00)!=((addr+REG_X)&0xFF00)){
-                 cycleAdd = 1;
-               }
-               addr+=REG_X;
-               addr&=0xFF;
-               addr = load16bit(addr);
-               break;
-
-             }case 11:{
-
-               // Post-indexed Indirect mode. Find the 16-bit address contained in the given location
-               // (and the one following). Add to that address the contents of the Y register. Fetch the value
-               // stored at that adress.
-
-               addr = load16bit(load(opaddr+2));
-               if((addr&0xFF00)!=((addr+REG_Y)&0xFF00)){
-                 cycleAdd = 1;
-               }
-               addr+=REG_Y;
-               break;
-
-             }case 12:{
-
-               // Indirect Absolute mode. Find the 16-bit address contained at the given location.
-
-               addr = load16bit(opaddr+2);// Find op
-               if(addr < 0x1FFF){
-                 addr = mem[addr] + (mem[(addr&0xFF00)|(((addr&0xFF)+1)&0xFF)]<<8);// Read from address given in op
-               }else{
-                 addr = mmap.load(addr)+(mmap.load((addr&0xFF00)|(((addr&0xFF)+1)&0xFF))<<8);
-               }
-               break;
-
-             }
-
-    }
+    addressModeLookup[addrMode]();
 
     // Wrap around for addresses above 0xFFFF:
-    addr&=0xFFFF;
+    addr &= 0xFFFF;
 
     // ----------------------------------------------------------------------------------------------------
     // Decode & execute instruction:
