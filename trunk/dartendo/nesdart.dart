@@ -67,8 +67,8 @@
 class Controller {
   bool debugMe = false;
   
-  var canvas;
-  var context;
+  CanvasElement canvas;
+  CanvasRenderingContext context;
 
   bool scale = false;
   bool sound = false;
