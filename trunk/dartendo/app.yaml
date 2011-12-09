@@ -8,18 +8,21 @@ handlers:
 - url: /favicon\.ico
   static_files: favicon.ico
   upload: favicon\.ico
-  login: required
+  login: admin
 
 - url: /
   static_files: nesdart.html
   upload: nesdart.html
-  login: required
+  login: admin
 
 - url: /(.*\.(html|css|js|png|json|dart|nes|jpg|gif))
   static_files: \1
   upload: (.*\.(html|css|js|png|json|dart|nes|jpg|gif))
-  login: required
+  login: admin
 
 - url: (.*)
   script: main.app
-  login: required
+  login: admin
+
+inbound_services:
+- channel_presence

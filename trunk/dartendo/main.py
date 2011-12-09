@@ -83,9 +83,19 @@ class SettingsHandler(JsonHandler):
     def json_get(self):
         return default_settings
 
+class ChannelConnectHandler(webapp2.RequestHandler):
+    def post(self):
+        client_id = self.request.get('from')
+
+class ChannelConnectHandler(webapp2.RequestHandler):
+    def post(self):
+        client_id = self.request.get('from')
+
 
 app = webapp2.WSGIApplication([
     ('/settings', SettingsHandler),
+    ('/_ah/channel/connected/', ChannelConnectHandler),
+    ('/_ah/channel/disconnected/', ChannelDisconnectHandler)
 ], debug=True)
 
 
