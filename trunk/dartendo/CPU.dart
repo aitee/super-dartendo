@@ -106,6 +106,7 @@ class CPU {
 
   var opcode_table;
   var addressModeLookup;
+  var irqTypeSwitch;
 
   // Constructor:
   CPU(NES nes){
@@ -924,6 +925,7 @@ class CPU {
 
     };
     
+    // address mode lookup
     addressModeLookup = [];
     
     addressModeLookup[0] = () {
@@ -1023,7 +1025,30 @@ class CPU {
       } else {
         addr = mmap.load(addr)+(mmap.load((addr&0xFF00)|(((addr&0xFF)+1)&0xFF))<<8);
       }
-    };    
+    };
+    
+    
+    irqTypeSwitch = [];
+    irqTypeSwitch[0] = () {
+      // Normal IRQ:
+      if(F_INTERRUPT != 0) {
+        Util.printDebug("CPU.Constructor.irqTypeSwitch[0]: Interrupt was masked.", debugMe);
+        return;
+      }
+      
+      doIrq(temp);
+      Util.printDebug("CPU.Constructor.irqTypeSwitch[0]: Did normal IRQ. I = " + F_INTERRUPT, debugMe);
+    };
+
+    irqTypeSwitch[1] = () { 
+      // NMI:
+      doNonMaskableInterrupt(temp);
+    };
+
+    irqTypeSwitch[2] = () {
+      // Reset:
+      doResetInterrupt();
+    };
   } // Ends Constructor CPU(NES nes)
 
   // Initialize:
@@ -1201,33 +1226,9 @@ class CPU {
 
       REG_PC_NEW = REG_PC;
       F_INTERRUPT_NEW = F_INTERRUPT;
-      switch(irqType){
-        case 0:{
-
-                 // Normal IRQ:
-                 if(F_INTERRUPT!=0){
-                   ////System.out.println("Interrupt was masked.");
-                   break;
-                 }
-                 doIrq(temp);
-                 ////System.out.println("Did normal IRQ. I="+F_INTERRUPT);
-                 break;
-
-               }case 1:{
-
-                 // NMI:
-                 doNonMaskableInterrupt(temp);
-                 break;
-
-               }case 2:{
-
-                 // Reset:
-                 doResetInterrupt();
-                 break;
-
-               }
-      }
-
+      
+      irqTypeSwitch[irqType]();
+      
       REG_PC = REG_PC_NEW;
       F_INTERRUPT = F_INTERRUPT_NEW;
       F_BRK = F_BRK_NEW;
