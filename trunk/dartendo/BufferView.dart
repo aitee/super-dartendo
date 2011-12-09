@@ -81,8 +81,10 @@ class BufferView {
 
         skipFrame = (skipFrame+1)%100;
         
-        if(nes.gui.applet.sleepTime<=-16)  //We are too far behind, skip the frame
+        if(nes.gui.applet.sleepTime<=-16) { //We are too far behind, skip the frame
+          //print("Skipping render");
           return;
+        }
         
         //if(skipFrame%2!=0)
           //return;
