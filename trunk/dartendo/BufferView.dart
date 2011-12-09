@@ -71,27 +71,25 @@ class BufferView {
      }
      
      void paint() {
-        
        //bool debugLoop = debugMe;
        
         // Skip if not needed:
-        if (usingMenu) {
+        if (usingMenu)
             return;
-        }
 
-        //JJG: TODO: DRAW NES HERE
-        
         //Util.printDebug('BufferView.paint: Getting imagedata', debugMe);
         var arr = context.getImageData(0,0,256,240);
         var data = arr.data;
         //Util.printDebug('BufferView.paint: data.length = ' + data.length, debugMe);
-        
+
+        var ppu_buffer = nes.ppu.buffer;       
+ 
         var ppui = 0;
         //Util.printDebug('BufferView.paint: setting pixels', debugLoop);
         for (var i = 0; i < 256*240*4;) {
           //Util.printDebug('BufferView.paint: Setting pixels, i = ' + i, debugMe);
           
-          int val = (nes.ppu.buffer[ppui]);
+          int val = (ppu_buffer[ppui]);
           
           data[i++] = val&0xFF; // r
           data[i++] = (val>>8)&0xFF; // g
