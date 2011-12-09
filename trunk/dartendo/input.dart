@@ -6,19 +6,22 @@ class Input {
   void init() {
     // Content section used a lot
     Element content = document.query('#content');
-    Element input = document.query('#file');
+    InputElement input = document.query('#file');
+    
+    Element inputLoadRom = document.query('#inputLoadRom');
     
     // Add invisible border to drop area
-    content.style.border = '4px solid transparent';
+    // content.style.border = '4px solid transparent';
   
     // Input handler
+    /*
     input.on.change.add((Event event) {
       Util.printDebug("Input.init(): input.on.change Event fired.", debugMe);
       
       unwrapDomObject(event).preventDefault();
       loadFile(input.files.item(0));
     });
-    
+
     // Add dragging events
     content.on.dragEnter.add((Event event) {
       Util.printDebug("Input.init(): content.on.dragEnter Event fired.", debugMe);
@@ -43,6 +46,12 @@ class Input {
       loadFile(unwrapDomObject(event).dataTransfer.files[0]);
       return false;
     });
+    */
+    /*
+    inputLoadRom.on.click.add((Event event) {
+      print('trying to load: ' + input.files.item(0).fileName);
+    });
+    */
   }
 
   void loadFile(File file) {

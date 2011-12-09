@@ -29,7 +29,7 @@
         kbJoy1.mapKey(KbInputHandler.KEY_A, 88);
         kbJoy1.mapKey(KbInputHandler.KEY_B, 90);
         kbJoy1.mapKey(KbInputHandler.KEY_START, 13);
-        kbJoy1.mapKey(KbInputHandler.KEY_SELECT, 32);
+        kbJoy1.mapKey(KbInputHandler.KEY_SELECT, 77);
         //kbJoy1.mapKey(KbInputHandler.KEY_UP, 38);
         //kbJoy1.mapKey(KbInputHandler.KEY_DOWN, 40);
         //kbJoy1.mapKey(KbInputHandler.KEY_LEFT, 37);

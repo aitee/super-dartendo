@@ -5,7 +5,7 @@
 
 #source('AppletUI.dart');
 #source('BufferView.dart');
-#source('ByteBuffer.dart');
+#source('ByteBuffer.dart'); 
 #source('ChannelDM.dart');
 #source('ChannelNoise.dart');
 #source('ChannelSquare.dart');
@@ -287,7 +287,7 @@ class Controller {
 
     String tmp;
 
-    tmp = "roms/SuperMario3.json";
+    tmp = "roms/BattleCity.json";
     if (tmp == null || tmp == ("")) {
         rom = "vnes.nes";
     } else {
@@ -367,7 +367,7 @@ class Controller {
 }
 
 void main() {
-  //Input input = new Input();
-//  input.init();
+  Input input = new Input();
+  input.init();
   new Controller().run();
 }
