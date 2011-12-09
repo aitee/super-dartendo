@@ -43,7 +43,7 @@
     if (kc >= allKeysState.length)
       return;
 
-    print('[KbInputHandler] keyPressed: ${ke.keyIdentifier} (${ke.keyCode})');
+    //print('[KbInputHandler] keyPressed: ${ke.keyIdentifier} (${ke.keyCode})');
     allKeysState[kc] = true;
 
     // Can't hold both left & right or up & down at same time:
@@ -58,7 +58,7 @@
   }
    
   void keyReleased(KeyboardEvent ke) {
-    print('[KbInputHandler] keyReleased: ${ke.keyIdentifier} (${ke.keyCode})');
+    //print('[KbInputHandler] keyReleased: ${ke.keyIdentifier} (${ke.keyCode})');
 
   int kc = ke.keyCode;
   if (kc >= allKeysState.length)

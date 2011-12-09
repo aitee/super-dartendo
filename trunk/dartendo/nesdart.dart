@@ -231,14 +231,14 @@ class Controller {
     document.on.keyDown.add((Event e) {
       Expect.isTrue(e is KeyboardEvent);
       KeyboardEvent ke = e;
-      print('GOT KEY DOWN EVENT ' + ke.keyIdentifier);
+      //print('GOT KEY DOWN EVENT ' + ke.keyIdentifier);
       gui.kbJoy1.keyPressed(ke);
       return false;
     }, true);
     document.on.keyUp.add((Event e) {
       Expect.isTrue(e is KeyboardEvent);
       KeyboardEvent ke = e;
-      print('GOT KEY UP EVENT ' + ke.keyIdentifier);
+      //print('GOT KEY UP EVENT ' + ke.keyIdentifier);
       gui.kbJoy1.keyReleased(ke);
       return false;
     }, true);
