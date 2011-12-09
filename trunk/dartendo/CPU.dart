@@ -114,7 +114,7 @@ class CPU {
     active = false;
 
     // Build the opcode jump table
-    _opcode_table = [];
+    _opcode_table = new List(56);
     _opcode_table[0] = () {
       // *******
       // * ADC *
@@ -918,7 +918,7 @@ class CPU {
     };
     
     // address mode lookup
-    _addressModeLookup = [];
+    _addressModeLookup = new List(13);
     
     _addressModeLookup[0] = () {
       // Zero Page mode. Use the address given after the opcode, but without high byte.
@@ -1020,7 +1020,7 @@ class CPU {
     };
     
     
-    irqTypeSwitch = [];
+    irqTypeSwitch = new List(3);
     irqTypeSwitch[0] = () {
       // Normal IRQ:
       if(F_INTERRUPT != 0) {

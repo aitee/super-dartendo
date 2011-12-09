@@ -130,7 +130,7 @@ class PPU {
 
   PPU(this.nes) {
     // Build the bgColor lookup table.
-    _bgColor_table = [];
+    _bgColor_table = new List(5);
 
     _bgColor_table[0] = 0x000000;
     _bgColor_table[1] = 0x00FF00;
