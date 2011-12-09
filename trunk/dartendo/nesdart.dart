@@ -365,7 +365,8 @@ class Controller {
           if (screen.frameFinished) {
             if (_netplay) {
               _buildLocalStatus();
-              _sendStatus();
+              if (frameCount % 10 == 0)
+                _sendStatus();
             }
             ++frameCount;
             screen.finishFrame();
@@ -424,7 +425,6 @@ class Controller {
     frameStatus['b'] = joy.getKeyState(KbInputHandler.KEY_B);
     frameStatus['select'] = joy.getKeyState(KbInputHandler.KEY_SELECT);
     frameStatus['start'] = joy.getKeyState(KbInputHandler.KEY_START);
-    //print('netplay: adding for frame $frameCount');
     _sendNetStatus[frameCount] = frameStatus;
   }
 
