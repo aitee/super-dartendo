@@ -9,7 +9,7 @@ class HelloWorld(object):
         return "Hello World!"
     index.exposed = True
 
-    def sendstatus(self, **args):
+    def sendStatus(self, **args):
         if int(args['matchid']) not in matchPlayerTimeInputs:
             matchPlayerTimeInputs[int(args['matchid'])] = {}
         playerTimeInputs = matchPlayerTimeInputs[int(args['matchid'])]
@@ -49,7 +49,7 @@ class HelloWorld(object):
                 retval[int(framecount)] = inputs
         return json.dumps(retval)
         #return "HELLO WORLD"
-    sendstatus.exposed = True
+    sendStatus.exposed = True
         
     
 conf = {

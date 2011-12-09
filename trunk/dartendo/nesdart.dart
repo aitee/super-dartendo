@@ -66,7 +66,7 @@
 
 class Controller {
 
-  static final String _sendUrl = "http://dartendo.appspot.com/sendStatus";
+  static final String _sendUrl = "./sendStatus";
 
   bool debugMe = false;
 
