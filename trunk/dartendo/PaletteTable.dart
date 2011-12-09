@@ -109,6 +109,69 @@ class PaletteTable {
         return curTable[yiq];
     }
     
+ /* List<double> RGBtoHSB(int r, int g, int b) {
+    int maxc = Math.max(Math.max(r, g), b);
+    int minc = Math.min(Math.min(r, g), b);
+    double v = maxc.toDouble();
+    
+    if (minc == maxc) {
+        List<double> r = Util.newDoubleList(3, 0.0);
+        r[0] = 0.0;
+        r[1] = 0.0;
+        r[2] = v;
+        return r;
+    }
+
+    double s = (maxc-minc) / maxc;
+    double rc = (maxc-r) / (maxc-minc);
+    double gc = (maxc-g) / (maxc-minc);
+    double bc = (maxc-b) / (maxc-minc);
+    double h;
+    if (r == maxc) {
+        h = bc - gc;
+    } else if (g == maxc) {
+        h = 2.0 + rc - bc;
+    } else {
+        h = 4.0+gc-rc;
+    }
+    h = (h/6.0) % 1.0;
+    List<double> r2 = Util.newDoubleList(3, 0.0);
+    r2[0] = h;
+    r2[1] = s;
+    r2[2] = v;
+    return r2;
+  }
+      
+  int HSBtoRGB(double h, double s, double v) {
+    if (s == 0.0) {
+        return getRGB(v,v,v);
+    }
+    int i = (h*6.0).toInt();
+    double f = (h*6.0) - i;
+    double p = v*(1.0 - s);
+    double q = v*(1.0 - s*f);
+    double t = v*(1.0 - s*(1.0-f));
+    
+    i = i%6;
+    if (i == 0)
+        return getRGB(v, t, p);
+    if (i == 1)
+        return getRGB(q, v, p);
+    if (i == 2)
+        return getRGB(p, v, t);
+    if (i == 3)
+        return getRGB(p, q, v);
+    if (i == 4) 
+        return getRGB(t, p, v);
+    else //i == 5
+        return getRGB(v, p, q);
+  }
+    
+  int getRGB(double r, double g, double b) {
+    return (r * 255).round().toInt() << 16 | (g * 255).round().toInt() << 8 | (b * 255).round().toInt();
+  }*/
+    
+
     // Original function at http://delphi.about.com/od/adptips2006/qt/RgbToHsb.htm
     // used Byte for RGB values--that may have screwed up the port of it.
     List<double> RGBtoHSB(int r, int g, int b) {
@@ -149,7 +212,7 @@ class PaletteTable {
        
        return hsb;
     }
-       
+
     int HSBtoRGB(double hue, double saturation, double brightness) {
       double r = 0.0, g = 0.0, b = 0.0;
       int i = 0;
