@@ -22,7 +22,7 @@ void setOnAudioProcess(JavaScriptAudioNode node, Function handler) native
 
 class SourceDataLine {
   
-  bool debugMe = true;
+  bool debugMe = false;
   
   Controller controller = null;
   
