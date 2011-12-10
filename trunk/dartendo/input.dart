@@ -11,7 +11,7 @@ class Input {
   void toggleMenu() {
     if (menuElement.style.bottom == '0px') {
       menuElement.style.transition = 'bottom 0.2s';
-      menuElement.style.bottom = '-21ex';
+      menuElement.style.bottom = '-15ex';
     } else {
       menuElement.style.transition = 'bottom 0.2s';
       menuElement.style.bottom = '0';
