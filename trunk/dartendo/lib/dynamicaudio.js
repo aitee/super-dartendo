@@ -91,7 +91,7 @@ DynamicAudio.prototype = {
             }
             this.audioElement.mozWriteAudio(out);
         }
-        else if (this.flashElement !== null) {
+        else if (this.flashElement !== null && this.flashElement.write != null) {
             this.flashElement.write(samples.join(' '));
         }
     }
