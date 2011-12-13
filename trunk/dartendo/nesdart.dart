@@ -77,9 +77,9 @@ class Controller {
   bool scale = false;
   bool sound = false;
   bool fps = false;
-  bool stereo = false;
+  //bool stereo = false;
   bool timeemulation = false;
-  bool showsoundbuffer = false;
+  //bool showsoundbuffer = false;
   bool _netplay = false;
 
   int matchid = 0;
@@ -114,9 +114,9 @@ class Controller {
     scale = false;
     sound = false;
     fps = false;
-    stereo = false;
+    //stereo = false;
     timeemulation = false;
-    showsoundbuffer = false;
+    //showsoundbuffer = false;
     samplerate = 0;
     romSize = 0;
     progress = 0;
@@ -148,6 +148,7 @@ class Controller {
     Globals.memoryFlushValue = 0x00; // make SMB1 hacked version work.
     
     nes = gui.getNES();
+    // TODO: Why is this enabled before now and then disabled here?
     nes.enableSound(sound);
     nes.reset();
     window.setInterval(_updateFps, 1000);
@@ -190,7 +191,7 @@ class Controller {
 
       // Set some properties:
       Globals.timeEmulation = timeemulation;
-      nes.ppu.showSoundBuffer = showsoundbuffer;
+      //nes.ppu.showSoundBuffer = showsoundbuffer;
 
       // Start emulation:
       Util.printDebug("nesdart.run(): vNES is now starting the processor.", debugMe);
@@ -247,7 +248,6 @@ class Controller {
     nes.getCpu().active = false;
     nes.stopEmulation();
     print("vNES has stopped the processor.");
-    nes.getPapu().stop();
     this.destroy();
   }
 
@@ -293,13 +293,13 @@ class Controller {
     } else {
       scale = tmp == ("on");
     }
-
+/*
     if (tmp == null || tmp == ("")) {
         stereo = true; // on by default
     } else {
       stereo = tmp == ("on");
     }
-
+*/
     if (tmp == null || tmp == ("")) {
       fps = true;
     } else {
@@ -311,13 +311,20 @@ class Controller {
     } else {
       timeemulation = tmp == ("on");
     }
-
+/*
     if (tmp == null || tmp == ("")) {
       showsoundbuffer = false;
     } else {
       showsoundbuffer = tmp == ("on");
     }
-
+*/
+    tmp = getQueryValue('sound');
+    if (tmp == null || tmp == ('')) {
+      sound = false;
+    } else {
+      sound = (tmp == ('on'));
+    }
+  
     tmp = getQueryValue('netplay');
     if (tmp == null || tmp == ('')) {
       _netplay = false;

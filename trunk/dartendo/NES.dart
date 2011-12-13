@@ -30,27 +30,17 @@ class NES {
     ppuMem = new Memory(this, 0x8000);  // VRAM memory (internal to PPU)
     sprMem = new Memory(this, 0x100);   // Sprite RAM  (internal to PPU)
 
-
     // Create system units:
     cpu = new CPU(this);
     palTable = new PaletteTable();
     ppu = new PPU(this);
     papu = new PAPU(this);
 
-    // Init sound registers:
-    for (int i = 0; i < 0x14; i++) {
-      if (i == 0x10) {
-        papu.writeReg(0x4010,  0x10);
-      } else {
-        papu.writeReg(0x4000 + i,  0);
-      }
-    }
-
     Util.printDebug("Nes.constructor(): Hi.", debugMe);
 
     // Load NTSC palette:
     if (!palTable.loadNTSCPalette()) {
-      //System.out.println("Unable to load palette file. Using default.");
+      print('WARNING: Loading default palette');
       palTable.loadDefaultPalette();
     }
 
@@ -58,8 +48,15 @@ class NES {
     cpu.init();
     ppu.init();
 
-    // Enable sound:
-    enableSound(true);
+    // Init sound registers:
+    papu.init();
+    for (int i = 0; i < 0x14; i++) {
+      if (i == 0x10)
+        papu.writeReg(0x4010,  0x10);
+      else
+        papu.writeReg(0x4000 + i,  0);
+    }
+
 
     // Clear CPU memory:
     clearCPUMemory();
@@ -96,12 +93,10 @@ class NES {
     }
 
     // Continue emulation:
-    if (continueEmulation) {
+    if (continueEmulation)
       startEmulation();
-    }
 
     return success;
-
   }
 
   void stateSave(MemByteBuffer buf) {
@@ -121,33 +116,25 @@ class NES {
     ppu.stateSave(buf);
 
     // Continue emulation:
-    if (continueEmulation) {
+    if (continueEmulation)
       startEmulation();
-    }
-
   }
 
-  bool isRunning() {
-
-    return isRunningFlag;
-
-  }
+  bool isRunning() => isRunningFlag;
 
   void startEmulation() {
-       Util.printDebug('NES.stopEmulation(): begins', debugMe);
-       if (cpu.isRunning()) {
-           cpu.endExecution();
-           isRunningFlag = false;
-       }
-       
-     if (Globals.enableSound && !papu.isRunning()) {
-         papu.start();
-      }
-       
-     if (rom != null && rom.isValid() && !cpu.isRunning()) {
-        cpu.beginExecution();
-        isRunningFlag = true;
-     }
+    print('NES.startEmulation');
+    if (cpu.isRunning()) {
+      cpu.endExecution();
+      isRunningFlag = false;
+    }
+
+    papu.reset();
+
+    if (rom != null && rom.isValid() && !cpu.isRunning()) {
+      cpu.beginExecution();
+      isRunningFlag = true;
+    }
   }
 
   void stopEmulation() {
@@ -155,86 +142,44 @@ class NES {
       cpu.endExecution();
       isRunningFlag = false;
     }
-
-    if (Globals.enableSound && papu.isRunning()) {
-      papu.stop();
-    }
+    
   }
 
   void reloadRom() {
-
-    if (romBytes != null) {
+    if (romBytes != null)
       loadRom(romBytes);
-    }
-
   }
 
   void clearCPUMemory() {
-
     int flushval = Globals.memoryFlushValue;
-    for (int i = 0; i < 0x2000; i++) {
+    for (int i = 0; i < 0x2000; ++i)
       cpuMem.mem[i] = flushval;
-    }
-    for (int p = 0; p < 4; p++) {
+    for (int p = 0; p < 4; ++p) {
       int i = p * 0x800;
       cpuMem.mem[i + 0x008] = 0xF7;
       cpuMem.mem[i + 0x009] = 0xEF;
       cpuMem.mem[i + 0x00A] = 0xDF;
       cpuMem.mem[i + 0x00F] = 0xBF;
     }
-
   }
 
   void setGameGenieState(bool enable) {
-    if (memMapper != null) {
+    if (memMapper != null)
       memMapper.setGameGenieState(enable);
-    }
   }
 
-  // Returns CPU object.
-  CPU getCpu() {
-    return cpu;
-  }
-
-  // Returns PPU object.
-  PPU getPpu() {
-    return ppu;
-  }
-
-  // Returns pAPU object.
-  PAPU getPapu() {
-    return papu;
-  }
-
-  // Returns CPU Memory.
-  Memory getCpuMemory() {
-    return cpuMem;
-  }
-
-  // Returns PPU Memory.
-  Memory getPpuMemory() {
-    return ppuMem;
-  }
-
-  // Returns Sprite Memory.
-  Memory getSprMemory() {
-    return sprMem;
-  }
+  CPU getCpu() => cpu;
+  PPU getPpu() => ppu;
+  PAPU getPapu() => papu;
+  Memory getCpuMemory() => cpuMem;
+  Memory getPpuMemory() => ppuMem;
+  Memory getSprMemory() => sprMem;
 
   // Returns the currently loaded ROM.
-  ROM getRom() {
-    return rom;
-  }
+  ROM getRom() => rom;
 
-  // Returns the GUI.
-  AppletUI getGui() {
-    return gui;
-  }
-
-  // Returns the memory mapper.
-  MemoryMapper getMemoryMapper() {
-    return memMapper;
-  }
+  AppletUI getGui() => gui;
+  MemoryMapper getMemoryMapper() => memMapper;
 
   // Loads a ROM file into the CPU and PPU.
   // The ROM file is validated first.
@@ -242,21 +187,17 @@ class NES {
     //       Util.printDebug('NES.loadRom( file = ' + file + '): begins.', debugMe);
 
     // Can't load ROM while still running.
-    if (isRunningFlag) {
+    if (isRunningFlag)
       stopEmulation();
-    }
 
     {
       // Load ROM file:
-
       rom = new ROM(this);
       rom.load(romBytes);
       if (rom.isValid()) {
-
         // The CPU will load
         // the ROM into the CPU
         // and PPU memory.
-
         reset();
 
         memMapper = rom.createMapper();
@@ -269,18 +210,14 @@ class NES {
       }
       return rom.isValid();
     }
-
   }
 
   // Resets the system.
   void reset() {
-
-    if (rom != null) {
+    if (rom != null)
       rom.closeRom();
-    }
-    if (memMapper != null) {
+    if (memMapper != null)
       memMapper.reset();
-    }
 
     cpuMem.reset();
     ppuMem.reset();
@@ -307,19 +244,11 @@ class NES {
       stopEmulation();
     }
 
-    if (enable) {
-      papu.start();
-    } else {
-      papu.stop();
-    }
-
-    //System.out.println("** SOUND ENABLE = "+enable+" **");
     Globals.enableSound = enable;
+    //System.out.println("** SOUND ENABLE = "+enable+" **");
 
-    if (wasRunning) {
+    if (wasRunning)
       startEmulation();
-    }
-
   }
 
   void setFramerate(int rate) {

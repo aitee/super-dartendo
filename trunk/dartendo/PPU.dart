@@ -7,7 +7,7 @@ class PPU {
 
   // Rendering Options:
   bool _showSpr0Hit = false;
-  bool showSoundBuffer = false;
+  //bool showSoundBuffer = false;
   bool _clipTVcolumn = true;
   bool _clipTVrow = false;
 
@@ -498,22 +498,22 @@ class PPU {
     }
 
     // Show sound buffer:
-    if (showSoundBuffer && nes.getPapu().getLine() != null) {
-      final int bufferSize = nes.getPapu().getLine().getBufferSize();
-      final int available = nes.getPapu().getLine().available();
-      final int scale = bufferSize ~/ 256;
+    //if (showSoundBuffer && nes.getPapu().getLine() != null) {
+    //  final int bufferSize = nes.getPapu().getLine().getBufferSize();
+    //  final int available = nes.getPapu().getLine().available();
+    //  final int scale = bufferSize ~/ 256;
 
-      for (int y = 0; y < 4; y++) {
-        _scanlineChanged[y] = true;
-        for (int x = 0; x < 256; x++) {
-          if (x >= (available / scale)) {
-            buffer[y * 256 + x] = 0xFFFFFF;
-          } else {
-            buffer[y * 256 + x] = 0;
-          }
-        }
-      }
-    }
+    //  for (int y = 0; y < 4; y++) {
+    //    _scanlineChanged[y] = true;
+    //    for (int x = 0; x < 256; x++) {
+    //      if (x >= (available / scale)) {
+    //        buffer[y * 256 + x] = 0xFFFFFF;
+    //      } else {
+    //        buffer[y * 256 + x] = 0;
+    //      }
+    //    }
+    //  }
+    //}
   }
 
   void updateControlReg1(int value) {

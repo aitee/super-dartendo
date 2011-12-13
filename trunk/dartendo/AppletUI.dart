@@ -56,25 +56,11 @@
      // BufferView.paint() calls AppletUI.imageReady()
      void imageReady() {
        Util.printDebug('AppletUI.imageReady(): begins', debugMe);
-       
-        // Sound stuff:
-        int tmp = nes.getPapu().bufferIndex;
-        if (Globals.enableSound && Globals.timeEmulation && tmp > 0) {
-
-            int min_avail = nes.getPapu().line.getBufferSize() - 4 * tmp;
-
-            int timeToSleep = nes.papu.getMillisToAvailableAbove(min_avail);
-            //applet.addSleepTime(timeToSleep);
-
-            nes.getPapu().writeBuffer();
-        }
-
         // Sleep a bit if sound is disabled:
         if (Globals.timeEmulation && !Globals.enableSound) {
 
            // applet.addSleepTime(16);
         }
-
         // Update timer:
         t1 = t2;
     }

@@ -1,13 +1,19 @@
-class PAPU {
+// HACK: Need a better WebAudio API
+var dynamicaudio = null;
 
-    bool debugMe = true;
-  
+var createDynamicAudio() native
+  "return new DynamicAudio({swf: './lib/dynamicaudio.swf'});";
+
+void writeDynamicAudio(samples) native
+  "\$globals.dynamicaudio.writeInt(samples);";
+ 
+class PAPU {
     NES nes;
     Controller controller;
     Memory cpuMem;
     
     //Mixer mixer;
-    SourceDataLine line;
+    //SourceDataLine line;
     ChannelSquare square1;
     ChannelSquare square2;
     ChannelTriangle triangle;
@@ -19,7 +25,6 @@ class PAPU {
     List<int> noiseWavelengthLookup;
     List<int> square_table;
     List<int> tnd_table;
-    List<int> ismpbuffer;
     List<int> sampleBuffer;
     
     int frameIrqCounter = 0;
@@ -32,7 +37,7 @@ class PAPU {
     int b3 = 0;
     int b4 = 0;
     
-    int bufferSize = 2048;
+    int bufferSize = 8192;
     int bufferIndex = 0;
     int sampleRate = 44100;
     
@@ -42,7 +47,6 @@ class PAPU {
     
     bool startedPlaying = false;
     bool recordOutput = false;
-    bool stereo = true;
     bool initingHardware = false;
     
     bool userEnableSquare1 = true;
@@ -101,8 +105,7 @@ class PAPU {
         controller = nes.gui.applet;
 
         setSampleRate(sampleRate, false);
-        sampleBuffer = Util.newIntList(bufferSize * (stereo ? 4 : 2), 0);
-        ismpbuffer = Util.newIntList(bufferSize * (stereo ? 2 : 1), 0);
+        sampleBuffer = Util.newIntList(bufferSize * 2, 0);
         bufferIndex = 0;
         frameIrqEnabled = false;
         initCounter = 2048;
@@ -142,19 +145,16 @@ class PAPU {
         // not yet.
     }
 
-     void start() {
-       Util.printDebug('PAPU.start(): begins', debugMe);
-       
-        Globals.enableSound = true;
-       
+     void init() {
+       dynamicaudio = createDynamicAudio();
         //System.out.println("* Starting PAPU lines.");
-        if (line != null && line.isActive()) {
-            print("PAPU.start(): SourceDataLine is already running.");
-            return;
-        }
+        // if (line != null && line.isActive()) {
+        //     print("PAPU.start(): SourceDataLine is already running.");
+        //     return;
+        // }
 
         bufferIndex = 0;
-        line = new SourceDataLine(nes.gui.applet);
+        //line = new SourceDataLine();
 /*        
          //List<Mixer.Info> mixerInfo = AudioSystem.getMixerInfo();
         var mixerInfo = null;
@@ -328,10 +328,9 @@ class PAPU {
     // divided by 2 for those counters that are
     // clocked at cpu speed.
      void clockFrameCounter(int nCycles) {
-       if(controller.sleepTime <= -16) { //We are too far behind, skip the frame
-         //print("Skipping render");
-         return;
-       }
+       //if(controller.sleepTime <= -16) { //We are too far behind, skip the frame
+       //  return;
+       //}
        
        // Util.printDebug('PAPU.clockFrameCounter( nCycles = ' + nCycles + '): begins', debugMe);       
         if (initCounter > 0) {
@@ -492,7 +491,7 @@ class PAPU {
         // Special treatment for triangle channel - need to interpolate.
         if (triangle.sampleCondition) {
 
-            triValue = ((triangle.progTimerCount << 4) / (triangle.progTimerMax + 1)).toInt();
+            triValue = ((triangle.progTimerCount << 4) ~/ (triangle.progTimerMax + 1));
             if (triValue > 16) {
                 triValue = 16;
             }
@@ -579,9 +578,9 @@ class PAPU {
     // Samples the channels, mixes the output together,
     // writes to buffer and (if enabled) file.
      void sample() {
+        int sq_index, tnd_index;
 
         if (accCount > 0) {
-
             smpSquare1 <<= 4;
             smpSquare1 ~/= accCount;
 
@@ -608,8 +607,6 @@ class PAPU {
         noise.accValue = smpNoise >> 4;
         noise.accCount = 1;
 
-        if (stereo) {
-
             // Stereo sound.
 
             // Left channel:
@@ -634,21 +631,6 @@ class PAPU {
             }
             sampleValueR = square_table[sq_index] + tnd_table[tnd_index] - dcValue;
 
-        } else {
-
-            // Mono sound:
-            sq_index = smpSquare1 + smpSquare2;
-            tnd_index = 3 * smpTriangle + 2 * smpNoise + smpDmc;
-            if (sq_index >= square_table.length) {
-                sq_index = square_table.length - 1;
-            }
-            if (tnd_index >= tnd_table.length) {
-                tnd_index = tnd_table.length - 1;
-            }
-            sampleValueL = 3 * (square_table[sq_index] + tnd_table[tnd_index] - dcValue);
-            sampleValueL >>= 2;
-
-        }
 
         // Remove DC from left channel:
         smpDiffL = sampleValueL - prevSampleL;
@@ -656,7 +638,6 @@ class PAPU {
         smpAccumL += smpDiffL - (smpAccumL >> 10);
         sampleValueL = smpAccumL;
 
-        if (stereo) {
 
             // Remove DC from right channel:
             smpDiffR = sampleValueR - prevSampleR;
@@ -665,25 +646,21 @@ class PAPU {
             sampleValueR = smpAccumR;
 
             // Write:
-            if (bufferIndex + 4 < sampleBuffer.length) {
+            //if (sampleValueL > maxSample)
+            //  maxSample = sampleValueL;
+            //if (sampleValueL < minSample)
+            //  minSample = sampleValueL;
+  
+            sampleBuffer[bufferIndex++] = sampleValueL;
+            sampleBuffer[bufferIndex++] = sampleValueR;
 
-                sampleBuffer[bufferIndex++] = (sampleValueL) & 0xFF;
-                sampleBuffer[bufferIndex++] = (sampleValueL >> 8) & 0xFF;
-                sampleBuffer[bufferIndex++] = (sampleValueR) & 0xFF;
-                sampleBuffer[bufferIndex++] = (sampleValueR >> 8) & 0xFF;
+          // Write the buffer out if full
+          if (bufferIndex === sampleBuffer.length) {
+            writeDynamicAudio(sampleBuffer);
+            sampleBuffer = Util.newIntList(bufferSize * 2, 0);
+            bufferIndex = 0;
+          }
 
-            }
-
-
-        } else {
-
-            // Write:
-            if (bufferIndex + 2 < sampleBuffer.length) {
-                sampleBuffer[bufferIndex++] = (sampleValueL) & 0xFF;
-                sampleBuffer[bufferIndex++] = (sampleValueL >> 8) & 0xFF;
-            }
-
-        }
         // Reset sampled values:
         smpSquare1 = 0;
         smpSquare2 = 0;
@@ -692,37 +669,6 @@ class PAPU {
 
     }
 
-     //Called by AppletUI.imageReady()
-    // Writes the sound buffer to the output line:
-     void writeBuffer() {
-
-        if (line == null) {
-            return;
-        }
-        
-        //Util.printDebug('PAPU.writeBuffer(): calling line.write().  bufferIndex = ' + bufferIndex, debugMe);
-        bufferIndex -= (bufferIndex % (stereo ? 4 : 2));
-        line.write(sampleBuffer, 0, bufferIndex);
-
-        bufferIndex = 0;
-
-    }
-
-     void stop() {
-        Util.printDebug('PAPU.stop(): begins', debugMe); 
-        
-        if (line == null) {
-            // No line to close. Probably lack of sound card.
-            return;
-        }
-
-        if (line != null && line.isOpen() && line.isActive()) {
-            line.close();
-        }
-
-        // Lose line:
-        line = null;
-    }
 
      int getSampleRate() {
         return sampleRate;
@@ -800,17 +746,15 @@ class PAPU {
         }
 
         sampleRate = rate;
-        sampleTimerMax = ((1024.0 * Globals.CPU_FREQ_NTSC * Globals.preferredFrameRate) /
-                (sampleRate * 60.0)).toInt();
+        sampleTimerMax = ((1024 * Globals.CPU_FREQ_NTSC * Globals.preferredFrameRate) ~/ (sampleRate * 60));
 
-        frameTime = ((14915.0 * Globals.preferredFrameRate) / 60.0).toInt();
+        frameTime = ((14915 * Globals.preferredFrameRate) ~/ 60.0);
 
         sampleTimer = 0;
         bufferIndex = 0;
 
         if (restart) {
-            stop();
-            start();
+            reset();
         }
 
         if (cpuRunning) {
@@ -818,33 +762,33 @@ class PAPU {
         }
 
     }
-
-     void setStereo(bool s, bool restart) {
-
-        if (stereo == s) {
-            return;
-        }
-
-        bool running = nes.isRunning();
-        nes.stopEmulation();
-
-        stereo = s;
-        if (stereo) {
-            sampleBuffer = Util.newIntList(bufferSize * 4, 0);
-        } else {
-            sampleBuffer = Util.newIntList(bufferSize * 2, 0);
-        }
-
-        if (restart) {
-            stop();
-            start();
-        }
-
-        if (running) {
-            nes.startEmulation();
-        }
-
-    }
+//
+//     void setStereo(bool s, bool restart) {
+//
+//        if (stereo == s) {
+//            return;
+//        }
+//
+//        bool running = nes.isRunning();
+//        nes.stopEmulation();
+//
+//        stereo = s;
+//        if (stereo) {
+//            sampleBuffer = Util.newIntList(bufferSize * 4, 0);
+//        } else {
+//            sampleBuffer = Util.newIntList(bufferSize * 2, 0);
+//        }
+//
+//        if (restart) {
+//            stop();
+//            start();
+//        }
+//
+//        if (running) {
+//            nes.startEmulation();
+//        }
+//
+//    }
 
      int getPapuBufferSize() {
         return sampleBuffer.length;
@@ -903,12 +847,12 @@ class PAPU {
 
     }
 
-    SourceDataLine getLine() => line;
+    //SourceDataLine getLine() => line;
    
-    bool isRunning() {
-        return (line != null && line.isActive());
-    }
-
+    //bool isRunning() {
+    //    return (line != null && line.isActive());
+    //}
+/*
     int getMillisToAvailableAbove(int target_avail) {
 
         double time;
@@ -922,7 +866,7 @@ class PAPU {
 
         return time.toInt();
     }
-
+*/
      int getBufferPos() {
         return bufferIndex;
     }
@@ -1046,21 +990,16 @@ class PAPU {
         nes = null;
         cpuMem = null;
 
-        if (square1 != null) {
+        if (square1 != null)
             square1.destroy();
-        }
-        if (square2 != null) {
+        if (square2 != null)
             square2.destroy();
-        }
-        if (triangle != null) {
+        if (triangle != null)
             triangle.destroy();
-        }
-        if (noise != null) {
+        if (noise != null)
             noise.destroy();
-        }
-        if (dmc != null) {
+        if (dmc != null)
             dmc.destroy();
-        }
 
         square1 = null;
         square2 = null;
@@ -1070,7 +1009,7 @@ class PAPU {
         dmc = null;
 
         //mixer = null;
-        line = null;
+        //line = null;
 
     }
 }
