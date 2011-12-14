@@ -157,9 +157,11 @@ class Controller {
   }
 
   void _updateFps() {
-    document.query('#fps_counter').innerHTML =
-      (frameCount - _lastFrameCount).toString();
-    _lastFrameCount = frameCount;
+    if (fps) {
+      document.query('#fps_counter').innerHTML =
+        (frameCount - _lastFrameCount).toString();
+      _lastFrameCount = frameCount;
+    }
   }
 
   void addScreenView() {
@@ -301,7 +303,7 @@ class Controller {
     }
 */
     if (tmp == null || tmp == ("")) {
-      fps = true;
+      fps = false;
     } else {
       fps = tmp == ("on");
     }
