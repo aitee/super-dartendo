@@ -1196,7 +1196,7 @@ class CPU {
   }
 
   // Emulates cpu instructions until stopped.
-  void emulate() {
+  int emulate() {
     if(stopRunning)return;
 
     // Check interrupts:
@@ -1265,13 +1265,7 @@ class CPU {
       }
     }
 
-    if(asApplet){   
-      ppu.cycles = cycleCount*3;
-      ppu.emulateCycles();      
-    }
-
-    if(emulateSound)
-      papu.clockFrameCounter(cycleCount);
+    return cycleCount;
   }
 
   void finishRun() {

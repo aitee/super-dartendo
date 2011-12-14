@@ -60,7 +60,6 @@
 #source('ROM.dart');
 #source('Tile.dart');
 #source('Scale.dart');
-#source('SourceDataLine.dart');
 #source('UI.dart');
 #source('Util.dart');
 
@@ -302,6 +301,7 @@ class Controller {
       stereo = tmp == ("on");
     }
 */
+    tmp = getQueryValue('fps');
     if (tmp == null || tmp == ("")) {
       fps = false;
     } else {
@@ -367,10 +367,34 @@ class Controller {
     if(frameTime < 1000) {
       final BufferView screen = nes.getGui().getScreenView();
       final CPU cpu = nes.getCpu();
+      final PPU ppu = nes.getPpu();
+      final PAPU papu = nes.getPapu();
       while(sleepTime <= 0) {
         //print('SLEEP TIME'+sleepTime);
+        int cycles = 0;
         while(true) {
-          cpu.emulate();
+          if (cpu.cyclesToHalt === 0) {
+            cycles = cpu.emulate();
+            if (cpu.emulateSound)
+              papu.clockFrameCounter(cycles);
+            cycles *= 3;
+          } else {
+            if (cpu.cyclesToHalt > 8) {
+              cycles = 24;
+              if (cpu.emulateSound)
+                papu.clockFrameCounter(8);
+              cpu.cyclesToHalt -= 8;
+            } else {
+              cycles = cpu.cyclesToHalt * 3;
+              if (cpu.emulateSound)
+                papu.clockFrameCounter(cpu.cyclesToHalt);
+              cpu.cyclesToHalt = 0;
+            }
+          }
+
+          ppu.cycles = cycles;
+          ppu.emulateCycles(); 
+
           if (screen.frameFinished) {
             if (_netplay && frameCount%10==0) {
               _buildLocalStatus();
