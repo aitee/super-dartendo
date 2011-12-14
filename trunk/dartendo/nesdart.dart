@@ -322,7 +322,7 @@ class Controller {
 */
     tmp = getQueryValue('sound');
     if (tmp == null || tmp == ('')) {
-      sound = false;
+      sound = true;
     } else {
       sound = (tmp == ('on'));
     }

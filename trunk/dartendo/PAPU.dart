@@ -382,7 +382,7 @@ class PAPU {
     square1.progTimerCount -= nCycles;
     if (square1.progTimerCount <= 0) {
 
-      square1.progTimerCount += (square1.progTimerMax + 1) << 1;
+      square1.progTimerCount += ((square1.progTimerMax + 1) << 1);
 
       square1.squareCounter++;
       square1.squareCounter &= 0x7;
@@ -394,7 +394,7 @@ class PAPU {
     square2.progTimerCount -= nCycles;
     if (square2.progTimerCount <= 0) {
 
-      square2.progTimerCount += (square2.progTimerMax + 1) << 1;
+      square2.progTimerCount += ((square2.progTimerMax + 1) << 1);
 
       square2.squareCounter++;
       square2.squareCounter &= 0x7;
