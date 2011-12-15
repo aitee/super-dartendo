@@ -207,24 +207,6 @@ class Controller {
     nes.getCpu().initRun();
     nes.getCpu().active = true;
 
-    //var ac = window.webkitAudioContext();
-    //audioContext = new AudioContext();
-
-    //var src = audioContext.createBufferSource();
-    //src.buffer = audioContext.createBuffer(1 /*channels*/, 2048, 44100);
-    //var audioData = src.buffer.getChannelData(0);
-    //print(audioData.length);
-    //src.looping = true;
-
-    //src.connect(audioContext.destination);
-
-    //src.noteOn(0);
-
-    //var audioElement = document.createElement('audio');
-    //var ac = audioElement.context();
-    //audioElement.setAttribute('src', 'sample.ogg');
-    //audioElement.play();
-
     List<int> intList = Util.newIntList(5, 0);
 
     intList[3] = 2;

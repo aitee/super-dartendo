@@ -1,11 +1,10 @@
-// HACK: Need a better WebAudio API
-var dynamicaudio = null;
+var audioInterface = null;
 
-var createDynamicAudio() native
-"return new DynamicAudio({swf: './lib/dynamicaudio.swf'});";
+var createAudioInterface(bufferSize) native
+"return new Audio(bufferSize);";
 
-void writeDynamicAudio(samples) native
-"\$globals.dynamicaudio.writeInt(samples);";
+void writeAudioInterface(samplesL, samplesR) native
+"\$globals.audioInterface.write(samplesL, samplesR);";
 
 class PAPU {
   NES nes;
@@ -31,7 +30,8 @@ class PAPU {
 
   List<int> square_table;
   List<int> tnd_table;
-  List<int> sampleBuffer;
+  List<double> sampleBufferL;
+  List<double> sampleBufferR;
 
   int frameIrqCounter = 0;
   int frameIrqCounterMax = 4;
@@ -100,7 +100,8 @@ class PAPU {
     controller = nes.gui.applet;
 
     setSampleRate(sampleRate, false);
-    sampleBuffer = Util.newIntList(bufferSize * 2, 0);
+    sampleBufferL = new List<double>(bufferSize);
+    sampleBufferR = new List<double>(bufferSize);
     bufferIndex = 0;
     frameIrqEnabled = false;
 
@@ -139,7 +140,7 @@ class PAPU {
   }
 
   void init() {
-    dynamicaudio = createDynamicAudio();
+    audioInterface = createAudioInterface(bufferSize);
     bufferIndex = 0;
   }
 
@@ -504,13 +505,14 @@ class PAPU {
     sampleValueR = smpAccumR;
 
     // Write:
-    sampleBuffer[bufferIndex++] = sampleValueL;
-    sampleBuffer[bufferIndex++] = sampleValueR;
+    sampleBufferL[bufferIndex] = (sampleValueL / 65536.0);
+    sampleBufferR[bufferIndex++] = (sampleValueR / 65536.0);
 
     // Write the buffer out if full
-    if (bufferIndex === sampleBuffer.length) {
-      writeDynamicAudio(sampleBuffer);
-      sampleBuffer = Util.newIntList(bufferSize * 2, 0);
+    if (bufferIndex === sampleBufferL.length) {
+      writeAudioInterface(sampleBufferL, sampleBufferR);
+      sampleBufferL = new List<double>(bufferSize); //Util.newIntList(bufferSize * 2, 0);
+      sampleBufferR = new List<double>(bufferSize); //Util.newIntList(bufferSize * 2, 0);
       bufferIndex = 0;
     }
 
