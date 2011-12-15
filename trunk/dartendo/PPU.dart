@@ -6,10 +6,10 @@ class PPU {
   bool debugMe = false;
 
   // Rendering Options:
-  bool _showSpr0Hit = false;
+  //bool _showSpr0Hit = false;
   //bool showSoundBuffer = false;
-  bool _clipTVcolumn = true;
-  bool _clipTVrow = false;
+  //bool _clipTVcolumn = true;
+  //bool _clipTVrow = false;
 
   // Control Flags Register 1:
   int f_nmiOnVblank = 0;    // NMI on VBlank. 0=disable, 1=enable
@@ -312,7 +312,6 @@ class PPU {
   }
 
   void startVBlank() {
-    //Util.printDebug('PPU.startVBlank: VBLANK', debugMe);
     // Start VBlank period:
     // Do VBlank.
 
@@ -447,55 +446,52 @@ class PPU {
   }
 
   void endFrame() {
-    //Util.printDebug("PPU.endFrame(): begins", debugMe); 
     // Draw spr#0 hit coordinates:
-    if (_showSpr0Hit) {
-      // Spr 0 position:
-      if (sprX[0] >= 0 && sprX[0] < 256 && sprY[0] >= 0 && sprY[0] < 240) {
-        for (int i = 0; i < 256; i++)
-          buffer[(sprY[0] << 8) + i] = 0xFF5555;
-        for (int i = 0; i < 240; i++)
-          buffer[(i << 8) + sprX[0]] = 0xFF5555;
-      }
-      // Hit position:
-      if (spr0HitX >= 0 && spr0HitX < 256 && spr0HitY >= 0 && spr0HitY < 240) {
-        for (int i = 0; i < 256; i++)
-          buffer[(spr0HitY << 8) + i] = 0x55FF55;
-        for (int i = 0; i < 240; i++)
-          buffer[(i << 8) + spr0HitX] = 0x55FF55;
-      }
-    }
+    //if (_showSpr0Hit) {
+    //  // Spr 0 position:
+    //  if (sprX[0] >= 0 && sprX[0] < 256 && sprY[0] >= 0 && sprY[0] < 240) {
+    //    for (int i = 0; i < 256; i++)
+    //      buffer[(sprY[0] << 8) + i] = 0xFF5555;
+    //    for (int i = 0; i < 240; i++)
+    //      buffer[(i << 8) + sprX[0]] = 0xFF5555;
+    //  }
+    //  // Hit position:
+    //  if (spr0HitX >= 0 && spr0HitX < 256 && spr0HitY >= 0 && spr0HitY < 240) {
+    //    for (int i = 0; i < 256; i++)
+    //      buffer[(spr0HitY << 8) + i] = 0x55FF55;
+    //    for (int i = 0; i < 240; i++)
+    //      buffer[(i << 8) + spr0HitX] = 0x55FF55;
+    //  }
+    //}
 
     // This is a bit lazy..
     // if either the sprites or the background should be clipped,
     // both are clipped after rendering is finished.
-    if (_clipTVcolumn || f_bgClipping == 0 || f_spClipping == 0) {
+    if (/*_clipTVcolumn ||*/ f_bgClipping == 0 || f_spClipping == 0) {
       // Clip left 8-pixels column:
       for (int y = 0; y < 240; y++) {
-        for (int x = 0; x < 8; x++) {
+        for (int x = 0; x < 8; x++)
           buffer[(y << 8) + x] = 0;
-        }
       }
     }
 
-    if (_clipTVcolumn) {
-      // Clip right 8-pixels column too:
-      for (int y = 0; y < 240; y++) {
-        for (int x = 0; x < 8; x++) {
-          buffer[(y << 8) + 255 - x] = 0;
-        }
-      }
-    }
+    //if (_clipTVcolumn) {
+    //  // Clip right 8-pixels column too:
+    //  for (int y = 0; y < 240; y++) {
+    //    for (int x = 0; x < 8; x++)
+    //      buffer[(y << 8) + 255 - x] = 0;
+    //  }
+    //}
 
-    // Clip top and bottom 8 pixels:
-    if (_clipTVrow) {
-      for (int y = 0; y < 8; y++) {
-        for (int x = 0; x < 256; x++) {
-          buffer[(y << 8) + x] = 0;
-          buffer[((239 - y) << 8) + x] = 0;
-        }
-      }
-    }
+    //// Clip top and bottom 8 pixels:
+    //if (_clipTVrow) {
+    //  for (int y = 0; y < 8; y++) {
+    //    for (int x = 0; x < 256; x++) {
+    //      buffer[(y << 8) + x] = 0;
+    //      buffer[((239 - y) << 8) + x] = 0;
+    //    }
+    //  }
+    //}
   }
 
   void updateControlReg1(int value) {
@@ -840,9 +836,8 @@ class PPU {
       }
     }
 
-    if (f_spVisibility == 1 && !Globals.disableSprites) {
+    if (f_spVisibility == 1 /*&& !Globals.disableSprites*/)
       renderSpritesPartially(startScan, scanCount, false);
-    }
 
     _validTileData = false;
   }
@@ -939,57 +934,54 @@ class PPU {
   }
 
   void renderSpritesPartially(int startscan, int scancount, bool bgPri) {
-    if (f_spVisibility == 1) {
-      int sprT1, sprT2;
+    for (int i = 0; i < 64; i++) {
+      if (bgPriority[i] == bgPri &&
+          sprX[i] >= 0 && sprX[i] < 256 &&
+          sprY[i] + 8 >= startscan && sprY[i] < startscan + scancount) {
+        // Show sprite.
+        if (f_spriteSize == 0) {
+          // 8x8 sprites
+          int srcy1 = 0;
+          int srcy2 = 8;
 
-      for (int i = 0; i < 64; i++) {
-        if (bgPriority[i] == bgPri && sprX[i] >= 0 && sprX[i] < 256 && sprY[i] + 8 >= startscan && sprY[i] < startscan + scancount) {
-          // Show sprite.
-          if (f_spriteSize == 0) {
-            // 8x8 sprites
-            int srcy1 = 0;
-            int srcy2 = 8;
+          if (sprY[i] < startscan)
+            srcy1 = startscan - sprY[i] - 1;
 
-            if (sprY[i] < startscan)
-              srcy1 = startscan - sprY[i] - 1;
+          if (sprY[i] + 8 > startscan + scancount)
+            srcy2 = startscan + scancount - sprY[i] + 1;
 
-            if (sprY[i] + 8 > startscan + scancount)
-              srcy2 = startscan + scancount - sprY[i] + 1;
+          final int tileIndex = (f_spPatternTable == 0 ? sprTile[i] : sprTile[i] +
+256);
+          ptTile[tileIndex].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
+        } else {
+          // 8x16 sprites
+          int top = sprTile[i];
+          if ((top & 1) != 0)
+            top = sprTile[i] - 1 + 256;
 
-            if (f_spPatternTable == 0) {
-              ptTile[sprTile[i]].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
-            } else {
-              ptTile[sprTile[i] + 256].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
-            }
-          } else {
-            // 8x16 sprites
-            int top = sprTile[i];
-            if ((top & 1) != 0) {
-              top = sprTile[i] - 1 + 256;
-            }
+          int srcy1 = 0;
+          int srcy2 = 8;
 
-            int srcy1 = 0;
-            int srcy2 = 8;
+          if (sprY[i] < startscan)
+            srcy1 = startscan - sprY[i] - 1;
 
-            if (sprY[i] < startscan)
-              srcy1 = startscan - sprY[i] - 1;
+          if (sprY[i] + 8 > startscan + scancount)
+            srcy2 = startscan + scancount - sprY[i];
 
-            if (sprY[i] + 8 > startscan + scancount)
-              srcy2 = startscan + scancount - sprY[i];
+          final int tileIndex = top + (vertFlip[i] ? 1 : 0);
+          ptTile[tileIndex].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
 
-            ptTile[top + (vertFlip[i] ? 1 : 0)].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
+          srcy1 = 0;
+          srcy2 = 8;
 
-            srcy1 = 0;
-            srcy2 = 8;
+          if (sprY[i] + 8 < startscan) 
+            srcy1 = startscan - (sprY[i] + 8 + 1);
 
-            if (sprY[i] + 8 < startscan) 
-              srcy1 = startscan - (sprY[i] + 8 + 1);
+          if (sprY[i] + 16 > startscan + scancount) 
+            srcy2 = startscan + scancount - (sprY[i] + 8);
 
-            if (sprY[i] + 16 > startscan + scancount) 
-              srcy2 = startscan + scancount - (sprY[i] + 8);
-
-            ptTile[top + (vertFlip[i] ? 0 : 1)].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1 + 8, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
-          }
+          final int otherTileIndex = top + (vertFlip[i] ? 0 : 1);
+          ptTile[otherTileIndex].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1 + 8, buffer, sprCol[i], _sprPalette, horiFlip[i], vertFlip[i], i, _pixrendered);
         }
       }
     }

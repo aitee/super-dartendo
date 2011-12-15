@@ -492,14 +492,15 @@ class PAPU {
 
     // Write:
     sampleBufferL[bufferIndex] = (sampleValueL / 65536.0);
-    sampleBufferR[bufferIndex++] = (sampleValueR / 65536.0);
-    samplesAhead++;
+    sampleBufferR[bufferIndex] = (sampleValueR / 65536.0);
+    ++bufferIndex;
+    ++samplesAhead;
 
     // Write the buffer out if full
     if (bufferIndex === sampleBufferL.length) {
       writeAudioInterface(sampleBufferL, sampleBufferR);
-      sampleBufferL = new List<double>(bufferSize); //Util.newIntList(bufferSize * 2, 0);
-      sampleBufferR = new List<double>(bufferSize); //Util.newIntList(bufferSize * 2, 0);
+      sampleBufferL = new List<double>(bufferSize);
+      sampleBufferR = new List<double>(bufferSize);
       bufferIndex = 0;
     }
 
