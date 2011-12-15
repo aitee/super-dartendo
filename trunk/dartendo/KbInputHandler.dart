@@ -1,7 +1,5 @@
- class KbInputHandler {
-   
-   bool debugMe = false;
-   
+class KbInputHandler {
+
   // Joypad keys:
   static final int KEY_A = 0;
   static final int KEY_B = 1;
@@ -11,10 +9,10 @@
   static final int KEY_DOWN = 5;
   static final int KEY_LEFT = 6;
   static final int KEY_RIGHT = 7;
-   
+
   // Key count:
   static final int NUM_KEYS = 8;
-   
+
   List<bool> allKeysState;
   List<int> keyMapping;
   List<int> inverseKeyMapping;
@@ -26,7 +24,7 @@
     this.id = id;
     allKeysState = Util.newBoolList(255, false);
     keyMapping = Util.newIntList(KbInputHandler.NUM_KEYS, 0);
-    Util.printDebug('KbInputHandler.constructor(): Exits', debugMe);
+    //Util.printDebug('KbInputHandler.constructor(): Exits', debugMe);
   }
 
   int getKeyState(int padKey) {
@@ -45,7 +43,7 @@
   }
 
   void mapKey(int padKey, int kbKeycode) {
-    Util.printDebug('KbInputHandler.mapKey: Mapping $padKey to $kbKeycode', debugMe);
+    //Util.printDebug('KbInputHandler.mapKey: Mapping $padKey to $kbKeycode', debugMe);
     keyMapping[padKey] = kbKeycode;
   }
 
@@ -54,7 +52,7 @@
     if (kc >= allKeysState.length)
       return;
 
-    Util.printDebug('KbInputHandler.keyPressed(...): ${ke.keyIdentifier} (${ke.keyCode})', debugMe);
+    //Util.printDebug('KbInputHandler.keyPressed(...): ${ke.keyIdentifier} (${ke.keyCode})', debugMe);
     allKeysState[kc] = true;
 
     // Can't hold both left & right or up & down at same time:
@@ -67,9 +65,9 @@
     else if (kc == keyMapping[KbInputHandler.KEY_DOWN])
       allKeysState[keyMapping[KbInputHandler.KEY_UP]] = false;
   }
-   
+
   void keyReleased(KeyboardEvent ke) {
-    Util.printDebug('KbInputHandler.keyReleased(...): ${ke.keyIdentifier} (${ke.keyCode})', debugMe);
+    //Util.printDebug('KbInputHandler.keyReleased(...): ${ke.keyIdentifier} (${ke.keyCode})', debugMe);
 
     int kc = ke.keyCode;
     if (kc >= allKeysState.length)
@@ -80,30 +78,30 @@
     if (id == 0) {
       switch (ke.keyIdentifier) {
         case 'F5': {
-        Util.printDebug('KbInputHandler.keyReleased: Resetting game IF running.', debugMe);
-        // Reset game:
-        if (nes.isRunning()) {
-            Util.printDebug('KbInputHandler.keyReleased: nes is Running', debugMe);
-            nes.stopEmulation();
-            nes.reset();
-            nes.reloadRom();
-            nes.startEmulation();
-        }
-        break;
-      }
-    
-      case 'F10': {
-        Util.printDebug('KbInputHandler.keyReleased: Closing ROM', debugMe); 
-        // Just using this to display the battery RAM contents to user.
-        if (nes.rom != null)
-          nes.rom.closeRom();
-        break;
-      }
-    
-      case 'F12':
-        // TODO
-        // JOptionPane.showInputDialog("Save Code for Resuming Game.", "Test");
-        break;
+                     //Util.printDebug('KbInputHandler.keyReleased: Resetting game IF running.', debugMe);
+                     // Reset game:
+                     if (nes.isRunning()) {
+                       //Util.printDebug('KbInputHandler.keyReleased: nes is Running', debugMe);
+                       nes.stopEmulation();
+                       nes.reset();
+                       nes.reloadRom();
+                       nes.startEmulation();
+                     }
+                     break;
+                   }
+
+        case 'F10': {
+                      //Util.printDebug('KbInputHandler.keyReleased: Closing ROM', debugMe); 
+                      // Just using this to display the battery RAM contents to user.
+                      if (nes.rom != null)
+                        nes.rom.closeRom();
+                      break;
+                    }
+
+        case 'F12':
+                    // TODO
+                    // JOptionPane.showInputDialog("Save Code for Resuming Game.", "Test");
+                    break;
       }// Ends switch (ke.keyIdentifier)
     }// Ends if (id == 0)
   }// Ends void keyReleased(KeyboardEvent ke)

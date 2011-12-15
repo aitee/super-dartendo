@@ -70,8 +70,6 @@ class Controller {
 
   static final String _sendUrl = "./sendStatus";
 
-  bool debugMe = false;
-
   CanvasElement canvas;
   CanvasRenderingContext context;
   Input input;
@@ -143,7 +141,7 @@ class Controller {
   }
 
   void init() {
-    Util.printDebug("nesdart.init(): begins", debugMe);
+    //Util.printDebug("nesdart.init(): begins", debugMe);
     PaletteTable.init();
     readParams();
 
@@ -204,15 +202,15 @@ class Controller {
       //nes.ppu.showSoundBuffer = showsoundbuffer;
 
       // Start emulation:
-      Util.printDebug("nesdart.run(): vNES is now starting the processor.", debugMe);
+      //print("nesdart.run(): dartendo is now starting the processor.");
       nes.getCpu().beginExecution();
 
     } else {
       // ROM file was invalid.
-      print("vNES was unable to find ROM.");
+      print('ERROR: dartendo was unable to find ROM.');
     }
 
-    Util.printDebug("nesdart.run(): ROM LOADED", debugMe);
+    //print("nesdart.run(): ROM LOADED");
     nes.getCpu().initRun();
     nes.getCpu().active = true;
 

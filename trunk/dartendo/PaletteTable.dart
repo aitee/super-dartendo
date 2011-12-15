@@ -1,6 +1,4 @@
 class PaletteTable {
-    bool debugMe = false;
-    
     static List<int> curTable;
     static List<int> origTable;
     static List<List<int>> emphTable;
@@ -29,20 +27,20 @@ class PaletteTable {
 
     // Load a palette file:
     bool loadPalette(String file) {              
-      Util.printDebug("PaletteTable.loadPalette( file = " + file + ")", debugMe);        
+      //print("PaletteTable.loadPalette( file = $file )"); 
       try {
           List<int> rawTable = FileLoader.loadFile(file);
           for(var i=0;i<origTable.length;i++) {
             origTable[i] = getRgb(rawTable[(i*3)], rawTable[(i*3)+1], rawTable[(i*3)+2]);
           }
           
-          Util.printDebug("PaletteTable.loadPalette(...): Finished loading palette.", debugMe);            
+          //print("PaletteTable.loadPalette(...): Finished loading palette."); 
   
           setEmphasis(0);
           makeTables();
           updatePalette();
           
-          Util.printDebug("PaletteTable.loadPalette(...): success!", debugMe);
+          //print("PaletteTable.loadPalette(...): success!");
           return true;
   
       } catch (Exception e) {
@@ -76,7 +74,7 @@ class PaletteTable {
             }
 
             // Calculate table:
-            Util.printDebug('PaletteTable.makeTables(): EMPH TABLE BEGIN', debugMe);
+            //Util.printDebug('PaletteTable.makeTables(): EMPH TABLE BEGIN', debugMe);
             
             for (int i = 0; i < 64; i ++) {
                 col = origTable[i];
@@ -84,10 +82,10 @@ class PaletteTable {
                 g = (getGreen(col) * gFactor).toInt();
                 b = (getBlue(col) * bFactor).toInt();
                 emphTable[emph][i] = col;
-                Util.printDebug(emphTable[emph][i].toString(), debugMe);
+                //Util.printDebug(emphTable[emph][i].toString(), debugMe);
             }
             
-            Util.printDebug('PaletteTable.makeTables(): EMPH TABLE END', debugMe);
+            //Util.printDebug('PaletteTable.makeTables(): EMPH TABLE END', debugMe);
 
         }
 
@@ -341,10 +339,10 @@ class PaletteTable {
             contrastAdd *= 4;
         }
         
-        Util.printDebug('PaletteTable.updatePaletteWith(...): Printing curTable....', debugMe);
+        //Util.printDebug('PaletteTable.updatePaletteWith(...): Printing curTable....', debugMe);
         for (int i = 0; i < 64; i++) {
           curTable[i] = emphTable[currentEmph][i];
-          Util.printDebug(curTable[i].toString(), debugMe);
+          //Util.printDebug(curTable[i].toString(), debugMe);
 
           /*
             hsl = packedRGBtoHSL(emphTable[currentEmph][i]);

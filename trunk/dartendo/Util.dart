@@ -37,7 +37,6 @@ class CUtil {
   {
     List<bool> r = new List<bool>(size);
     for(int i = 0; i < size; ++i) r[i] = defaultValue;
-    
     return r;
   }
 
@@ -46,30 +45,10 @@ class CUtil {
     List<List<int>> r = new List<List<int>>(size1);
     for(int i = 0; i < size1; ++i) {
       r[i] = new List<int>(size2);
-	    for(int j = 0;j < size2 ; j++) {
-               r[i][j] = defaultValue;
-            }
+      for(int j = 0;j < size2 ; j++) r[i][j] = defaultValue;
     }
 
     return r;
-  }
-  
-  void printDebug(String content, bool toPrint) {
-    if (toPrint) {
-      // Don't comment this out.  Set (debugMe = false) on the top of your file instead.
-      print(content);
-    }
-  }
-  
-  void printDebugImage(String content) {
-    print(content);
-  }
-  
-  void printVerbose(String content, bool toPrint) {
-    if (toPrint) {
-      // Don't comment this out.  Set (debugMe = false) on the top of your file instead.
-      print(content);
-    }
   }
 }
 

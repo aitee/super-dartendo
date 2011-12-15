@@ -1,7 +1,5 @@
 class NES {
 
-  bool debugMe = true;
-
   AppletUI gui;
   CPU cpu;
   PPU ppu;
@@ -36,7 +34,7 @@ class NES {
     ppu = new PPU(this);
     papu = new PAPU(this);
 
-    Util.printDebug("Nes.constructor(): Hi.", debugMe);
+    print("Nes.constructor(): Hi.");
 
     // Load NTSC palette:
     if (!palTable.loadNTSCPalette()) {
@@ -184,7 +182,7 @@ class NES {
   // Loads a ROM file into the CPU and PPU.
   // The ROM file is validated first.
   bool loadRom(List<int> romBytes) {
-    //       Util.printDebug('NES.loadRom( file = ' + file + '): begins.', debugMe);
+    //       print('NES.loadRom( file = $file ): begins.');
 
     // Can't load ROM while still running.
     if (isRunningFlag)

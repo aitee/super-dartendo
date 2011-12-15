@@ -23,8 +23,6 @@
 
 class CPU {
 
-  bool debugMe = false;
-
   // References to other parts of NES :
   NES nes;
   MemoryMapper mmap;
@@ -1024,12 +1022,12 @@ class CPU {
     irqTypeSwitch[0] = () {
       // Normal IRQ:
       if(F_INTERRUPT != 0) {
-        Util.printDebug("CPU.Constructor.irqTypeSwitch[0]: Interrupt was masked.", debugMe);
+        //print("CPU.Constructor.irqTypeSwitch[0]: Interrupt was masked.");
         return;
       }
       
       doIrq(temp);
-      Util.printDebug("CPU.Constructor.irqTypeSwitch[0]: Did normal IRQ. I = " + F_INTERRUPT, debugMe);
+      //print("CPU.Constructor.irqTypeSwitch[0]: Did normal IRQ. I = " + F_INTERRUPT);
     };
 
     irqTypeSwitch[1] = () { 
