@@ -356,7 +356,7 @@ class Controller {
     // Skip one frame to set lastTime and skip if too much time has passed since
     // the last frame.
     //print("DATA AVAILABLE: " + isDataAvailable());
-    if(frameTime < 1000 && (isDataAvailable() == 0 || nes.papu.bufferIndex<nes.papu.sampleBufferL.length*2~/3)) {
+    if(frameTime < 1000 && (isDataAvailable() == 0 || nes.papu.bufferIndex < (nes.papu.sampleBufferL.length~/2))) {
       final BufferView screen = nes.getGui().getScreenView();
       final CPU cpu = nes.getCpu();
       final PPU ppu = nes.getPpu();

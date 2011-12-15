@@ -38,7 +38,7 @@ class PAPU {
   final int initCounter = 2048;
   int channelEnableValue = 0;
 
-  final int bufferSize = 8192;
+  final int bufferSize = 4096;
   int bufferIndex = 0;
   int sampleRate = 44100;
 
