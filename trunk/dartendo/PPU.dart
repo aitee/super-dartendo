@@ -98,19 +98,13 @@ class PPU {
   bool _nmiOk = false;
 
   int _nmiCounter = 0;
-  int _tmp = 0;
   bool _dummyCycleToggle = false;
-
-  // Vars used when updating regs/address:
-  int _address = 0;
-  int _b1 = 0;
-  int _b2 = 0;
 
   // Variables used when rendering:
   List<int> buffer;
   //List<int> _tpix;
 
-  bool requestRenderAll = false;
+  //bool requestRenderAll = false;
   bool _validTileData = false;  
   //int _att = 0;
 
@@ -534,7 +528,7 @@ class PPU {
   // CPU Register $2002:
   // Read the Status Register.
   int readStatusRegister() {
-    _tmp = nes.getCpuMemory().load(0x2002);
+    int tmp = nes.getCpuMemory().load(0x2002);
 
     // Reset scroll & VRAM Address toggle:
     _firstWrite = true;
@@ -543,7 +537,7 @@ class PPU {
     setStatusFlag(_STATUS_VBLANK, false);
 
     // Fetch status data:
-    return _tmp;
+    return tmp;
   }
 
   // CPU Register $2003:
@@ -703,52 +697,52 @@ class PPU {
 
   // Updates the scroll registers from a new VRAM address.
   void regsFromAddress() {
-    _address = (_vramTmpAddress >> 8) & 0xFF;
-    _regFV = (_address >> 4) & 7;
-    _regV = (_address >> 3) & 1;
-    _regH = (_address >> 2) & 1;
-    _regVT = (_regVT & 7) | ((_address & 3) << 3);
+    int address = (_vramTmpAddress >> 8) & 0xFF;
+    _regFV = (address >> 4) & 7;
+    _regV = (address >> 3) & 1;
+    _regH = (address >> 2) & 1;
+    _regVT = (_regVT & 7) | ((address & 3) << 3);
 
-    _address = _vramTmpAddress & 0xFF;
-    _regVT = (_regVT & 24) | ((_address >> 5) & 7);
-    _regHT = _address & 31;
+    address = _vramTmpAddress & 0xFF;
+    _regVT = (_regVT & 24) | ((address >> 5) & 7);
+    _regHT = address & 31;
   }
 
   // Updates the scroll registers from a new VRAM address.
   void cntsFromAddress() {
-    _address = (_vramAddress >> 8) & 0xFF;
-    _cntFV = (_address >> 4) & 3;
-    _cntV = (_address >> 3) & 1;
-    _cntH = (_address >> 2) & 1;
-    _cntVT = (_cntVT & 7) | ((_address & 3) << 3);
+    int address = (_vramAddress >> 8) & 0xFF;
+    _cntFV = (address >> 4) & 3;
+    _cntV = (address >> 3) & 1;
+    _cntH = (address >> 2) & 1;
+    _cntVT = (_cntVT & 7) | ((address & 3) << 3);
 
-    _address = _vramAddress & 0xFF;
-    _cntVT = (_cntVT & 24) | ((_address >> 5) & 7);
-    _cntHT = _address & 31;
+    address = _vramAddress & 0xFF;
+    _cntVT = (_cntVT & 24) | ((address >> 5) & 7);
+    _cntHT = address & 31;
   }
 
   void regsToAddress() {
-    _b1 = (_regFV & 7) << 4;
-    _b1 |= (_regV & 1) << 3;
-    _b1 |= (_regH & 1) << 2;
-    _b1 |= (_regVT >> 3) & 3;
+    int b1 = (_regFV & 7) << 4;
+    b1 |= (_regV & 1) << 3;
+    b1 |= (_regH & 1) << 2;
+    b1 |= (_regVT >> 3) & 3;
 
-    _b2 = (_regVT & 7) << 5;
-    _b2 |= _regHT & 31;
+    int b2 = (_regVT & 7) << 5;
+    b2 |= _regHT & 31;
 
-    _vramTmpAddress = ((_b1 << 8) | _b2) & 0x7FFF;
+    _vramTmpAddress = ((b1 << 8) | b2) & 0x7FFF;
   }
 
   void cntsToAddress() {
-    _b1 = (_cntFV & 7) << 4;
-    _b1 |= (_cntV & 1) << 3;
-    _b1 |= (_cntH & 1) << 2;
-    _b1 |= (_cntVT >> 3) & 3;
+    int b1 = (_cntFV & 7) << 4;
+    b1 |= (_cntV & 1) << 3;
+    b1 |= (_cntH & 1) << 2;
+    b1 |= (_cntVT >> 3) & 3;
 
-    _b2 = (_cntVT & 7) << 5;
-    _b2 |= _cntHT & 31;
+    int b2 = (_cntVT & 7) << 5;
+    b2 |= _cntHT & 31;
 
-    _vramAddress = ((_b1 << 8) | _b2) & 0x7FFF;
+    _vramAddress = ((b1 << 8) | b2) & 0x7FFF;
   }
 
   void incTileCounter(int count) {
@@ -881,18 +875,20 @@ class PPU {
               destIndex -= x;
               sx = -x;
             }
+            var imgPalette = _imgPalette;
+            var pixrendered = _pixrendered;
             if (t.opaque[_cntFV]) {
               for (; sx < 8; ++sx) {
-                buffer[destIndex] = _imgPalette[tpix[tscanoffset + sx] + att];
-                _pixrendered[destIndex] |= 256;
+                buffer[destIndex] = imgPalette[tpix[tscanoffset + sx] + att];
+                pixrendered[destIndex] |= 256;
                 ++destIndex;
               }
             } else {
               for (; sx < 8; ++sx) {
                 final int col = tpix[tscanoffset + sx];
                 if (col != 0) {
-                  buffer[destIndex] = _imgPalette[col + att];
-                  _pixrendered[destIndex] |= 256;
+                  buffer[destIndex] = imgPalette[col + att];
+                  pixrendered[destIndex] |= 256;
                 }
                 ++destIndex;
               }
@@ -1204,7 +1200,7 @@ class PPU {
       _scanlineChanged[i] = true;
     }
     _oldFrame.forEach((e) => e = -1);
-    requestRenderAll = true;
+    //requestRenderAll = true;
   }
 
   // Updates the internal name table buffers
@@ -1344,7 +1340,6 @@ class PPU {
       _nmiOk = buf.readBoolean();
       _dummyCycleToggle = buf.readBoolean();
       _nmiCounter = buf.readInt();
-      _tmp =  buf.readInt();
 
       // Stuff used during rendering:
       for (int i = 0; i < _bgbuffer.length; i++) {
@@ -1432,7 +1427,6 @@ class PPU {
     buf.putBoolean(_nmiOk);
     buf.putBoolean(_dummyCycleToggle);
     buf.putInt(_nmiCounter);
-    buf.putInt(_tmp);
 
     // Stuff used during rendering:
     for (int i = 0; i < _bgbuffer.length; i++) {
@@ -1477,7 +1471,6 @@ class PPU {
     _dummyCycleToggle = false;
     _validTileData = false;
     _nmiCounter = 0;
-    _tmp = 0;
     //_att = 0;
 
     // Control Flags Register 1:

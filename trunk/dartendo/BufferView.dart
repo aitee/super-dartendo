@@ -47,7 +47,7 @@ class BufferView {
     // Skip image drawing if minimized or frameskipping:
     painted = false;
     if (!skipFrame) {
-      nes.ppu.requestRenderAll = false;
+      //nes.ppu.requestRenderAll = false;
       painted = paint();
     }
     frameFinished = true;
