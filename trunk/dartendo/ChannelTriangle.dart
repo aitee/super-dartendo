@@ -72,34 +72,27 @@ class ChannelTriangle implements PapuChannel {
   }
 
   void writeReg(int address, int value) {
-
     if (address == 0x4008) {
-
       // New values for linear counter:
       lcControl = (value & 0x80) != 0;
       lcLoadValue = value & 0x7F;
 
       // Length counter enable:
       lengthCounterEnable = !lcControl;
-
     } else if (address == 0x400A) {
-
       // Programmable timer:
       progTimerMax &= 0x700;
       progTimerMax |= value;
 
     } else if (address == 0x400B) {
-
       // Programmable timer, length counter
       progTimerMax &= 0xFF;
       progTimerMax |= ((value & 0x07) << 8);
       lengthCounter = papu.getLengthMax(value & 0xF8);
       lcHalt = true;
-
     }
 
     updateSampleCondition();
-
   }
 
   void clockProgrammableTimer(int nCycles) {
@@ -131,15 +124,11 @@ class ChannelTriangle implements PapuChannel {
   bool isEnabled() => _isEnabled;
 
   void updateSampleCondition() {
-    sampleCondition =
-      _isEnabled &&
-      progTimerMax > 7 &&
-      linearCounter > 0 &&
-      lengthCounter > 0;
+    sampleCondition = _isEnabled && progTimerMax > 7 &&
+                      linearCounter > 0 && lengthCounter > 0;
   }
 
   void reset() {
-
     progTimerCount = 0;
     progTimerMax = 0;
     triangleCounter = 0;
@@ -153,7 +142,6 @@ class ChannelTriangle implements PapuChannel {
     lcControl = false;
     tmp = 0;
     sampleValue = 0xF;
-
   }
 
   void destroy() {

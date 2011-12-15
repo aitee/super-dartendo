@@ -97,7 +97,9 @@ class Controller {
   int lastTime = 0;
   int sleepTime = 0;
   int frameCount = 0;
+  int paintedFrameCount = 0;
   int _lastFrameCount = 0;
+  int _lastPaintedFrameCount = 0;
   
   Map<int, Map<String, int>> _recvNetStatus;
   Map<int, Map<String, int>> _sendNetStatus;
@@ -129,6 +131,8 @@ class Controller {
     playerid = 0;
     _lastFrameCount = 0;
     frameCount = 0;
+    _lastPaintedFrameCount = 0;
+    paintedFrameCount = 0;
     _recvNetStatus = new Map<int, Map<String, int>>();
     _sendNetStatus = new Map<int, Map<String, int>>();
 
@@ -158,19 +162,21 @@ class Controller {
   void _updateFps() {
     if (fps) {
       document.query('#fps_counter').innerHTML =
-        (frameCount - _lastFrameCount).toString();
+        (frameCount - _lastFrameCount).toString() +
+        ' [' + (paintedFrameCount - _lastPaintedFrameCount).toString() + ']';
       _lastFrameCount = frameCount;
+      _lastPaintedFrameCount = paintedFrameCount;
     }
   }
 
   void addScreenView() {
-    Util.printDebug("nesdart.addScreenView(): begins", debugMe);
+    //Util.printDebug("nesdart.addScreenView(): begins", debugMe);
 
     panelScreen = gui.getScreenView();
     //panelScreen.setFPSEnabled(fps);
 
     if (scale) {
-      Util.printDebug("nesdart.addScreenView(): SCALE NOT SUPPORTED!", debugMe);
+      //Util.printDebug("nesdart.addScreenView(): SCALE NOT SUPPORTED!", debugMe);
       panelScreen.setScaleMode(BufferView.SCALE_NORMAL);
     }
   }
@@ -383,6 +389,9 @@ class Controller {
               if (frameCount % 10 == 0)
                 _sendStatus();
             }
+
+            if (screen.painted)
+              ++paintedFrameCount;
             ++frameCount;
             screen.finishFrame();
             if (_netplay)

@@ -186,10 +186,8 @@ class PAPU {
       // Channel enable
       updateChannelEnable(value);
 
-      if (value != 0 && initCounter > 0) {
-        // Start hardware initialization
-        initingHardware = true;
-      }
+      // Start hardware initialization
+      initingHardware = (value != 0 && initCounter > 0);
 
       // DMC/IRQ Status
       dmc.writeReg(address, value);
@@ -374,6 +372,10 @@ class PAPU {
   }
 
   void accSample(int cycles) {
+    final var triangle = this.triangle;
+    final var dmc = this.dmc;
+    final var square1 = this.square1;
+    
     // Special treatment for triangle channel - need to interpolate.
     if (triangle.sampleCondition) {
       triValue = ((triangle.progTimerCount << 4) ~/ (triangle.progTimerMax + 1));
@@ -387,28 +389,11 @@ class PAPU {
     }
 
     // Now sample normally:
-    // TODO: If branching is more expensive than multiplying, just keep the else
-    // statement.
-/*
-    if (cycles == 2) {
-      smpTriangle += triValue << 1;
-      smpDmc += dmc.sample << 1;
-      smpSquare1 += square1.sampleValue << 1;
-      smpSquare2 += square2.sampleValue << 1;
-      accCount += 2;
-    } else if (cycles == 4) {
-      smpTriangle += triValue << 2;
-      smpDmc += dmc.sample << 2;
-      smpSquare1 += square1.sampleValue << 2;
-      smpSquare2 += square2.sampleValue << 2;
-      accCount += 4;
-    } else {*/
-      smpTriangle += cycles * triValue;
-      smpDmc += cycles * dmc.sample;
-      smpSquare1 += cycles * square1.sampleValue;
-      smpSquare2 += cycles * square2.sampleValue;
-      accCount += cycles;
-    //}
+    smpTriangle += cycles * triValue;
+    smpDmc += cycles * dmc.sample;
+    smpSquare1 += cycles * square1.sampleValue;
+    smpSquare2 += cycles * square2.sampleValue;
+    accCount += cycles;
   }
 
   void frameCounterTick() {

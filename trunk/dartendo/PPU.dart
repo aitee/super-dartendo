@@ -496,24 +496,6 @@ class PPU {
         }
       }
     }
-
-    // Show sound buffer:
-    //if (showSoundBuffer && nes.getPapu().getLine() != null) {
-    //  final int bufferSize = nes.getPapu().getLine().getBufferSize();
-    //  final int available = nes.getPapu().getLine().available();
-    //  final int scale = bufferSize ~/ 256;
-
-    //  for (int y = 0; y < 4; y++) {
-    //    _scanlineChanged[y] = true;
-    //    for (int x = 0; x < 256; x++) {
-    //      if (x >= (available / scale)) {
-    //        buffer[y * 256 + x] = 0xFFFFFF;
-    //      } else {
-    //        buffer[y * 256 + x] = 0;
-    //      }
-    //    }
-    //  }
-    //}
   }
 
   void updateControlReg1(int value) {
@@ -541,9 +523,8 @@ class PPU {
     f_bgClipping = (value >> 1) & 1;
     f_dispType = value & 1;
 
-    if (f_dispType == 0) {
+    if (f_dispType == 0)
       nes.palTable.setEmphasis(f_color);
-    }
     updatePalettes();
   }
 
@@ -640,9 +621,8 @@ class PPU {
 
     // Invoke mapper latch:
     cntsToAddress();
-    if (_vramAddress < 0x2000) {
+    if (_vramAddress < 0x2000)
       nes.memMapper.latchAccess(_vramAddress);
-    }
   }
 
   // CPU Register $2007(R):
@@ -656,16 +636,14 @@ class PPU {
       int tmp = _vramBufferedReadValue;
 
       // Update buffered value:
-      if (_vramAddress < 0x2000) {
+      if (_vramAddress < 0x2000)
         _vramBufferedReadValue = ppuMem.load(_vramAddress);
-      } else {
+      else
         _vramBufferedReadValue = mirroredLoad(_vramAddress);
-      }
 
       // Mapper latch access:
-      if (_vramAddress < 0x2000) {
+      if (_vramAddress < 0x2000)
         nes.memMapper.latchAccess(_vramAddress);
-      }
 
       // Increment by either 1 or 32, depending on d2 of Control Register 1:
       _vramAddress += (f_addrInc == 1 ? 32 : 1);
