@@ -62,6 +62,8 @@
 #source('Scale.dart');
 #source('UI.dart');
 #source('Util.dart');
+// TODO: WebAudio implementation in Dart
+//#source('WebAudio.dart');
 
 var isDataAvailable() native
 "return \$globals.audioInterface.isDataAvailable();";

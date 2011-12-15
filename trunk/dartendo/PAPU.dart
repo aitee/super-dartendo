@@ -1,3 +1,4 @@
+// TODO: Replace with WebAudio object.
 var audioInterface = null;
 
 var createAudioInterface(bufferSize) native
@@ -10,6 +11,7 @@ class PAPU {
   NES nes;
   Controller controller;
   Memory cpuMem;
+// TODO:  WebAudio audio;
 
   ChannelSquare square1;
   ChannelSquare square2;
@@ -100,6 +102,7 @@ class PAPU {
   PAPU(this.nes) {
     cpuMem = nes.getCpuMemory();
     controller = nes.gui.applet;
+    // TODO: audio = new WebAudio(bufferSize);
 
     setSampleRate(sampleRate, false);
     sampleBufferL = new List<double>(bufferSize);
@@ -499,6 +502,7 @@ class PAPU {
     // Write the buffer out if full
     if (bufferIndex === sampleBufferL.length) {
       writeAudioInterface(sampleBufferL, sampleBufferR);
+      // TODO: audio.write(sampleBufferL, sampleBufferR);
       sampleBufferL = new List<double>(bufferSize);
       sampleBufferR = new List<double>(bufferSize);
       bufferIndex = 0;
