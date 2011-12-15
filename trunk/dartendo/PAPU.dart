@@ -250,8 +250,9 @@ class PAPU {
     // Don't process ticks beyond next sampling:
     nCycles += extraCycles;
     maxCycles = sampleTimerMax - sampleTimer;
-    if ((nCycles << 10) > maxCycles) {
-      extraCycles = ((nCycles << 10) - maxCycles) >> 10;
+    final int cycleDelta = (nCycles << 10) - maxCycles;
+    if (cycleDelta > 0) {
+      extraCycles = (cycleDelta) >> 10;
       nCycles -= extraCycles;
     } else {
       extraCycles = 0;
@@ -278,16 +279,14 @@ class PAPU {
       while (triangle.progTimerCount <= 0) {
         triangle.progTimerCount += triangle.progTimerMax + 1;
         if (triangle.linearCounter > 0 && triangle.lengthCounter > 0) {
-          triangle.triangleCounter++;
+          ++triangle.triangleCounter;
           triangle.triangleCounter &= 0x1F;
           if (triangle.isEnabled()) {
-            if (triangle.triangleCounter >= 0x10) {
-              // Normal value.
-              triangle.sampleValue = (triangle.triangleCounter & 0xF);
-            } else {
-              // Inverted value.
-              triangle.sampleValue = (0xF - (triangle.triangleCounter & 0xF));
-            }
+            final int triangleCounterAbs = (triangle.triangleCounter & 0xF);
+            if (triangle.triangleCounter >= 0x10)
+              triangle.sampleValue = triangleCounterAbs;
+            else
+              triangle.sampleValue = (0xF - triangleCounterAbs);
             triangle.sampleValue <<= 4;
           }
         }
@@ -299,7 +298,7 @@ class PAPU {
     if (square1.progTimerCount <= 0) {
       square1.progTimerCount += ((square1.progTimerMax + 1) << 1);
 
-      square1.squareCounter++;
+      ++square1.squareCounter;
       square1.squareCounter &= 0x7;
       square1.updateSampleValue();
     }
@@ -309,16 +308,17 @@ class PAPU {
     if (square2.progTimerCount <= 0) {
       square2.progTimerCount += ((square2.progTimerMax + 1) << 1);
 
-      square2.squareCounter++;
+      ++square2.squareCounter;
       square2.squareCounter &= 0x7;
       square2.updateSampleValue();
     }
 
     // Clock noise channel Prog timer:
     int acc_c = nCycles;
-    if (noise.progTimerCount - acc_c > 0) {
+    final int noiseCycleDelta = noise.progTimerCount - acc_c;
+    if (noiseCycleDelta > 0) {
       // Do all cycles at once:
-      noise.progTimerCount -= acc_c;
+      noise.progTimerCount = noiseCycleDelta;
       noise.accCount += acc_c;
       noise.accValue += acc_c * noise.sampleValue;
     } else {
@@ -336,17 +336,16 @@ class PAPU {
           } else {
             // Find sample value:
             noise.randomBit = 1;
-            if (noise.isEnabled() && noise.lengthCounter > 0) {
+            if (noise.isEnabled() && noise.lengthCounter > 0)
               noise.sampleValue = noise.masterVolume;
-            } else {
+            else
               noise.sampleValue = 0;
-            }
           }
           noise.progTimerCount += noise.progTimerMax;
         }
 
         noise.accValue += noise.sampleValue;
-        noise.accCount++;
+        ++noise.accCount;
       }
     }
 
@@ -390,6 +389,7 @@ class PAPU {
     // Now sample normally:
     // TODO: If branching is more expensive than multiplying, just keep the else
     // statement.
+/*
     if (cycles == 2) {
       smpTriangle += triValue << 1;
       smpDmc += dmc.sample << 1;
@@ -402,17 +402,17 @@ class PAPU {
       smpSquare1 += square1.sampleValue << 2;
       smpSquare2 += square2.sampleValue << 2;
       accCount += 4;
-    } else {
+    } else {*/
       smpTriangle += cycles * triValue;
       smpDmc += cycles * dmc.sample;
       smpSquare1 += cycles * square1.sampleValue;
       smpSquare2 += cycles * square2.sampleValue;
       accCount += cycles;
-    }
+    //}
   }
 
   void frameCounterTick() {
-    derivedFrameCounter++;
+    ++derivedFrameCounter;
     if (derivedFrameCounter >= frameIrqCounterMax)
       derivedFrameCounter = 0;
 
@@ -434,10 +434,9 @@ class PAPU {
       triangle.clockLinearCounter();
     }
 
-    if (derivedFrameCounter == 3 && countSequence == 0) {
-      // Enable IRQ:
+    // Enable IRQ:
+    if (derivedFrameCounter == 3 && countSequence == 0)
       frameIrqActive = true;
-    }
 
     // End of 240Hz tick
   }
