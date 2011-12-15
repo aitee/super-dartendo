@@ -20,6 +20,10 @@ Audio.prototype.write = function(bufferL, bufferR) {
   this.dataAvailable = true;
 }
 
+Audio.prototype.isDataAvailable = function() {
+    return this.dataAvailable?1:0;
+}
+
 Audio.prototype.process = function(e) {
   if (!this.dataAvailable)
     return;

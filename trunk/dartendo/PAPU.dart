@@ -95,6 +95,8 @@ class PAPU {
   int extraCycles = 0;
   int maxCycles = 0;
 
+  int samplesAhead = 0;
+
   PAPU(this.nes) {
     cpuMem = nes.getCpuMemory();
     controller = nes.gui.applet;
@@ -491,6 +493,7 @@ class PAPU {
     // Write:
     sampleBufferL[bufferIndex] = (sampleValueL / 65536.0);
     sampleBufferR[bufferIndex++] = (sampleValueR / 65536.0);
+    samplesAhead++;
 
     // Write the buffer out if full
     if (bufferIndex === sampleBufferL.length) {

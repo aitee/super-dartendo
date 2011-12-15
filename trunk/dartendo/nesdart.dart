@@ -63,6 +63,9 @@
 #source('UI.dart');
 #source('Util.dart');
 
+var isDataAvailable() native
+"return \$globals.audioInterface.isDataAvailable();";
+
 class Controller {
 
   static final String _sendUrl = "./sendStatus";
@@ -352,7 +355,8 @@ class Controller {
     int frameTime = time - lastTime;
     // Skip one frame to set lastTime and skip if too much time has passed since
     // the last frame.
-    if(frameTime < 1000) {
+    //print("DATA AVAILABLE: " + isDataAvailable());
+    if(frameTime < 1000 && (isDataAvailable() == 0 || nes.papu.bufferIndex<nes.papu.sampleBufferL.length*2~/3)) {
       final BufferView screen = nes.getGui().getScreenView();
       final CPU cpu = nes.getCpu();
       final PPU ppu = nes.getPpu();
@@ -399,7 +403,13 @@ class Controller {
             break;
           }
         }
-        sleepTime += 16;
+        if(sound == false) {
+            sleepTime += 16;
+        } else {
+            int audioToSleep = ((nes.papu.samplesAhead * 1000) ~/ nes.papu.sampleRate);
+            sleepTime += audioToSleep;
+	    nes.papu.samplesAhead = 0;
+        }
       }
       sleepTime -= frameTime;
       //print("FRAME TIME: "+(time-lastTime));
