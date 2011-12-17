@@ -2,7 +2,7 @@
 var audioInterface = null;
 
 var createAudioInterface(bufferSize) native
-"return new Audio(bufferSize);";
+"return new WebAudio(bufferSize);";
 
 void writeAudioInterface(samplesL, samplesR) native
 "\$globals.audioInterface.write(samplesL, samplesR);";
