@@ -65,13 +65,19 @@
 // TODO: WebAudio implementation in Dart
 //#source('WebAudio.dart');
 
-var isDataAvailable() native
+var isAudioDataAvailable() native
 "return \$globals.audioInterface.isDataAvailable();";
 
+// TODO: Replace with WebSocket object.
+var socketInterface = null;
+
+var createSocketInterface(String url, onopen, onmessage, onerror) native
+"return new DartendoSocket(url, onopen, onmessage, onerror);";
+
+void sendSocketInterface(String buffer) native
+"\$globals.socketInterface.send(buffer);";
+
 class Controller {
-
-  static final String _sendUrl = "./sendStatus";
-
   CanvasElement canvas;
   CanvasRenderingContext context;
   Input input;
@@ -79,7 +85,6 @@ class Controller {
   bool scale = false;
   bool sound = false;
   bool fps = false;
-  //bool stereo = false;
   bool timeemulation = false;
   //bool showsoundbuffer = false;
   bool _netplay = false;
@@ -103,7 +108,8 @@ class Controller {
   int paintedFrameCount = 0;
   int _lastFrameCount = 0;
   int _lastPaintedFrameCount = 0;
-  
+ 
+  //WebSocket _socket; 
   Map<int, Map<String, int>> _recvNetStatus;
   Map<int, Map<String, int>> _sendNetStatus;
 
@@ -112,13 +118,12 @@ class Controller {
     Util = new CUtil();
     Misc = new MiscClass();
     input = new Input(this);
-     
+    
     canvas = document.query("#webGlCanvas");
     context = canvas.getContext('2d');
     scale = false;
     sound = false;
     fps = false;
-    //stereo = false;
     timeemulation = false;
     //showsoundbuffer = false;
     samplerate = 0;
@@ -136,6 +141,9 @@ class Controller {
     frameCount = 0;
     _lastPaintedFrameCount = 0;
     paintedFrameCount = 0;
+    
+    //_socket = new WebSocket();
+    //_socket.onmessage(_recvStatus);
     _recvNetStatus = new Map<int, Map<String, int>>();
     _sendNetStatus = new Map<int, Map<String, int>>();
 
@@ -160,6 +168,14 @@ class Controller {
     window.setInterval(_updateFps, 1000);
      
     input.init();
+    
+    if (_netplay) {
+      socketInterface =
+          createSocketInterface('ws://' + window.location.host + '/sendStatus',
+                                (e) { print('Connected'); },
+                                (e) { _recvStatus(e); },
+                                (e) { throw new Exception(e); });
+    }
   }
 
   void _updateFps() {
@@ -285,13 +301,7 @@ class Controller {
     } else {
       scale = tmp == ("on");
     }
-/*
-    if (tmp == null || tmp == ("")) {
-        stereo = true; // on by default
-    } else {
-      stereo = tmp == ("on");
-    }
-*/
+    
     tmp = getQueryValue('fps');
     if (tmp == null || tmp == ("")) {
       fps = false;
@@ -355,8 +365,8 @@ class Controller {
     int frameTime = time - lastTime;
     // Skip one frame to set lastTime and skip if too much time has passed since
     // the last frame.
-    //print("DATA AVAILABLE: " + isDataAvailable());
-    if(frameTime < 1000 && (isDataAvailable() == 0 || nes.papu.bufferIndex < (nes.papu.sampleBufferL.length~/2))) {
+    //print("DATA AVAILABLE: " + isAudioDataAvailable());
+    if(frameTime < 1000 && (isAudioDataAvailable() == 0 || nes.papu.bufferIndex < (nes.papu.sampleBufferL.length~/2))) {
       final BufferView screen = nes.getGui().getScreenView();
       final CPU cpu = nes.getCpu();
       final PPU ppu = nes.getPpu();
@@ -388,7 +398,7 @@ class Controller {
           ppu.emulateCycles(); 
 
           if (screen.frameFinished) {
-            if (_netplay && frameCount%10==0) {
+            if (_netplay) {
               _buildLocalStatus();
               if (frameCount % 10 == 0)
                 _sendStatus();
@@ -421,23 +431,36 @@ class Controller {
   }
 
   void _sendStatus() {
-    final req = new XMLHttpRequest();
+    //_socket.send(JSON.stringify(_sendNetStatus));
+    sendSocketInterface(JSON.stringify(_sendNetStatus));
+    _sendNetStatus.clear();
+    _sendNetStatus[-1] = new Map<String, int>();
+    _sendNetStatus[-1]['matchid'] = matchid;
+    _sendNetStatus[-1]['playerid'] = playerid;
 
-    String resp = '';
+//    String resp = '';
 
     //while (!_recvNetStatus.containsKey(frameCount + 1)) {
-      String jsonStatus = JSON.stringify(_sendNetStatus);
-      String url = _sendUrl + '?status=' + jsonStatus;
-      req.open('GET', url, false);
-      req.send();
-      _sendNetStatus.clear();
-      _sendNetStatus[-1] = new Map<String, int>();
-      _sendNetStatus[-1]['matchid'] = matchid;
-      _sendNetStatus[-1]['playerid'] = playerid;
-      resp = req.responseText;
-      Map<String, Map<String, int>> resp_map = JSON.parse(resp);
-      resp_map.forEach((k, v) => _recvNetStatus[Math.parseInt(k)] = v);
+//      String jsonStatus = JSON.stringify(_sendNetStatus);
+//      String url = _sendUrl + '?status=' + jsonStatus;
+//      req.open('GET', url, false);
+//      req.send();
+//      _sendNetStatus.clear();
+//      _sendNetStatus[-1] = new Map<String, int>();
+//      _sendNetStatus[-1]['matchid'] = matchid;
+//      _sendNetStatus[-1]['playerid'] = playerid;
+//      resp = req.responseText;
+//      Map<String, Map<String, int>> resp_map = JSON.parse(resp);
+//      resp_map.forEach((k, v) => _recvNetStatus[Math.parseInt(k)] = v);
     //}
+  }
+
+  void _recvStatus(e) {
+    var data = e.data;
+    if (data !== null) {
+      Map<String, Map<String, int>> resp_map = JSON.parse(data);
+      resp_map.forEach((k, v) => _recvNetStatus[Math.parseInt(k)] = v);
+    }
   }
 
   void _buildLocalStatus() {
@@ -464,7 +487,7 @@ class Controller {
 
   void _handleRemoteInput() {
     Map<String, int> status = _recvNetStatus[frameCount];
-    if (status==null) return;
+    if (status === null) return;
     KbInputHandler joy = (playerid == 1 ? gui.kbJoy2 : gui.kbJoy1);
     joy.setKeyState(KbInputHandler.KEY_LEFT, status['left']);
     joy.setKeyState(KbInputHandler.KEY_RIGHT, status['right']);

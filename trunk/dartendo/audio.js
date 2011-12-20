@@ -1,4 +1,4 @@
-WebAudio = function(bufferSize) {
+DartendoAudio = function(bufferSize) {
   var that = this;
   
   if (!window.AudioContext) {
@@ -27,17 +27,17 @@ WebAudio = function(bufferSize) {
   this.play();
 }
 
-WebAudio.prototype.write = function(bufferL, bufferR) {
+DartendoAudio.prototype.write = function(bufferL, bufferR) {
   this.bufferL = bufferL;
   this.bufferR = bufferR;
   this.dataAvailable = true;
 }
 
-WebAudio.prototype.isDataAvailable = function() {
+DartendoAudio.prototype.isDataAvailable = function() {
   return this.dataAvailable?1:0;
 }
 
-WebAudio.prototype.process = function(e) {
+DartendoAudio.prototype.process = function(e) {
   if (!this.dataAvailable)
     return;
 
@@ -59,12 +59,12 @@ WebAudio.prototype.process = function(e) {
   this.dataAvailable = false;
 }
 
-WebAudio.prototype.play = function() {
+DartendoAudio.prototype.play = function() {
   if (this.node)
     this.node.connect(this.context.destination);
 }
 
-WebAudio.prototype.stop = function() {
+DartendoAudio.prototype.stop = function() {
   if (this.node)
     this.node.disconnect();
 }

@@ -2,7 +2,7 @@
 var audioInterface = null;
 
 var createAudioInterface(bufferSize) native
-"return new WebAudio(bufferSize);";
+"return new DartendoAudio(bufferSize);";
 
 void writeAudioInterface(samplesL, samplesR) native
 "\$globals.audioInterface.write(samplesL, samplesR);";
