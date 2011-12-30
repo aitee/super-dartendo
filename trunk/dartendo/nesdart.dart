@@ -15,7 +15,6 @@
 #source('CpuInfo.dart');
 #source('FileLoader.dart');
 #source('Globals.dart');
-#source('input.dart');
 #source('KbInputHandler.dart');
 #source('MemoryMapper.dart');
 #source('Mapper001.dart');
@@ -64,6 +63,7 @@
 #source('Util.dart');
 // TODO: WebAudio implementation in Dart
 //#source('WebAudio.dart');
+#source('RomManager.dart');
 
 var isAudioDataAvailable() native
 "return \$globals.audioInterface.isDataAvailable();";
@@ -80,7 +80,7 @@ void sendSocketInterface(String buffer) native
 class Controller {
   CanvasElement canvas;
   CanvasRenderingContext context;
-  Input input;
+  RomManager romManager;
   
   bool scale = false;
   bool sound = false;
@@ -117,7 +117,7 @@ class Controller {
     Globals = new SGlobals();
     Util = new CUtil();
     Misc = new MiscClass();
-    input = new Input(this);
+    romManager = new RomManager(this);
     
     canvas = document.query("#webGlCanvas");
     context = canvas.getContext('2d');
@@ -167,7 +167,7 @@ class Controller {
     nes.reset();
     window.setInterval(_updateFps, 1000);
      
-    input.init();
+    romManager.init();
     
     if (_netplay) {
       socketInterface =
@@ -209,7 +209,7 @@ class Controller {
     print("For updates, see www.thatsanderskid.com");
     print("Use of this program subject to GNU GPL, Version 3.");
 
-    nes.loadRom(input.romBytes);
+    nes.loadRom(romManager.romBytes);
 
     if (nes.rom.isValid()) {
       // Add the screen buffer:

@@ -90,21 +90,29 @@
             
       #roms-label {
         padding: 2px 4px 2px 4px;
-        border: 4px solid #ccc;
+        border: 0.5ex solid #ddd;
         border-bottom: 0;
-        background-color: #ccc;
         border-radius: 4px 4px 0 0;
+        background-color: #ddd;
+        box-shadow: 5px 5px 5px #888;      
         width: 10em;
         cursor: pointer;
       }
       
       #roms-content {
         padding: 2px 4px 2px 4px;
-        border-left: 1ex solid #ccc;
-        border-right: 1ex solid #ccc;
-        border-top: 1ex solid #ccc;
-        background-color: #ddd;
+        border-left: 0.5ex solid #ddd;
+        border-right: 0.5ex solid #ddd;
+        border-top: 0.5ex solid #ddd;
         height: 14ex;
+        box-shadow: 5px 5px 5px #888;      
+      }
+
+      .roms-drag-in {
+        background-color: #cfc;
+      }
+      .roms-drag-out {
+	    background-color: #eee;
       }
     </style>
   </head>
@@ -123,7 +131,7 @@
       <div id="roms-label">
         roms
       </div>
-      <div id="roms-content">
+      <div id="roms-content" class="roms-drag-out">
 	    <p>
 	      Select a ROM or drag one into this area<br>
 	      <input type="file" id="input-file" />
