@@ -46,9 +46,10 @@ class RomManager {
   }
   
   void hideMenu() {
-    _menu.style.transition = 'bottom 0.2s';
-    // TODO(tedmao): measure height of menu instead of hard-coding height. 
-    _menu.style.bottom = '-15ex';
+    _romsContent.computedStyle.then((value) {
+      _menu.style.transition = 'bottom 0.2s';
+      _menu.style.bottom = "-" + value.height;
+    });
   }
   
   void init() {
@@ -99,7 +100,7 @@ class RomManager {
     };
     _romsContent.on.drop.add(onDropHandler);
     _tv.on.drop.add(onDropHandler);
-}
+  }
   
   void _updateRomsContentDragStyle() {
     if (_dragState > 0) {

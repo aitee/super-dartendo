@@ -84,9 +84,9 @@
 
       #menu {
         position: fixed;
-        bottom: -15ex;
+        bottom: -20.5ex;
         z-index: 5;
-        width: 80%;
+        width: 98%;
       }
             
       #roms-label {
@@ -101,19 +101,32 @@
       }
       
       #roms-content {
-        padding: 2px 4px 2px 4px;
         border-left: 0.5ex solid #ddd;
         border-right: 0.5ex solid #ddd;
         border-top: 0.5ex solid #ddd;
-        height: 14ex;
-        box-shadow: 5px 5px 5px #888;      
+        box-shadow: 5px 5px 5px #888;
       }
 
       .roms-drag-in {
         background-color: #cfc;
       }
+      
       .roms-drag-out {
-	    background-color: #eee;
+        background-color: #eee;
+      }
+
+      #roms-content-left {
+        height: 20ex;
+        width: 20em;
+        float: left;
+        padding: 2px 4px 2px 4px;
+        border-right: 0.5ex solid #ddd;
+      }
+
+      #roms-content-right {
+        height: 20ex;
+        margin-left: 21em;
+        padding: 2px 4px 2px 4px;
       }
     </style>
   </head>
@@ -133,15 +146,20 @@
         roms
       </div>
       <div id="roms-content" class="roms-drag-out">
-	    <p>
-	      Select a ROM or drag one into this area<br>
-	      <input type="file" id="input-file" />
-	    </p>
-	    <p>
-	      <b>Name:</b> <span id="name"></span><br>
-	      <b>File Size:</b> <span id="size"></span><br>
-	    </p>
-	  </div>
+        <div id="roms-content-left">
+        <p>
+          Select a ROM or drag one into this area<br>
+          <input type="file" id="input-file" />
+        </p>
+        <p>
+          Current ROM: <span id="name"></span><br>
+          File Size: <span id="size"></span><br>
+        </p>
+        </div>
+        <div id="roms-content-right">
+          This area is reserved for a list of ROMs stored in the HTML5 IndexedDB.
+        </div>
+      </div>
     </div>
 
     <script src="./audio.js" type="text/javascript"></script>
