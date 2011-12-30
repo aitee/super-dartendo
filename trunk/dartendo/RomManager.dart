@@ -9,6 +9,7 @@ class RomManager {
   Element _menu;
   Element _romsLabel;
   Element _romsContent;
+  Element _tv;
   InputElement _inputFile;
   
   /**
@@ -28,17 +29,26 @@ class RomManager {
     this._romsLabel = document.query('#roms-label');
     this._romsContent = document.query('#roms-content');
     this._inputFile = document.query('#input-file');
+    this._tv = document.query('#tv');
   }
 
   void toggleMenuVisibility() {
     if (_menu.style.bottom == '0px') {
-      _menu.style.transition = 'bottom 0.2s';
-      // TODO(tedmao): measure height of menu instead of hard-coding height. 
-      _menu.style.bottom = '-15ex';
+      hideMenu();
     } else {
-      _menu.style.transition = 'bottom 0.2s';
-      _menu.style.bottom = '0';
+      showMenu();
     }
+  }
+  
+  void showMenu() {
+    _menu.style.transition = 'bottom 0.2s';
+    _menu.style.bottom = '0';
+  }
+  
+  void hideMenu() {
+    _menu.style.transition = 'bottom 0.2s';
+    // TODO(tedmao): measure height of menu instead of hard-coding height. 
+    _menu.style.bottom = '-15ex';
   }
   
   void init() {
@@ -76,16 +86,20 @@ class RomManager {
     });
   
     // dragOver needs to be cancelled in order for the drop event to fire.
-    _romsContent.on.dragOver.add((EventWrappingImplementation event) {
+    var onDragOverHandler = (EventWrappingImplementation event) {
       unwrapDomObject(event).preventDefault();
-    });
+    };
+    _romsContent.on.dragOver.add(onDragOverHandler);
+    _tv.on.dragOver.add(onDragOverHandler);
   
     // if a file is dropped, attempt to load it as a rom.
-    _romsContent.on.drop.add((EventWrappingImplementation event) {
+    var onDropHandler = (EventWrappingImplementation event) {
       unwrapDomObject(event).preventDefault();
       _loadFile(new FileWrappingImplementation._wrap(unwrapDomObject(event).dataTransfer.files[0]));
-    });
-  }
+    };
+    _romsContent.on.drop.add(onDropHandler);
+    _tv.on.drop.add(onDropHandler);
+}
   
   void _updateRomsContentDragStyle() {
     if (_dragState > 0) {
@@ -120,7 +134,7 @@ class RomManager {
       if (reader.readyState == 2) {
         List<int> fromFileBytes = new dom.Uint8Array.fromBuffer(reader.result);
         _romBytes = fromFileBytes;
-        toggleMenuVisibility();
+        hideMenu();
         _controller.run();
       } else {
         window.setTimeout(handler, 100);
