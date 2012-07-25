@@ -1,17 +1,8 @@
-// TODO: Replace with WebAudio object.
-var audioInterface = null;
-
-var createAudioInterface(bufferSize) native
-"return new DartendoAudio(bufferSize);";
-
-void writeAudioInterface(samplesL, samplesR) native
-"\$globals.audioInterface.write(samplesL, samplesR);";
-
 class PAPU {
   NES nes;
   Controller controller;
   Memory cpuMem;
-// TODO:  WebAudio audio;
+  WebAudio audio;
 
   ChannelSquare square1;
   ChannelSquare square2;
@@ -37,10 +28,10 @@ class PAPU {
 
   int frameIrqCounter = 0;
   int frameIrqCounterMax = 4;
-  final int initCounter = 2048;
+  int initCounter = 2048;
   int channelEnableValue = 0;
 
-  final int bufferSize = 4096;
+  final int bufferSize = 2048;
   int bufferIndex = 0;
   int sampleRate = 44100;
 
@@ -102,7 +93,7 @@ class PAPU {
   PAPU(this.nes) {
     cpuMem = nes.getCpuMemory();
     controller = nes.gui.applet;
-    // TODO: audio = new WebAudio(bufferSize);
+    audio = new WebAudio(bufferSize);
 
     setSampleRate(sampleRate, false);
     sampleBufferL = new List<double>(bufferSize);
@@ -142,11 +133,6 @@ class PAPU {
 
   void stateSave(MemByteBuffer buf) {
     // not yet.
-  }
-
-  void init() {
-    audioInterface = createAudioInterface(bufferSize);
-    bufferIndex = 0;
   }
 
   NES getNes() => nes;
@@ -261,12 +247,6 @@ class PAPU {
       extraCycles = 0;
     }
 
-    var dmc = this.dmc;
-    var triangle = this.triangle;
-    var square1 = this.square1;
-    var square2 = this.square2;
-    var noise = this.noise;
-
     // Clock DMC:
     if (dmc.isEnabled()) {
       dmc.shiftCounter -= (nCycles << 3);
@@ -377,10 +357,6 @@ class PAPU {
   }
 
   void accSample(int cycles) {
-    final var triangle = this.triangle;
-    final var dmc = this.dmc;
-    final var square1 = this.square1;
-    
     // Special treatment for triangle channel - need to interpolate.
     if (triangle.sampleCondition) {
       triValue = ((triangle.progTimerCount << 4) ~/ (triangle.progTimerMax + 1));
@@ -501,8 +477,7 @@ class PAPU {
 
     // Write the buffer out if full
     if (bufferIndex === sampleBufferL.length) {
-      writeAudioInterface(sampleBufferL, sampleBufferR);
-      // TODO: audio.write(sampleBufferL, sampleBufferR);
+      audio.write(sampleBufferL, sampleBufferR);
       sampleBufferL = new List<double>(bufferSize);
       sampleBufferR = new List<double>(bufferSize);
       bufferIndex = 0;
@@ -574,7 +549,8 @@ class PAPU {
       nes.stopEmulation();
 
     sampleRate = rate;
-    sampleTimerMax = ((1024 * Globals.CPU_FREQ_NTSC * Globals.preferredFrameRate) ~/ (sampleRate * 60));
+    sampleTimerMax = ((1024 * Globals.CPU_FREQ_NTSC *
+          Globals.preferredFrameRate) ~/ (sampleRate * 60)).toInt();
 
     frameTime = ((14915 * Globals.preferredFrameRate) ~/ 60);
 

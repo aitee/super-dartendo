@@ -54,6 +54,7 @@ class CPU {
   // Interrupt notification:
   bool irqRequested = false;
   int irqType = 0;
+  int interruptStatus = 0;
 
   // Op/Inst Data:
   List<int> opdata;
@@ -95,7 +96,6 @@ class CPU {
   int palCnt = 0;
   int cycleCount = 0;
   int cycleAdd = 0;
-  int temp = 0;
   int add = 0;
 
   bool palEmu = false;
@@ -119,7 +119,7 @@ class CPU {
       // *******
 
       // Add with carry.
-      temp = REG_ACC + load(addr) + F_CARRY;
+      int temp = REG_ACC + load(addr) + F_CARRY;
       F_OVERFLOW = ((!(((REG_ACC ^ load(addr)) & 0x80)!=0) && (((REG_ACC ^ temp) & 0x80))!=0)?1:0);
       F_CARRY = (temp>255?1:0);
       F_SIGN = (temp>>7)&1;
@@ -156,7 +156,7 @@ class CPU {
 
       }else{
 
-        temp = load(addr);
+        int temp = load(addr);
         F_CARRY = (temp>>7)&1;
         temp = (temp<<1)&255;
         F_SIGN = (temp>>7)&1;
@@ -212,7 +212,7 @@ class CPU {
       // * BIT *
       // *******
 
-      temp = load(addr);
+      int temp = load(addr);
       F_SIGN = (temp>>7)&1;
       F_OVERFLOW = (temp>>6)&1;
       temp &= REG_ACC;
@@ -358,7 +358,7 @@ class CPU {
       // *******
 
       // Compare memory and accumulator:
-      temp = REG_ACC - load(addr);
+      int temp = REG_ACC - load(addr);
       F_CARRY = (temp>=0?1:0);
       F_SIGN = (temp>>7)&1;
       F_ZERO = temp&0xFF;
@@ -372,7 +372,7 @@ class CPU {
       // *******
 
       // Compare memory and index X:
-      temp = REG_X - load(addr);
+      int temp = REG_X - load(addr);
       F_CARRY = (temp>=0?1:0);
       F_SIGN = (temp>>7)&1;
       F_ZERO = temp&0xFF;
@@ -385,7 +385,7 @@ class CPU {
       // *******
 
       // Compare memory and index Y:
-      temp = REG_Y - load(addr);
+      int temp = REG_Y - load(addr);
       F_CARRY = (temp>=0?1:0);
       F_SIGN = (temp>>7)&1;
       F_ZERO = temp&0xFF;
@@ -398,7 +398,7 @@ class CPU {
       // *******
 
       // Decrement memory by one:
-      temp = (load(addr)-1)&0xFF;
+      int temp = (load(addr)-1)&0xFF;
       F_SIGN = (temp>>7)&1;
       F_ZERO = temp;
       write(addr,temp);
@@ -448,7 +448,7 @@ class CPU {
       // *******
 
       // Increment memory by one:
-      temp = (load(addr)+1)&0xFF;
+      int temp = (load(addr)+1)&0xFF;
       F_SIGN = (temp>>7)&1;
       F_ZERO = temp;
       write(addr,(temp&0xFF));
@@ -547,20 +547,17 @@ class CPU {
       // *******
 
       // Shift right one bit:
+      int temp = 0;
       if(addrMode == 4){ // ADDR_ACC
-
         temp = (REG_ACC & 0xFF);
         F_CARRY = temp&1;
         temp >>= 1;
         REG_ACC = temp;
-
-      }else{
-
+      } else {
         temp = load(addr) & 0xFF;
         F_CARRY = temp&1;
         temp >>= 1;
         write(addr,temp);
-
       }
       F_SIGN = 0;
       F_ZERO = temp;
@@ -576,7 +573,7 @@ class CPU {
       // Ignore.
 
     }; 
-    
+
     _opcode_table[34] = () {
 
       // *******
@@ -584,14 +581,14 @@ class CPU {
       // *******
 
       // OR memory with accumulator, store in accumulator.
-      temp = (load(addr)|REG_ACC)&255;
+      int temp = (load(addr)|REG_ACC)&255;
       F_SIGN = (temp>>7)&1;
       F_ZERO = temp;
       REG_ACC = temp;
       if(addrMode!=11)cycleCount+=cycleAdd; // PostIdxInd = 11
 
     }; 
-    
+
     _opcode_table[35] = () {
 
       // *******
@@ -602,7 +599,7 @@ class CPU {
       push(REG_ACC);
 
     }; 
-    
+
     _opcode_table[36] = () {
 
       // *******
@@ -623,7 +620,7 @@ class CPU {
           );
 
     }; 
-    
+
     _opcode_table[37] = () {
 
       // *******
@@ -636,7 +633,7 @@ class CPU {
       F_ZERO = REG_ACC;
 
     }; 
-    
+
     _opcode_table[38] = () {
 
       // *******
@@ -644,7 +641,7 @@ class CPU {
       // *******
 
       // Pull processor status from stack
-      temp = pull();
+      int temp = pull();
       F_CARRY     = (temp   )&1;
       F_ZERO      = (((temp>>1)&1)==1)?0:1;
       F_INTERRUPT = (temp>>2)&1;
@@ -657,13 +654,14 @@ class CPU {
       F_NOTUSED = 1;
 
     }; 
-    
+
     _opcode_table[39] = () {
 
       // *******
       // * ROL *
       // *******
 
+      int temp = 0;
       // Rotate one bit left
       if(addrMode == 4){ // ADDR_ACC = 4
 
@@ -692,6 +690,7 @@ class CPU {
       // *******
 
       // Rotate one bit right
+      int temp = 0;
       if(addrMode == 4){ // ADDR_ACC = 4
 
         add = F_CARRY<<7;
@@ -712,7 +711,7 @@ class CPU {
       F_ZERO = temp;
 
     }; 
-    
+
     _opcode_table[41] = () {
 
       // *******
@@ -721,7 +720,7 @@ class CPU {
 
       // Return from interrupt. Pull status and PC from stack.
 
-      temp = pull();
+      int temp = pull();
       F_CARRY     = (temp   )&1;
       F_ZERO      = ((temp>>1)&1)==0?1:0;
       F_INTERRUPT = (temp>>2)&1;
@@ -740,7 +739,7 @@ class CPU {
       F_NOTUSED = 1;
 
     }; 
-    
+
     _opcode_table[42] = () {
 
       // *******
@@ -757,14 +756,14 @@ class CPU {
       }
 
     }; 
-    
+
     _opcode_table[43] = () {
 
       // *******
       // * SBC *
       // *******
 
-      temp = REG_ACC-load(addr)-(1-F_CARRY);
+      int temp = REG_ACC-load(addr)-(1-F_CARRY);
       F_SIGN = (temp>>7)&1;
       F_ZERO = temp&0xFF;
       F_OVERFLOW = ((((REG_ACC^temp)&0x80)!=0 && ((REG_ACC^load(addr))&0x80)!=0)?1:0);
@@ -773,7 +772,7 @@ class CPU {
       if(addrMode!=11)cycleCount+=cycleAdd; // PostIdxInd = 11
 
     }; 
-    
+
     _opcode_table[44] = () {
 
       // *******
@@ -784,7 +783,7 @@ class CPU {
       F_CARRY = 1;
 
     }; 
-    
+
     _opcode_table[45] = () {
 
       // *******
@@ -795,7 +794,7 @@ class CPU {
       F_DECIMAL = 1;
 
     }; 
-    
+
     _opcode_table[46] = () {
 
       // *******
@@ -806,7 +805,7 @@ class CPU {
       F_INTERRUPT = 1;
 
     }; 
-    
+
     _opcode_table[47] = () {
 
       // *******
@@ -817,7 +816,7 @@ class CPU {
       write(addr,REG_ACC);
 
     }; 
-    
+
     _opcode_table[48] = () {
 
       // *******
@@ -828,7 +827,7 @@ class CPU {
       write(addr,REG_X);
 
     }; 
-    
+
     _opcode_table[49] = () {
 
       // *******
@@ -850,7 +849,7 @@ class CPU {
       F_ZERO = REG_ACC;
 
     }; 
-    
+
     _opcode_table[51] = () {
 
       // *******
@@ -863,7 +862,7 @@ class CPU {
       F_ZERO = REG_ACC;
 
     }; 
-    
+
     _opcode_table[52] = () {
 
       // *******
@@ -876,7 +875,7 @@ class CPU {
       F_ZERO = REG_X;
 
     }; 
-    
+
     _opcode_table[53] = () {
 
       // *******
@@ -889,7 +888,7 @@ class CPU {
       F_ZERO = REG_X;
 
     }; 
-    
+
     _opcode_table[54] = () {
 
       // *******
@@ -901,7 +900,7 @@ class CPU {
       stackWrap();
 
     }; 
-    
+
     _opcode_table[55] = () {
 
       // *******
@@ -914,10 +913,10 @@ class CPU {
       F_ZERO = REG_Y;
 
     };
-    
+
     // address mode lookup
     _addressModeLookup = new List(13);
-    
+
     _addressModeLookup[0] = () {
       // Zero Page mode. Use the address given after the opcode, but without high byte.
       addr = load(opaddr + 2);    
@@ -932,38 +931,38 @@ class CPU {
         addr += REG_PC - 256;
       }
     };
-    
+
     _addressModeLookup[2] = () {
       // Ignore. Address is implied in instruction.                          
     };
-    
+
     _addressModeLookup[3] = () {
       // Absolute mode. Use the two bytes following the opcode as an address.
       addr = load16bit(opaddr+2);
     };
-    
+
     _addressModeLookup[4] = () {
       // Accumulator mode. The address is in the accumulator register.
       addr = REG_ACC;                          
     };
-    
+
     _addressModeLookup[5] = () {
       // Immediate mode. The value is given after the opcode.
       addr = REG_PC;
     };
-    
+
     _addressModeLookup[6] = () {
       // Zero Page Indexed mode, X as index. Use the address given after the opcode, then add the
       // X register to it to get the final address.
       addr = (load(opaddr+2)+REG_X) & 0xFF;                       
     };
-    
+
     _addressModeLookup[7] = () {
       // Zero Page Indexed mode, Y as index. Use the address given after the opcode, then add the
       // Y register to it to get the final address.
-       addr = (load(opaddr+2)+REG_Y)&0xFF;
+      addr = (load(opaddr+2)+REG_Y)&0xFF;
     };
-    
+
     _addressModeLookup[8] = () {
       // Absolute Indexed Mode, X as index. Same as zero page indexed, but with the high byte.
       addr = load16bit(opaddr+2);
@@ -972,29 +971,29 @@ class CPU {
       }
       addr += REG_X;
     };
-    
+
     _addressModeLookup[9] = () {
       // Absolute Indexed Mode, Y as index. Same as zero page indexed, but with the high byte.
       addr = load16bit(opaddr+2);
       if((addr&0xFF00)!=((addr+REG_Y)&0xFF00)){
-            cycleAdd = 1;
+        cycleAdd = 1;
       }
       addr += REG_Y;
     };
-    
+
     _addressModeLookup[10] = () {
       // Pre-indexed Indirect mode. Find the 16-bit address starting at the given location plus
       // the current X register. The value is the contents of that address.
       addr = load(opaddr+2);
       if((addr&0xFF00)!=((addr+REG_X)&0xFF00)){
-         cycleAdd = 1;
+        cycleAdd = 1;
       }
-      
+
       addr += REG_X;
       addr &= 0xFF;
       addr = load16bit(addr);
     };
-    
+
     _addressModeLookup[11] = () {
       // Post-indexed Indirect mode. Find the 16-bit address contained in the given location
       // (and the one following). Add to that address the contents of the Y register. Fetch the value
@@ -1006,7 +1005,7 @@ class CPU {
       }
       addr += REG_Y;
     };
-    
+
     _addressModeLookup[12] = () {
       // Indirect Absolute mode. Find the 16-bit address contained at the given location.
       addr = load16bit(opaddr+2);// Find op
@@ -1016,8 +1015,8 @@ class CPU {
         addr = mmap.load(addr)+(mmap.load((addr&0xFF00)|(((addr&0xFF)+1)&0xFF))<<8);
       }
     };
-    
-    
+
+
     irqTypeSwitch = new List(3);
     irqTypeSwitch[0] = () {
       // Normal IRQ:
@@ -1025,14 +1024,14 @@ class CPU {
         //print("CPU.Constructor.irqTypeSwitch[0]: Interrupt was masked.");
         return;
       }
-      
-      doIrq(temp);
+
+      doIrq();
       //print("CPU.Constructor.irqTypeSwitch[0]: Did normal IRQ. I = " + F_INTERRUPT);
     };
 
     irqTypeSwitch[1] = () { 
       // NMI:
-      doNonMaskableInterrupt(temp);
+      doNonMaskableInterrupt(interruptStatus);
     };
 
     irqTypeSwitch[2] = () {
@@ -1195,11 +1194,11 @@ class CPU {
 
   // Emulates cpu instructions until stopped.
   int emulate() {
-    if(stopRunning)return;
+    if(stopRunning) return 0;
 
     // Check interrupts:
     if(irqRequested){
-      temp =
+      interruptStatus =
         (F_CARRY)|
         ((F_ZERO==0?1:0)<<1)|
         (F_INTERRUPT<<2)|
@@ -1211,9 +1210,9 @@ class CPU {
 
       REG_PC_NEW = REG_PC;
       F_INTERRUPT_NEW = F_INTERRUPT;
-      
+
       irqTypeSwitch[irqType]();
-      
+
       REG_PC = REG_PC_NEW;
       F_INTERRUPT = F_INTERRUPT_NEW;
       F_BRK = F_BRK_NEW;
@@ -1236,14 +1235,14 @@ class CPU {
     // Wrap around for addresses above 0xFFFF:
     addr &= 0xFFFF;
 
-    // ----------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Decode & execute instruction:
-    // ----------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 
     // Use the opcode jump table
     final int opcode = opinf & 0xFF;
     if (opcode < _opcode_table.length) {
-     _opcode_table[opcode]();
+      _opcode_table[opcode]();
     } else {
       // Illegal opcode!
       if(!crash) {
@@ -1253,7 +1252,7 @@ class CPU {
       }
     }
 
-    // ----------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 
     if(palEmu){
       ++palCnt;
@@ -1285,20 +1284,18 @@ class CPU {
     F_SIGN_NEW      = F_SIGN;
   }
 
-  int load(int addr){
-    return addr<0x2000 ? mem[addr&0x7FF] : mmap.load(addr);
+  int load(int address) => address<0x2000 ? mem[address&0x7FF] : mmap.load(address);
+
+  int load16bit(int address){
+    return address<0x1FFF ? mem[address&0x7FF] | (mem[(address+1)&0x7FF]<<8)
+      : mmap.load(address) | (mmap.load(address+1)<<8);
   }
 
-  int load16bit(int addr){
-    return addr<0x1FFF ? mem[addr&0x7FF] | (mem[(addr+1)&0x7FF]<<8)
-      : mmap.load(addr) | (mmap.load(addr+1)<<8);
-  }
-
-  void write(int addr, int val){
-    if(addr < 0x2000){
-      mem[addr&0x7FF] = val;
+  void write(int address, int val){
+    if(address < 0x2000){
+      mem[address&0x7FF] = val;
     }else{
-      mmap.write(addr,val);
+      mmap.write(address,val);
     }
   }
 
@@ -1315,7 +1312,7 @@ class CPU {
 
   void push(int value){
     mmap.write(REG_SP,value);
-    REG_SP--;
+    --REG_SP;
     REG_SP = 0x0100 | (REG_SP&0xFF);
   }
 
@@ -1324,55 +1321,47 @@ class CPU {
   }
 
   int pull(){
-    REG_SP++;
+    ++REG_SP;
     REG_SP = 0x0100 | (REG_SP&0xFF);
     return mmap.load(REG_SP);
   }
 
-  bool pageCrossed(int addr1, int addr2){
-    return ((addr1&0xFF00)!=(addr2&0xFF00));
-  }
+  bool pageCrossed(int addr1, int addr2) => ((addr1&0xFF00)!=(addr2&0xFF00));
 
-  void haltCycles(int cycles){
+  void haltCycles(int cycles) {
     cyclesToHalt += cycles;
   }
 
   void doNonMaskableInterrupt(int status){
-
     int temp = mmap.load(0x2000); // Read PPU status.
     if((temp&128)!=0){ // Check whether VBlank Interrupts are enabled
 
-      REG_PC_NEW++;
+      ++REG_PC_NEW;
       push((REG_PC_NEW>>8)&0xFF);
       push(REG_PC_NEW&0xFF);
       //F_INTERRUPT_NEW = 1;
       push(status);
 
       REG_PC_NEW = mmap.load(0xFFFA) | (mmap.load(0xFFFB) << 8);
-      REG_PC_NEW--;
-
+      --REG_PC_NEW;
     }
   }
 
   void doResetInterrupt(){
-
     REG_PC_NEW = mmap.load(0xFFFC) | (mmap.load(0xFFFD) << 8);
-    REG_PC_NEW--;
-
+    --REG_PC_NEW;
   }
 
-  void doIrq(int status){
-
-    REG_PC_NEW++;
+  void doIrq(){
+    ++REG_PC_NEW;
     push((REG_PC_NEW>>8)&0xFF);
     push(REG_PC_NEW&0xFF);
-    push(status);
+    push(interruptStatus);
     F_INTERRUPT_NEW = 1;
     F_BRK_NEW = 0;
 
     REG_PC_NEW = mmap.load(0xFFFE) | (mmap.load(0xFFFF) << 8);
-    REG_PC_NEW--;
-
+    --REG_PC_NEW;
   }
 
   int getStatus(){

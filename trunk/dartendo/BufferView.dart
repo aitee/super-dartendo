@@ -40,13 +40,13 @@ class BufferView {
     setScaleMode(SCALE_NONE);
   }
 
-  void imageReady(bool skipFrame) {
+  void imageReady(bool shouldSkipFrame) {
     if (!Globals.focused)
       Globals.focused = true;
 
     // Skip image drawing if minimized or frameskipping:
     painted = false;
-    if (!skipFrame) {
+    if (!shouldSkipFrame) {
       //nes.ppu.requestRenderAll = false;
       painted = paint();
     }
@@ -79,7 +79,7 @@ class BufferView {
 
     //Util.printDebug('BufferView.paint: Getting imagedata', debugMe);
     ImageData imageData = context.getImageData(0,0,256,240);
-    CanvasPixelArray data = imageData.data;
+    Uint8ClampedArray data = imageData.data;
     //Util.printDebug('BufferView.paint: data.length = ' + data.length, debugMe);
 
     List<int> ppu_buffer = nes.ppu.buffer;       
@@ -91,6 +91,7 @@ class BufferView {
 
       int val = ppu_buffer[ppui];
 
+      // TODO: Are these masks needed now the array is Clamped type?
       data[i++] = val & 0xFF; // r
       data[i++] = (val>>8)  & 0xFF; // g
       data[i++] = (val>>16) & 0xFF; // b

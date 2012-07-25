@@ -18,7 +18,7 @@ class NES {
 
   // Creates the NES system.
   NES(AppletUI gui) {
-    this.romBytes = null;
+    romBytes = null;
 
     Globals.nes = this;
     this.gui = gui;
@@ -47,7 +47,6 @@ class NES {
     ppu.init();
 
     // Init sound registers:
-    papu.init();
     for (int i = 0; i < 0x14; i++) {
       if (i == 0x10)
         papu.writeReg(0x4010,  0x10);
@@ -140,7 +139,7 @@ class NES {
       cpu.endExecution();
       isRunningFlag = false;
     }
-    
+
   }
 
   void reloadRom() {
@@ -181,7 +180,7 @@ class NES {
 
   // Loads a ROM file into the CPU and PPU.
   // The ROM file is validated first.
-  bool loadRom(List<int> romBytes) {
+  bool loadRom(List<int> bytes) {
     //       print('NES.loadRom( file = $file ): begins.');
 
     // Can't load ROM while still running.
@@ -191,20 +190,17 @@ class NES {
     {
       // Load ROM file:
       rom = new ROM(this);
-      rom.load(romBytes);
+      rom.load(bytes);
       if (rom.isValid()) {
-        // The CPU will load
-        // the ROM into the CPU
-        // and PPU memory.
+        // The CPU will load the ROM into the CPU and PPU memory.
         reset();
 
-        memMapper = rom.createMapper();
-        memMapper.init(this);
+        memMapper = rom.createMapper(this);
         cpu.setMapper(memMapper);
         memMapper.loadROM(rom);
         ppu.setMirroring(rom.getMirroringType());
 
-        this.romBytes = romBytes;
+        romBytes = bytes;
       }
       return rom.isValid();
     }
@@ -250,11 +246,9 @@ class NES {
   }
 
   void setFramerate(int rate) {
-
     Globals.preferredFrameRate = rate;
     Globals.frameTime = (1000000 / rate).toInt();
     papu.setSampleRate(papu.getSampleRate(), false);
-
   }
 
   void destroy() {

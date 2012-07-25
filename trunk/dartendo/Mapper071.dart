@@ -1,73 +1,73 @@
 /*
-vNES
-Copyright © 2006-2011 Jamie Sanders
+   vNES
+   Copyright © 2006-2011 Jamie Sanders
 
-This program is free software: you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any later
-version.
+   This program is free software: you can redistribute it and/or modify it under
+   the terms of the GNU General Public License as published by the Free Software
+   Foundation, either version 3 of the License, or (at your option) any later
+   version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   This program is distributed in the hope that it will be useful, but WITHOUT ANY
+   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+   PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with
-this program.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU General Public License along with
+   this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 class Mapper071 extends MapperDefault {
 
-    int curBank = 0;
+  int curBank = 0;
 
-    void init(NES nes) {
-        super.init(nes);
-        reset();
+  Mapper071(NES nes_) : super(nes_) {
+    reset();
+  }
+
+  void loadROM(ROM rom_) {
+    assert(rom_ == rom);
+
+    //System.out.println("Loading ROM.");
+
+    if (!rom.isValid()) {
+      print("Mapper071.loadROM: Camerica: Invalid ROM! Unable to load.");
+      return;
     }
 
-    void loadROM(ROM rom) {
+    // Get number of PRG ROM banks:
+    int num_banks = rom.getRomBankCount();
 
-        //System.out.println("Loading ROM.");
+    // Load PRG-ROM:
+    loadRomBank(0, 0x8000);
+    loadRomBank(num_banks - 1, 0xC000);
 
-        if (!rom.isValid()) {
-            print("Mapper071.loadROM: Camerica: Invalid ROM! Unable to load.");
-            return;
-        }
+    // Load CHR-ROM:
+    loadCHRROM();
 
-        // Get number of PRG ROM banks:
-        int num_banks = rom.getRomBankCount();
+    // Load Battery RAM (if present):
+    loadBatteryRam();
 
-        // Load PRG-ROM:
-        loadRomBank(0, 0x8000);
-        loadRomBank(num_banks - 1, 0xC000);
+    // Do Reset-Interrupt:
+    nes.getCpu().requestIrq(CPU.IRQ_RESET);
+  }
 
-        // Load CHR-ROM:
-        loadCHRROM();
+  void write(int address, int value) {
 
-        // Load Battery RAM (if present):
-        loadBatteryRam();
+    if (address < 0x8000) {
+      // Handle normally:
+      super.write(address, value);
+    } else if (address < 0xC000) {
+      // Unknown function.
+    } else {
+      // Select 16K PRG ROM at 0x8000:
+      if (value != curBank) {
 
-        // Do Reset-Interrupt:
-        nes.getCpu().requestIrq(CPU.IRQ_RESET);
+        curBank = value;
+        loadRomBank(value, 0x8000);
+      }
     }
+  }
 
-    void write(int address, int value) {
-
-        if (address < 0x8000) {
-            // Handle normally:
-            super.write(address, value);
-        } else if (address < 0xC000) {
-            // Unknown function.
-        } else {
-            // Select 16K PRG ROM at 0x8000:
-            if (value != curBank) {
-
-                curBank = value;
-                loadRomBank(value, 0x8000);
-            }
-        }
-    }
-
-    void reset() {
-        curBank = -1;
-    }
+  void reset() {
+    curBank = -1;
+  }
 }

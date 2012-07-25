@@ -48,7 +48,7 @@ class RomManager {
   void hideMenu() {
     _romsContent.computedStyle.then((value) {
       _menu.style.transition = 'bottom 0.2s';
-      _menu.style.bottom = "-" + value.height;
+      _menu.style.bottom = "-$value.height";
     });
   }
   
@@ -60,43 +60,41 @@ class RomManager {
   List<int> get romBytes() => _romBytes;
 
   void _registerEventHandlers() {
-    _romsLabel.on.click.add((EventWrappingImplementation event) {
-      unwrapDomObject(event).preventDefault();
+    _romsLabel.on.click.add((event) {
+      event.preventDefault();
       toggleMenuVisibility();
     });
 
     // Input handler
-    _inputFile.on.change.add((EventWrappingImplementation event) {
-      unwrapDomObject(event).preventDefault();
+    _inputFile.on.change.add((event) {
+      event.preventDefault();
       File file = _inputFile.files.item(0);
       _loadFile(file);
     });
 
     
     // change background color of drag area if it's dragged over
-    _romsContent.on.dragEnter.add((EventWrappingImplementation event) {
-      unwrapDomObject(event).preventDefault();
+    _romsContent.on.dragEnter.add((event) {
+      event.preventDefault();
       _dragState++;
       _updateRomsContentDragStyle();
     });
   
-    _romsContent.on.dragLeave.add((EventWrappingImplementation event) {
-      unwrapDomObject(event).preventDefault();
+    _romsContent.on.dragLeave.add((event) {
+      event.preventDefault();
       _dragState--;
       _updateRomsContentDragStyle();
     });
   
     // dragOver needs to be cancelled in order for the drop event to fire.
-    var onDragOverHandler = (EventWrappingImplementation event) {
-      unwrapDomObject(event).preventDefault();
-    };
+    var onDragOverHandler = (event) => event.preventDefault();
     _romsContent.on.dragOver.add(onDragOverHandler);
     _tv.on.dragOver.add(onDragOverHandler);
   
     // if a file is dropped, attempt to load it as a rom.
-    var onDropHandler = (EventWrappingImplementation event) {
-      unwrapDomObject(event).preventDefault();
-      _loadFile(new FileWrappingImplementation._wrap(unwrapDomObject(event).dataTransfer.files[0]));
+    var onDropHandler = (e) {
+      e.preventDefault();
+      _loadFile(e.dataTransfer.files[0]);
     };
     _romsContent.on.drop.add(onDropHandler);
     _tv.on.drop.add(onDropHandler);
@@ -113,9 +111,8 @@ class RomManager {
   void _loadDefaultRom() {
     String defaultRom = 'roms/SuperMario3.json';
     String romParameter = Controller.getQueryValue('rom');
-    if (romParameter != null && romParameter.length > 0) {
-      defaultRom = 'roms/' + Controller.getQueryValue('rom') + '.json';
-    }
+    if (romParameter != null && romParameter.length > 0)
+      defaultRom = "roms/$romParameter.json";
     
     final req = new XMLHttpRequest();
     req.open('GET', '${FileLoader.home}/$defaultRom', false);
@@ -124,23 +121,17 @@ class RomManager {
     _romBytes = JSON.parse(req.responseText);
   }
 
-  void _loadFile(FileWrappingImplementation file) {
-    document.query('#name').text = file.fileName;
-    document.query('#size').text = file.fileSize;
+  void _loadFile(File file) {
+    document.query('#name').text = file.name;
+    document.query('#size').text = "$file.size";
 
-    dom.FileReader reader = new dom.FileReader();
-    reader.readAsArrayBuffer(unwrapDomObject(file));
-
-    (handler() {
-      if (reader.readyState == 2) {
-        List<int> fromFileBytes = new dom.Uint8Array.fromBuffer(reader.result);
-        _romBytes = fromFileBytes;
-        hideMenu();
-        _controller.run();
-      } else {
-        window.setTimeout(handler, 100);
-      }
-    })();
+    FileReader reader = new FileReader();
+    reader.on.load.add((e) {
+      List<int> fromFileBytes = new Uint8Array.fromBuffer(reader.result);
+      _romBytes = fromFileBytes;
+      hideMenu();
+      _controller.run();
+    });
+    reader.readAsArrayBuffer(file);
   }
-
 }

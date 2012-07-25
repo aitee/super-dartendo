@@ -1,233 +1,233 @@
 /*
-vNES
-Copyright © 2006-2011 Jamie Sanders
+   vNES
+   Copyright © 2006-2011 Jamie Sanders
 
-This program is free software: you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any later
-version.
+   This program is free software: you can redistribute it and/or modify it under
+   the terms of the GNU General Public License as published by the Free Software
+   Foundation, either version 3 of the License, or (at your option) any later
+   version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   This program is distributed in the hope that it will be useful, but WITHOUT ANY
+   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+   PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with
-this program.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU General Public License along with
+   this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 class Mapper010 extends MapperDefault {
 
-    int latchLo = 0;
-    int latchHi = 0;
-    int latchLoVal1 = 0;
-    int latchLoVal2 = 0;
-    int latchHiVal1 = 0;
-    int latchHiVal2 = 0;
+  int latchLo = 0;
+  int latchHi = 0;
+  int latchLoVal1 = 0;
+  int latchLoVal2 = 0;
+  int latchHiVal1 = 0;
+  int latchHiVal2 = 0;
 
-    void init(NES nes) {
-        super.init(nes);
-        reset();
-    }
+  Mapper010(NES nes_) : super(nes_) {
+    reset();
+  }
 
-    void write(int address, int value) {
-        if (address < 0x8000) {
-            // Handle normally.
-            super.write(address, value);
-        } else {
-            // MMC4 write.
-            value &= 0xFF;
-            switch (address >> 12) {
-                case 0xA: {
+  void write(int address, int value) {
+    if (address < 0x8000) {
+      // Handle normally.
+      super.write(address, value);
+    } else {
+      // MMC4 write.
+      value &= 0xFF;
+      switch (address >> 12) {
+        case 0xA: {
                     // Select 8k ROM bank at 0x8000
                     loadRomBank(value, 0x8000);
                     break;
 
-                }
-                case 0xB: {
+                  }
+        case 0xB: {
 
                     // Select 4k VROM bank at 0x0000, $FD mode
                     latchLoVal1 = value;
                     if (latchLo == 0xFD) {
-                        loadVromBank(value, 0x0000);
+                      loadVromBank(value, 0x0000);
                     }
                     break;
 
-                }
-                case 0xC: {
+                  }
+        case 0xC: {
 
                     // Select 4k VROM bank at 0x0000, $FE mode
                     latchLoVal2 = value;
                     if (latchLo == 0xFE) {
-                        loadVromBank(value, 0x0000);
+                      loadVromBank(value, 0x0000);
                     }
                     break;
 
-                }
-                case 0xD: {
+                  }
+        case 0xD: {
 
                     // Select 4k VROM bank at 0x1000, $FD mode
                     latchHiVal1 = value;
                     if (latchHi == 0xFD) {
-                        loadVromBank(value, 0x1000);
+                      loadVromBank(value, 0x1000);
                     }
                     break;
 
-                }
-                case 0xE: {
+                  }
+        case 0xE: {
 
                     // Select 4k VROM bank at 0x1000, $FE mode
                     latchHiVal2 = value;
                     if (latchHi == 0xFE) {
-                        loadVromBank(value, 0x1000);
+                      loadVromBank(value, 0x1000);
                     }
                     break;
 
-                }
-                case 0xF: {
+                  }
+        case 0xF: {
 
                     // Select mirroring
                     if ((value & 0x1) == 0) {
 
-                        // Vertical mirroring
-                        nes.getPpu().setMirroring(ROM.VERTICAL_MIRRORING);
+                      // Vertical mirroring
+                      nes.getPpu().setMirroring(ROM.VERTICAL_MIRRORING);
 
                     } else {
 
-                        // Horizontal mirroring
-                        nes.getPpu().setMirroring(ROM.HORIZONTAL_MIRRORING);
+                      // Horizontal mirroring
+                      nes.getPpu().setMirroring(ROM.HORIZONTAL_MIRRORING);
 
                     }
                     break;
 
-                }
-            }
-
-        }
+                  }
+      }
 
     }
 
-    void loadROM(ROM rom) {
+  }
 
-        //System.out.println("Loading ROM.");
+  void loadROM(ROM rom_) {
+    assert(rom_ == rom);
 
-        if (!rom.isValid()) {
-            print("Mapper010.loadROM: MMC2: Invalid ROM! Unable to load.");
-            return;
-        }
+    //System.out.println("Loading ROM.");
 
-        // Get number of 16K banks:
-        int num_16k_banks = rom.getRomBankCount() * 4;
-
-        // Load PRG-ROM:
-        loadRomBank(0, 0x8000);
-        loadRomBank(num_16k_banks - 1, 0xC000);
-
-        // Load CHR-ROM:
-        loadCHRROM();
-
-        // Load Battery RAM (if present):
-        loadBatteryRam();
-
-        // Do Reset-Interrupt:
-        nes.getCpu().requestIrq(CPU.IRQ_RESET);
+    if (!rom.isValid()) {
+      print("Mapper010.loadROM: MMC2: Invalid ROM! Unable to load.");
+      return;
     }
 
-    void latchAccess(int address) {
+    // Get number of 16K banks:
+    int num_16k_banks = rom.getRomBankCount() * 4;
 
-        // Important: Only invoke if address < 0x2000
+    // Load PRG-ROM:
+    loadRomBank(0, 0x8000);
+    loadRomBank(num_16k_banks - 1, 0xC000);
 
-        //System.out.println("latch addr="+Misc.hex16(address));
-        bool lo = (address < 0x2000);
-        address &= 0x0FF0;
+    // Load CHR-ROM:
+    loadCHRROM();
 
-        if (lo) {
+    // Load Battery RAM (if present):
+    loadBatteryRam();
 
-            // Switch lo part of CHR
+    // Do Reset-Interrupt:
+    nes.getCpu().requestIrq(CPU.IRQ_RESET);
+  }
 
-            if (address == 0xFD0) {
+  void latchAccess(int address) {
 
-                // Set $FD mode
-                latchLo = 0xFD;
-                loadVromBank(latchLoVal1, 0x0000);
-            //System.out.println("LO FD");
+    // Important: Only invoke if address < 0x2000
 
-            } else if (address == 0xFE0) {
+    //System.out.println("latch addr="+Misc.hex16(address));
+    bool lo = (address < 0x2000);
+    address &= 0x0FF0;
 
-                // Set $FE mode
-                latchLo = 0xFE;
-                loadVromBank(latchLoVal2, 0x0000);
-            //System.out.println("LO FE");
+    if (lo) {
 
-            }
+      // Switch lo part of CHR
 
-        } else {
+      if (address == 0xFD0) {
 
-            // Switch hi part of CHR
+        // Set $FD mode
+        latchLo = 0xFD;
+        loadVromBank(latchLoVal1, 0x0000);
+        //System.out.println("LO FD");
 
-            if (address == 0xFD0) {
+      } else if (address == 0xFE0) {
 
-                // Set $FD mode
-                latchHi = 0xFD;
-                loadVromBank(latchHiVal1, 0x1000);
-            //System.out.println("HI FD");
-
-            } else if (address == 0xFE0) {
-
-                // Set $FE mode
-                latchHi = 0xFE;
-                loadVromBank(latchHiVal2, 0x1000);
-            //System.out.println("HI FE");
-
-            }
-
-        }
-
-    }
-
-    void mapperInternalStateLoad(MemByteBuffer buf) {
-
-        super.mapperInternalStateLoad(buf);
-
-        // Check version:
-        if (buf.readByte() == 1) {
-
-            latchLo = buf.readByte();
-            latchHi = buf.readByte();
-            latchLoVal1 = buf.readByte();
-            latchLoVal2 = buf.readByte();
-            latchHiVal1 = buf.readByte();
-            latchHiVal2 = buf.readByte();
-
-        }
-
-    }
-
-    void mapperInternalStateSave(MemByteBuffer buf) {
-
-        super.mapperInternalStateSave(buf);
-
-        // Version:
-        buf.putByte( 1);
-
-        // State:
-        buf.putByte(latchLo);
-        buf.putByte(latchHi);
-        buf.putByte(latchLoVal1);
-        buf.putByte(latchLoVal2);
-        buf.putByte(latchHiVal1);
-        buf.putByte(latchHiVal2);
-
-    }
-
-    void reset() {
-
-        // Set latch to $FE mode:
+        // Set $FE mode
         latchLo = 0xFE;
+        loadVromBank(latchLoVal2, 0x0000);
+        //System.out.println("LO FE");
+
+      }
+
+    } else {
+
+      // Switch hi part of CHR
+
+      if (address == 0xFD0) {
+
+        // Set $FD mode
+        latchHi = 0xFD;
+        loadVromBank(latchHiVal1, 0x1000);
+        //System.out.println("HI FD");
+
+      } else if (address == 0xFE0) {
+
+        // Set $FE mode
         latchHi = 0xFE;
-        latchLoVal1 = 0;
-        latchLoVal2 = 4;
-        latchHiVal1 = 0;
-        latchHiVal2 = 0;
+        loadVromBank(latchHiVal2, 0x1000);
+        //System.out.println("HI FE");
+
+      }
 
     }
+
+  }
+
+  void mapperInternalStateLoad(MemByteBuffer buf) {
+
+    super.mapperInternalStateLoad(buf);
+
+    // Check version:
+    if (buf.readByte() == 1) {
+
+      latchLo = buf.readByte();
+      latchHi = buf.readByte();
+      latchLoVal1 = buf.readByte();
+      latchLoVal2 = buf.readByte();
+      latchHiVal1 = buf.readByte();
+      latchHiVal2 = buf.readByte();
+
+    }
+
+  }
+
+  void mapperInternalStateSave(MemByteBuffer buf) {
+
+    super.mapperInternalStateSave(buf);
+
+    // Version:
+    buf.putByte( 1);
+
+    // State:
+    buf.putByte(latchLo);
+    buf.putByte(latchHi);
+    buf.putByte(latchLoVal1);
+    buf.putByte(latchLoVal2);
+    buf.putByte(latchHiVal1);
+    buf.putByte(latchHiVal2);
+
+  }
+
+  void reset() {
+
+    // Set latch to $FE mode:
+    latchLo = 0xFE;
+    latchHi = 0xFE;
+    latchLoVal1 = 0;
+    latchLoVal2 = 4;
+    latchHiVal1 = 0;
+    latchHiVal2 = 0;
+
+  }
 }

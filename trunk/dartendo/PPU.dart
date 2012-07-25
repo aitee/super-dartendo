@@ -180,7 +180,7 @@ class PPU {
     // Create nametable buffers:
     _nameTable = new List<NameTable>(4);
     for (int i = 0; i < 4; i++) {
-      _nameTable[i] = new NameTable(32, 32, "Nt" + i);
+      _nameTable[i] = new NameTable(32, 32, "Nt$i");
     }
 
     // Initialize mirroring lookup table:
@@ -817,7 +817,7 @@ class PPU {
     }
   }
 
-  void renderFramePartially(List<int> buffer, int startScan, int scanCount) {
+  void renderFramePartially(List<int> buff, int startScan, int scanCount) {
     if (f_spVisibility == 1 /*&& !Globals.disableSprites*/)
       renderSpritesPartially(startScan, scanCount, true);
 
@@ -826,7 +826,7 @@ class PPU {
       final int ei = Math.min((startScan + scanCount) << 8, 0xF000);
       for (int destIndex = si; destIndex < ei; ++destIndex) {
         if (_pixrendered[destIndex] > 0xFF)
-          buffer[destIndex] = _bgbuffer[destIndex];
+          buff[destIndex] = _bgbuffer[destIndex];
       }
     }
 
@@ -836,7 +836,7 @@ class PPU {
     _validTileData = false;
   }
 
-  void renderBgScanline(List<int> buffer, int scan) {
+  void renderBgScanline(List<int> buff, int scan) {
     final int baseTile = (_regS == 0 ? 0 : 256);
     int destIndex = (scan << 8) - _regFH;
 
@@ -879,7 +879,7 @@ class PPU {
             var pixrendered = _pixrendered;
             if (t.opaque[_cntFV]) {
               for (; sx < 8; ++sx) {
-                buffer[destIndex] = imgPalette[tpix[tscanoffset + sx] + att];
+                buff[destIndex] = imgPalette[tpix[tscanoffset + sx] + att];
                 pixrendered[destIndex] |= 256;
                 ++destIndex;
               }
@@ -887,7 +887,7 @@ class PPU {
               for (; sx < 8; ++sx) {
                 final int col = tpix[tscanoffset + sx];
                 if (col != 0) {
-                  buffer[destIndex] = imgPalette[col + att];
+                  buff[destIndex] = imgPalette[col + att];
                   pixrendered[destIndex] |= 256;
                 }
                 ++destIndex;

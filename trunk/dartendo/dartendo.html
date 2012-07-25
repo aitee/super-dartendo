@@ -162,30 +162,12 @@
       </div>
     </div>
 
-    <script src="./audio.js" type="text/javascript"></script>
     <script src="./socket.js" type="text/javascript"></script>
 
     <script type="text/javascript">
-      function getQueryVariable(variable) {
-        var query = window.location.search.substring(1);
-        var vars = query.split("&");
-        for (var i = 0; i < vars.length; i++) {
-            var pair = vars[i].split("=");
-            if (pair[0] == variable) {
-                return unescape(pair[1]);
-            }
-        }
-        return null;
-      }
-
       var script = document.createElement("script");
-      if(getQueryVariable("native") 
-          && document.implementation.hasFeature("dart")) {
-        script.setAttribute("type", "application/dart");
-        script.setAttribute("src", "nesdart.dart");
-      } else {
-        script.setAttribute("src", "nesdart.dart.js");
-      }
+      script.setAttribute("type", "application/dart");
+      script.setAttribute("src", "dartendo.dart");
 
       /* Workaround for performance issue, from jmesserly@google.com
          "The bug was that we were causing CanvasPixelArray indexing 
@@ -250,6 +232,8 @@
 
       document.body.appendChild(script);
     </script>
-
+    <script type='text/javascript'
+        src='http://dart.googlecode.com/svn/branches/bleeding_edge/dart/client/dart.js'>
+    </script>
   </body>
 </html>

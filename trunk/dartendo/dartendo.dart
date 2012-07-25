@@ -1,7 +1,6 @@
+#import('dart:core');
 #import('dart:html');
 #import('dart:json');
-#import('dart:htmlimpl');
-#import('dart:dom', prefix:'dom');
 
 #source('AppletUI.dart');
 #source('BufferView.dart');
@@ -57,31 +56,27 @@
 #source('PapuChannel.dart');
 #source('PPU.dart');
 #source('ROM.dart');
+#source('RomManager.dart');
 #source('Tile.dart');
 #source('Scale.dart');
 #source('UI.dart');
 #source('Util.dart');
-// TODO: WebAudio implementation in Dart
-//#source('WebAudio.dart');
-#source('RomManager.dart');
-
-var isAudioDataAvailable() native
-"return \$globals.audioInterface.isDataAvailable();";
+#source('WebAudio.dart');
 
 // TODO: Replace with WebSocket object.
-var socketInterface = null;
+//var socketInterface = null;
 
-var createSocketInterface(String url, onopen, onmessage, onerror) native
-"return new DartendoSocket(url, onopen, onmessage, onerror);";
+//var createSocketInterface(String url, onopen, onmessage, onerror) native
+//"return new DartendoSocket(url, onopen, onmessage, onerror);";
 
-void sendSocketInterface(String buffer) native
-"\$globals.socketInterface.send(buffer);";
+//void sendSocketInterface(String buffer) native
+//"\$globals.socketInterface.send(buffer);";
 
 class Controller {
   CanvasElement canvas;
   CanvasRenderingContext context;
   RomManager romManager;
-  
+
   bool scale = false;
   bool sound = false;
   bool fps = false;
@@ -102,13 +97,13 @@ class Controller {
   Color bgColor;
   bool started;
 
-  int lastTime = 0;
+  num lastTime = 0;
   int sleepTime = 0;
   int frameCount = 0;
   int paintedFrameCount = 0;
   int _lastFrameCount = 0;
   int _lastPaintedFrameCount = 0;
- 
+
   //WebSocket _socket; 
   Map<int, Map<String, int>> _recvNetStatus;
   Map<int, Map<String, int>> _sendNetStatus;
@@ -118,7 +113,7 @@ class Controller {
     Util = new CUtil();
     Misc = new MiscClass();
     romManager = new RomManager(this);
-    
+
     canvas = document.query("#webGlCanvas");
     context = canvas.getContext('2d');
     scale = false;
@@ -133,7 +128,7 @@ class Controller {
     started = false;
     lastTime = 0;
     sleepTime = 0;
-     
+
     _netplay = false;
     matchid = 0;
     playerid = 0;
@@ -141,7 +136,7 @@ class Controller {
     frameCount = 0;
     _lastPaintedFrameCount = 0;
     paintedFrameCount = 0;
-    
+
     //_socket = new WebSocket();
     //_socket.onmessage(_recvStatus);
     _recvNetStatus = new Map<int, Map<String, int>>();
@@ -160,29 +155,29 @@ class Controller {
 
     Globals.appletMode = true;
     Globals.memoryFlushValue = 0x00; // make SMB1 hacked version work.
-    
+
     nes = gui.getNES();
     // TODO: Why is this enabled before now and then disabled here?
     nes.enableSound(sound);
     nes.reset();
     window.setInterval(_updateFps, 1000);
-     
+
     romManager.init();
-    
+
     if (_netplay) {
-      socketInterface =
-          createSocketInterface('ws://' + window.location.host + '/sendStatus',
-                                (e) { print('Connected'); },
-                                (e) { _recvStatus(e); },
-                                (e) { throw new Exception(e); });
+      //      socketInterface =
+      //          createSocketInterface('ws://' + window.location.host + '/sendStatus',
+      //                                (e) { print('Connected'); },
+      //                                (e) { _recvStatus(e); },
+      //                                (e) { throw new Exception(e); });
     }
   }
 
   void _updateFps() {
     if (fps) {
       document.query('#fps_counter').innerHTML =
-        (frameCount - _lastFrameCount).toString() +
-        ' [' + (paintedFrameCount - _lastPaintedFrameCount).toString() + ']';
+        "${frameCount - _lastFrameCount} "
+        "[${paintedFrameCount - _lastPaintedFrameCount}]";
       _lastFrameCount = frameCount;
       _lastPaintedFrameCount = paintedFrameCount;
     }
@@ -249,7 +244,7 @@ class Controller {
         return false;
         }, true);
 
-    window.webkitRequestAnimationFrame(animate, canvas);
+    window.setTimeout(animate, 1000);
   }
 
   void stop() {
@@ -280,28 +275,28 @@ class Controller {
     progress = percentComplete;
   }
 
-  static String getQueryValue(String key) { 
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i = 0; i < vars.length; i++) {
+  static String getQueryValue(String key) {
+    if (window.location.search.length === 0)
+      return null;
+    List vars = window.location.search.substring(1).split("&");
+    for (var i = 0; i < vars.length; ++i) {
       var pair = vars[i].split("=");
-      if (pair[0] == key) {
+      if (pair[0] == key)
         return pair[1];
-      }
     }
     return null;
   }
 
   void readParams() {
     print("READING PARAMS");
-    
+
     String tmp = "";
     if (tmp == null || tmp == ("")) {
       scale = false;
     } else {
       scale = tmp == ("on");
     }
-    
+
     tmp = getQueryValue('fps');
     if (tmp == null || tmp == ("")) {
       fps = false;
@@ -314,27 +309,28 @@ class Controller {
     } else {
       timeemulation = tmp == ("on");
     }
-/*
-    if (tmp == null || tmp == ("")) {
-      showsoundbuffer = false;
-    } else {
-      showsoundbuffer = tmp == ("on");
-    }
-*/
+    /*
+       if (tmp == null || tmp == ("")) {
+       showsoundbuffer = false;
+       } else {
+       showsoundbuffer = tmp == ("on");
+       }
+     */
     tmp = getQueryValue('sound');
     if (tmp == null || tmp == ('')) {
-      sound = true;
+      // TODO: reenable sound when WebAudio works
+      sound = false;
     } else {
       sound = (tmp == ('on'));
     }
-  
+
     tmp = getQueryValue('netplay');
     if (tmp == null || tmp == ('')) {
       _netplay = false;
     } else {
       _netplay = (tmp == ('on'));
     }
-    print('NETPLAY: '+_netplay);
+    print('NETPLAY: $_netplay');
 
     tmp = getQueryValue('matchid');
     if (tmp == null || tmp == ('')) {
@@ -353,8 +349,7 @@ class Controller {
     romSize = -1;
   }
 
-  void animate(int time) {
-    //print("nesdart.animate(" + time + ") begins.");
+  void animate() {
 
     if (nes.getCpu().stopRunning) {
       print('NOT RUNNING');
@@ -362,15 +357,18 @@ class Controller {
       return;
     }
 
-    int frameTime = time - lastTime;
+    num time = 1000 * Clock.now() / Clock.frequency();
+    num frameTime = time - lastTime;
+    //print("dartendo.animate($time) begins -> $frameTime");
     // Skip one frame to set lastTime and skip if too much time has passed since
     // the last frame.
-    //print("DATA AVAILABLE: " + isAudioDataAvailable());
-    if(frameTime < 1000 && (isAudioDataAvailable() == 0 || nes.papu.bufferIndex < (nes.papu.sampleBufferL.length~/2))) {
+    bool audioReady = !sound || (nes.papu.audio.dataAvailable ||
+        nes.papu.bufferIndex < (nes.papu.sampleBufferL.length ~/ 2));
+    print("DATA AVAILABLE: ${nes.papu.audio.dataAvailable}");
+    if(frameTime < 4000 && audioReady) {
       final BufferView screen = nes.getGui().getScreenView();
       final CPU cpu = nes.getCpu();
       final PPU ppu = nes.getPpu();
-      final PAPU papu = nes.getPapu();
       while(sleepTime <= 0) {
         //print('SLEEP TIME'+sleepTime);
         int cycles = 0;
@@ -378,18 +376,18 @@ class Controller {
           if (cpu.cyclesToHalt === 0) {
             cycles = cpu.emulate();
             if (cpu.emulateSound)
-              papu.clockFrameCounter(cycles);
+              nes.papu.clockFrameCounter(cycles);
             cycles *= 3;
           } else {
             if (cpu.cyclesToHalt > 8) {
               cycles = 24;
               if (cpu.emulateSound)
-                papu.clockFrameCounter(8);
+                nes.papu.clockFrameCounter(8);
               cpu.cyclesToHalt -= 8;
             } else {
               cycles = cpu.cyclesToHalt * 3;
               if (cpu.emulateSound)
-                papu.clockFrameCounter(cpu.cyclesToHalt);
+                nes.papu.clockFrameCounter(cpu.cyclesToHalt);
               cpu.cyclesToHalt = 0;
             }
           }
@@ -414,44 +412,44 @@ class Controller {
           }
         }
         if(sound == false) {
-            sleepTime += 16;
+          sleepTime += 16;
         } else {
-            int audioToSleep = ((nes.papu.samplesAhead * 1000) ~/ nes.papu.sampleRate);
-            sleepTime += audioToSleep;
-	    nes.papu.samplesAhead = 0;
+          int audioToSleep = ((nes.papu.samplesAhead * 1000) ~/ nes.papu.sampleRate);
+          sleepTime += audioToSleep;
+          nes.papu.samplesAhead = 0;
         }
       }
       sleepTime -= frameTime;
       //print("FRAME TIME: "+(time-lastTime));
     } else {
-      //print('SKIPPING FRAME');
+      print('SKIPPING FRAME frameTime: $frameTime');
     }
     lastTime = time;
-    window.webkitRequestAnimationFrame(animate, canvas);
+    window.setTimeout(animate, 1000);
   }
 
   void _sendStatus() {
     //_socket.send(JSON.stringify(_sendNetStatus));
-    sendSocketInterface(JSON.stringify(_sendNetStatus));
+    //    sendSocketInterface(JSON.stringify(_sendNetStatus));
     _sendNetStatus.clear();
     _sendNetStatus[-1] = new Map<String, int>();
     _sendNetStatus[-1]['matchid'] = matchid;
     _sendNetStatus[-1]['playerid'] = playerid;
 
-//    String resp = '';
+    //    String resp = '';
 
     //while (!_recvNetStatus.containsKey(frameCount + 1)) {
-//      String jsonStatus = JSON.stringify(_sendNetStatus);
-//      String url = _sendUrl + '?status=' + jsonStatus;
-//      req.open('GET', url, false);
-//      req.send();
-//      _sendNetStatus.clear();
-//      _sendNetStatus[-1] = new Map<String, int>();
-//      _sendNetStatus[-1]['matchid'] = matchid;
-//      _sendNetStatus[-1]['playerid'] = playerid;
-//      resp = req.responseText;
-//      Map<String, Map<String, int>> resp_map = JSON.parse(resp);
-//      resp_map.forEach((k, v) => _recvNetStatus[Math.parseInt(k)] = v);
+    //      String jsonStatus = JSON.stringify(_sendNetStatus);
+    //      String url = _sendUrl + '?status=' + jsonStatus;
+    //      req.open('GET', url, false);
+    //      req.send();
+    //      _sendNetStatus.clear();
+    //      _sendNetStatus[-1] = new Map<String, int>();
+    //      _sendNetStatus[-1]['matchid'] = matchid;
+    //      _sendNetStatus[-1]['playerid'] = playerid;
+    //      resp = req.responseText;
+    //      Map<String, Map<String, int>> resp_map = JSON.parse(resp);
+    //      resp_map.forEach((k, v) => _recvNetStatus[Math.parseInt(k)] = v);
     //}
   }
 

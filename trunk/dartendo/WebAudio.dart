@@ -9,20 +9,28 @@ class WebAudio {
 
   WebAudio(this._bufferSize)
       : _context = new AudioContext() {
-    _node = _context.createJavaScriptNode(bufferSize_); // TODO: Channels 2, 2
-    _node.on.audioprocess = _process;
+    _node = _context.createJavaScriptNode(_bufferSize, 2, 2);
+    _node.on.audioProcess.add(_process);
 
-    play();
+    _play();
   }
 
   void write(List<double> bufferL, List<double> bufferR) {
     _bufferL = bufferL;
     _bufferR = bufferR;
     _dataAvailable = true;
+    print("audio data ready");
   }
 
-  void play() => _node.connect(_context.destination);
-  void stop() => _node.disconnect();
+  void _play() {
+    _node.connect(_context.destination, 0, 0);
+   // _node.connect(_context.destination, 1, 1);
+  }
+
+  void _stop() {
+    _node.disconnect(0);
+   // _node.disconnect(1);
+  }
 
   bool get dataAvailable() => _dataAvailable;
 
@@ -36,6 +44,7 @@ class WebAudio {
       bufferL[i] = _bufferL[i];
       bufferR[i] = _bufferR[i];
     }
+    print("audio data processed");
     _dataAvailable = false;
   }
 }

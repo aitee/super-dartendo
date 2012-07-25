@@ -38,18 +38,15 @@ class MapperDefault implements MemoryMapper
   int mouseX = 0;
   int mouseY = 0;
 
-  void init(NES nes) 
-  {
-    this.nes = nes;
-    this.cpuMem = nes.getCpuMemory();
-    this.cpuMemArray = cpuMem.mem;
-    this.ppuMem = nes.getPpuMemory();
-    this.rom = nes.getRom();
-    this.cpu = nes.getCpu();
-    this.ppu = nes.getPpu();
-
+  MapperDefault(this.nes) 
+      : joypadLastWrite = -1 {
+    cpuMem = nes.getCpuMemory();
+    cpuMemArray = cpuMem.mem;
     cpuMemSize = cpuMem.getMemSize();
-    joypadLastWrite = -1;
+    ppuMem = nes.getPpuMemory();
+    rom = nes.getRom();
+    cpu = nes.getCpu();
+    ppu = nes.getPpu();
   }
 
   void stateLoad(MemByteBuffer buf) {
@@ -457,7 +454,7 @@ class MapperDefault implements MemoryMapper
     }
   }
 
-  void loadROM(ROM rom) {
+  void loadROM(ROM ignored_rom) {
     if (!rom.isValid() || rom.getRomBankCount() < 1) {
       print("NoMapper: Invalid ROM! Unable to load.");
       return;
