@@ -100,9 +100,9 @@ class RomManager {
   
   void _updateRomsContentDragStyle() {
     if (_dragState > 0) {
-      _romsContent.classes = ["roms-drag-in"];
+      _romsContent.classes = ["roms-drag-in"].toSet();
     } else {
-      _romsContent.classes = ["roms-drag-out"];
+      _romsContent.classes = ["roms-drag-out"].toSet();
     }
   }
     

@@ -4,6 +4,7 @@ class BufferView {
 
   CanvasElement canvas;
   CanvasRenderingContext2D context;
+  ImageData _imageData;
 
   // Scale modes:
   static final int SCALE_NONE = 0;
@@ -27,6 +28,7 @@ class BufferView {
   BufferView(NES nes, int width, int height) {
     canvas = document.query("#webGlCanvas");
     context = canvas.getContext('2d');
+    _imageData = context.getImageData(0, 0, 256, 240);
 
     this.nes = nes;
     this.width = width;
@@ -80,8 +82,7 @@ class BufferView {
     //  return;
 
     //Util.printDebug('BufferView.paint: Getting imagedata', debugMe);
-    ImageData imageData = context.getImageData(0,0,256,240);
-    Uint8ClampedList data = imageData.data;
+    Uint8ClampedList data = _imageData.data;
     //Util.printDebug('BufferView.paint: data.length = ' + data.length, debugMe);
 
     List<int> ppu_buffer = nes.ppu.buffer;       
@@ -101,7 +102,7 @@ class BufferView {
       data[i++] = 255; // a
     }
     //Util.printDebug('BufferView.paint(): Blitting imagedata', debugMe);
-    context.putImageData(imageData, 0, 0, 0,   0, 256, 240);
+    context.putImageData(_imageData, 0, 0, 0, 0, 256, 240);
     return true;
   }
 

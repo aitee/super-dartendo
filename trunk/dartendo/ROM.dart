@@ -364,99 +364,37 @@ class ROM {
       //Util.printDebug('ROM.createMapper(): mapperType = ' + mapperType, debugMe);
 
       switch (mapperType) {
-        case 0: {
-                  return new MapperDefault(nes_);
-                }
-        case 1: {
-                  return new Mapper001(nes_);
-                }
-        case 2: {
-                  return new Mapper002(nes_);
-                }
-        case 3: {
-                  return new Mapper003(nes_);
-                }
-        case 4: {
-                  return new Mapper004(nes_);
-                }
-        case 7: {
-                  return new Mapper007(nes_);
-                }
-        case 9: {
-                  return new Mapper009(nes_);
-                }
-        case 10: {
-                   return new Mapper010(nes_);
-                 }
-        case 11: {
-                   return new Mapper011(nes_);
-                 }
-        case 15: {
-                   return new Mapper015(nes_);
-                 }
-        case 18: {
-                   return new Mapper018(nes_);
-                 }
-        case 21: {
-                   return new Mapper021(nes_);
-                 }
-        case 22: {
-                   return new Mapper022(nes_);
-                 }
-        case 23: {
-                   return new Mapper023(nes_);
-                 }
-        case 32: {
-                   return new Mapper032(nes_);
-                 }
-        case 33: {
-                   return new Mapper033(nes_);
-                 }
-        case 34: {
-                   return new Mapper034(nes_);
-                 }
-        case 48: {
-                   return new Mapper048(nes_);
-                 }
-        case 64: {
-                   return new Mapper064(nes_);
-                 }
-        case 66: {
-                   return new Mapper066(nes_);
-                 }
-        case 68: {
-                   return new Mapper068(nes_);
-                 }
-        case 71: {
-                   return new Mapper071(nes_);
-                 }
-        case 72: {
-                   return new Mapper072(nes_);
-                 }
-        case 75: {
-                   return new Mapper075(nes_);
-                 }
-        case 78: {
-                   return new Mapper078(nes_);
-                 }
-        case 79: {
-                   return new Mapper079(nes_);
-                 }
-        case 87: {
-                   return new Mapper087(nes_);
-                 }
-        case 94: {
-                   return new Mapper094(nes_);
-                 }
-        case 105: {
-                    return new Mapper105(nes_);
-                  }
-        case 140: {
-                    return new Mapper140(nes_);
-                  }
-        case 182: {
-                    return new Mapper182(nes_);
-                  }
+        case 0: return new MapperDefault(nes_);
+        case 1: return new Mapper001(nes_);
+        case 2: return new Mapper002(nes_);
+        case 3: return new Mapper003(nes_);
+        case 4: return new Mapper004(nes_);
+        case 7: return new Mapper007(nes_);
+        case 9: return new Mapper009(nes_);
+        case 10: return new Mapper010(nes_);
+        case 11: return new Mapper011(nes_);
+        case 15: return new Mapper015(nes_);
+        case 18: return new Mapper018(nes_);
+        case 21: return new Mapper021(nes_);
+        case 22: return new Mapper022(nes_);
+        case 23: return new Mapper023(nes_);
+        case 32: return new Mapper032(nes_);
+        case 33: return new Mapper033(nes_);
+        case 34: return new Mapper034(nes_);
+        case 48: return new Mapper048(nes_);
+        case 64: return new Mapper064(nes_);
+        case 66: return new Mapper066(nes_);
+        case 68: return new Mapper068(nes_);
+        case 71: return new Mapper071(nes_);
+        case 72: return new Mapper072(nes_);
+        case 75: return new Mapper075(nes_);
+        case 78: return new Mapper078(nes_);
+        case 79: return new Mapper079(nes_);
+        case 87: return new Mapper087(nes_);
+        case 94: return new Mapper094(nes_);
+        case 105: return new Mapper105(nes_);
+        case 140: return new Mapper140(nes_);
+        case 182: return new Mapper182(nes_);
 
       }
     }
@@ -474,11 +412,7 @@ class ROM {
     }
   }
 
-  List<int> getBatteryRam() {
-
-    return saveRam;
-
-  }
+  List<int> getBatteryRam() => saveRam; 
 
   void loadBatteryRam() {
     return; //just return for now since we don't need this function

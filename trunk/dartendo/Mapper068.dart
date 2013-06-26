@@ -16,68 +16,49 @@ class Mapper068 extends MapperDefault {
 
     switch ((address >> 12) - 0x8) {
 
-      case 0: {
+      case 0:
                 // Select 2K VROM bank at 0x0000
                 load2kVromBank(value, 0x0000);
                 break;
 
-              }
-
-      case 1: {
-
+      case 1:
                 // Select 2K VROM bank at 0x0800
                 load2kVromBank(value, 0x0800);
                 break;
 
-              }
-
-      case 2: {
-
+      case 2:
                 // Select 2K VROM bank at 0x1000
                 load2kVromBank(value, 0x1000);
                 break;
 
-              }
-
-      case 3: {
-
+      case 3:
                 // Select 2K VROM bank at 0x1800
                 load2kVromBank(value, 0x1800);
                 break;
 
-              }
-
-      case 4: {
-
+      case 4:
                 // Mirroring.
                 r3 = value;
                 setMirroring();
                 break;
 
-              }
-
-      case 5: {
-
+      case 5:
                 // Mirroring.
                 r4 = value;
                 setMirroring();
                 break;
 
-              }
-
-      case 6: {
+      case 6:
                 // Mirroring.
                 r1 = (value >> 4) & 0x1;
                 r2 = value & 0x3;
                 setMirroring();
                 break;
-              }
 
-      case 7: {
+      case 7:
                 // Select 16K ROM bank at 0x8000
                 loadRomBank(value, 0x8000);
                 break;
-              }
     }
   }
 
@@ -87,40 +68,32 @@ class Mapper068 extends MapperDefault {
 
       // Normal mirroring modes:
       switch (r2) {
-        case 0: {
+        case 0:
                   ppu.setMirroring(ROM.HORIZONTAL_MIRRORING);
                   break;
-                }
-        case 1: {
+        case 1:
                   ppu.setMirroring(ROM.VERTICAL_MIRRORING);
                   break;
-                }
-        case 2: {
+        case 2:
                   ppu.setMirroring(ROM.SINGLESCREEN_MIRRORING);
                   break;
-                }
-        case 3: {
+        case 3:
                   ppu.setMirroring(ROM.SINGLESCREEN_MIRRORING2);
                   break;
-                }
       }
 
     } else {
 
       // Special mirroring (not yet..):
       switch (r2) {
-        case 0: {
+        case 0:
                   break;
-                }
-        case 1: {
+        case 1:
                   break;
-                }
-        case 2: {
+        case 2:
                   break;
-                }
-        case 3: {
+        case 3:
                   break;
-                }
       }
 
     }

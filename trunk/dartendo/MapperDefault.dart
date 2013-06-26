@@ -137,18 +137,13 @@ class MapperDefault implements MemoryMapper
   int regLoad(int address) {
     switch (address >> 12) { // use fourth nibble (0xF000)
 
-      case 0: {
-                break;
-              }
-      case 1: {
-                break;
-              }
+      case 0: break;
+      case 1: break;
       case 2:
-      case 3: {
+      case 3: 
                 // PPU Registers
                 switch (address & 0x7) {
-                  case 0x0: {
-
+                  case 0x0:
                               // 0x2000:
                               // PPU Control Register 1.
                               // (the value is stored both
@@ -156,10 +151,7 @@ class MapperDefault implements MemoryMapper
                               // PPU as flags):
                               // (not in the real NES)
                               return cpuMem.mem[0x2000];
-
-                            }
-                  case 0x1: {
-
+                  case 0x1:
                               // 0x2001:
                               // PPU Control Register 2.
                               // (the value is stored both
@@ -167,10 +159,7 @@ class MapperDefault implements MemoryMapper
                               // PPU as flags):
                               // (not in the real NES)
                               return cpuMem.mem[0x2001];
-
-                            }
-                  case 0x2: {
-
+                  case 0x2:
                               // 0x2002:
                               // PPU Status Register.
                               // The value is stored in
@@ -178,47 +167,32 @@ class MapperDefault implements MemoryMapper
                               // to as flags in the PPU.
                               // (not in the real NES)
                               return ppu.readStatusRegister();
-
-                            }
-                  case 0x3: {
-                              return 0;
-                            }
-                  case 0x4: {
-
+                  case 0x3: return 0;
+                  case 0x4:
                               // 0x2004:
                               // Sprite Memory read.
                               return ppu.sramLoad();
-
-                            }
-                  case 0x5: {
-                              return 0;
-                            }
-                  case 0x6: {
-                              return 0;
-                            }
-                  case 0x7: {
+                  case 0x5: return 0;
+                  case 0x6: return 0;
+                  case 0x7:
                               // 0x2007:
                               // VRAM read:
                               return ppu.vramLoad();
-                            }
                 }
                 break;
-              }
 
-      case 4: {
+      case 4:
                 // Sound+Joypad registers
                 switch (address - 0x4015) {
-                  case 0: {
+                  case 0:
                             // 0x4015:
                             // Sound channel enable, DMC Status
                             return nes.getPapu().readReg(address);
-                          }
-                  case 1: {
+                  case 1:
                             // 0x4016:
                             // Joystick 1 + Strobe
                             return joy1Read();
-                          }
-                  case 2: {
+                  case 2:
                             // 0x4017:
                             // Joystick 2 + Strobe
                             if (mousePressed && nes.ppu != null && nes.ppu.buffer != null) {
@@ -242,79 +216,55 @@ class MapperDefault implements MemoryMapper
 
                               w |= (mousePressed ? (0x1 << 4) : 0);
                               return  (joy2Read() | w);
-                            } else {
-                              return joy2Read();
                             }
-                          }
+                            return joy2Read();
                 }
                 break;
-              }
     }
     return 0;
   }
 
   void regWrite(int address, int value) {
     switch (address) {
-      case 0x2000: {
+      case 0x2000:
                      // PPU Control register 1
                      cpuMem.write(address, value);
                      ppu.updateControlReg1(value);
                      break;
-
-                   }
-      case 0x2001: {
+      case 0x2001:
                      // PPU Control register 2
                      cpuMem.write(address, value);
                      ppu.updateControlReg2(value);
                      break;
-                   }
-      case 0x2003: {
+      case 0x2003:
                      // Set Sprite RAM address:
                      ppu.writeSRAMAddress(value);
                      break;
-
-                   }
-      case 0x2004: {
+      case 0x2004:
                      // Write to Sprite RAM:
                      ppu.sramWrite(value);
                      break;
-                   }
-      case 0x2005: {
-
+      case 0x2005:
                      // Screen Scroll offsets:
                      ppu.scrollWrite(value);
                      break;
-
-                   }
-      case 0x2006: {
-
+      case 0x2006:
                      // Set VRAM address:
                      ppu.writeVRAMAddress(value);
                      break;
-
-                   }
-      case 0x2007: {
-
+      case 0x2007:
                      // Write to VRAM:
                      ppu.vramWrite(value);
                      break;
-
-                   }
-      case 0x4014: {
-
+      case 0x4014:
                      // Sprite Memory DMA Access
                      ppu.sramDMA(value);
                      break;
-
-                   }
-      case 0x4015: {
-
+      case 0x4015:
                      // Sound Channel Switch, DMC Status
                      nes.getPapu().writeReg(address, value);
                      break;
-
-                   }
-      case 0x4016: {
+      case 0x4016:
                      // Joystick 1 + Strobe
                      if (value == 0 && joypadLastWrite == 1) {
                        joy1StrobeState = 0;
@@ -322,21 +272,17 @@ class MapperDefault implements MemoryMapper
                      }
                      joypadLastWrite = value;
                      break;
-
-                   }
-      case 0x4017: {
+      case 0x4017:
                      // Sound channel frame sequencer:
                      nes.papu.writeReg(address, value);
                      break;
-                   }
-      default: {
+      default:
                  // Sound registers
                  ////System.out.println("write to sound reg");
                  if (address >= 0x4000 && address <= 0x4017) {
                    nes.getPapu().writeReg(address, value);
                  }
                  break;
-               }
     }
 
   }
@@ -359,7 +305,6 @@ class MapperDefault implements MemoryMapper
         break;
       case 3:
         ret = input.getKeyState(KbInputHandler.KEY_START);
-
         break;
       case 4:
         ret = input.getKeyState(KbInputHandler.KEY_UP);
@@ -391,6 +336,7 @@ class MapperDefault implements MemoryMapper
         break;
       default:
         ret = 0;
+        break;
     }
 
     joy1StrobeState++;

@@ -9,64 +9,54 @@ class ScaleStatics {
 
   void setFilterParams(int darkenDepth, int brightenDepth) {
     switch (darkenDepth) {
-      case 0: {
+      case 0:
                 darkenShift = 0;
                 darkenShiftMask = 0x00000000;
                 break;
-              }
-      case 1: {
+      case 1:
                 darkenShift = 4;
                 darkenShiftMask = 0x000F0F0F;
                 break;
-              }
-      case 2: {
+      case 2:
                 darkenShift = 3;
                 darkenShiftMask = 0x001F1F1F;
                 break;
-              }
-      case 3: {
+      case 3:
                 darkenShift = 2;
                 darkenShiftMask = 0x003F3F3F;
                 break;
-              }
-      default: {
+      default:
                  darkenShift = 1;
                  darkenShiftMask = 0x007F7F7F;
                  break;
-               }
     }
 
     switch (brightenDepth) {
-      case 0: {
+      case 0:
                 brightenShift = 0;
                 brightenShiftMask = 0x00000000;
                 brightenCutoffMask = 0x00000000;
                 break;
-              }
-      case 1: {
+      case 1:
                 brightenShift = 4;
                 brightenShiftMask = 0x000F0F0F;
                 brightenCutoffMask = 0x003F3F3F;
                 break;
-              }
-      case 2: {
+      case 2:
                 brightenShift = 3;
                 brightenShiftMask = 0x001F1F1F;
                 brightenCutoffMask = 0x003F3F3F;
                 break;
-              }
-      case 3: {
+      case 3:
                 brightenShift = 2;
                 brightenShiftMask = 0x003F3F3F;
                 brightenCutoffMask = 0x007F7F7F;
                 break;
-              }
-      default: {
+      default:
                  brightenShift = 1;
                  brightenShiftMask = 0x007F7F7F;
                  brightenCutoffMask = 0x007F7F7F;
                  break;
-               }
     }
   }
 

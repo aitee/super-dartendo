@@ -21,69 +21,48 @@ class Mapper010 extends MapperDefault {
       // MMC4 write.
       value &= 0xFF;
       switch (address >> 12) {
-        case 0xA: {
+        case 0xA:
                     // Select 8k ROM bank at 0x8000
                     loadRomBank(value, 0x8000);
                     break;
-
-                  }
-        case 0xB: {
-
+        case 0xB:
                     // Select 4k VROM bank at 0x0000, $FD mode
                     latchLoVal1 = value;
                     if (latchLo == 0xFD) {
                       loadVromBank(value, 0x0000);
                     }
                     break;
-
-                  }
-        case 0xC: {
-
+        case 0xC:
                     // Select 4k VROM bank at 0x0000, $FE mode
                     latchLoVal2 = value;
                     if (latchLo == 0xFE) {
                       loadVromBank(value, 0x0000);
                     }
                     break;
-
-                  }
-        case 0xD: {
-
+        case 0xD:
                     // Select 4k VROM bank at 0x1000, $FD mode
                     latchHiVal1 = value;
                     if (latchHi == 0xFD) {
                       loadVromBank(value, 0x1000);
                     }
                     break;
-
-                  }
-        case 0xE: {
-
+        case 0xE:
                     // Select 4k VROM bank at 0x1000, $FE mode
                     latchHiVal2 = value;
                     if (latchHi == 0xFE) {
                       loadVromBank(value, 0x1000);
                     }
                     break;
-
-                  }
-        case 0xF: {
-
+        case 0xF:
                     // Select mirroring
                     if ((value & 0x1) == 0) {
-
                       // Vertical mirroring
                       nes.getPpu().setMirroring(ROM.VERTICAL_MIRRORING);
-
                     } else {
-
                       // Horizontal mirroring
                       nes.getPpu().setMirroring(ROM.HORIZONTAL_MIRRORING);
-
                     }
                     break;
-
-                  }
       }
 
     }

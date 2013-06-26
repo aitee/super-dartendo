@@ -79,7 +79,7 @@ class KbInputHandler {
 
     if (id == 0) {
       switch (ke.$dom_keyIdentifier) {
-        case 'F5': {
+        case 'F5':
                      //Util.printDebug('KbInputHandler.keyReleased: Resetting game IF running.', debugMe);
                      // Reset game:
                      if (nes.isRunning()) {
@@ -90,15 +90,13 @@ class KbInputHandler {
                        nes.startEmulation();
                      }
                      break;
-                   }
 
-        case 'F10': {
+        case 'F10':
                       //Util.printDebug('KbInputHandler.keyReleased: Closing ROM', debugMe); 
                       // Just using this to display the battery RAM contents to user.
                       if (nes.rom != null)
                         nes.rom.closeRom();
                       break;
-                    }
 
         case 'F12':
                     // TODO
