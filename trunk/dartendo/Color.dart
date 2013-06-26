@@ -1,3 +1,5 @@
+part of dartendo;
+
 class Color {
   int r,g,b;
   

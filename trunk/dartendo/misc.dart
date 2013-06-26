@@ -1,3 +1,5 @@
+part of dartendo;
+
 class MiscClass {
   bool debug = false;
   // TODO: wtf?
@@ -8,8 +10,9 @@ class MiscClass {
   MiscClass() {
     debug = Globals.debug;
     rnd = Util.newDoubleList(10000, 0.0);
+    var rng = new Math.Random();
     for (int i = 0; i < rnd.length; i++) {
-      rnd[i] = Math.random();
+      rnd[i] = rng.nextDouble();
     }
   }
 /*

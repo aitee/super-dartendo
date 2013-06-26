@@ -1,3 +1,5 @@
+part of dartendo;
+
 class PPU {
   NES nes;
   Memory ppuMem;
@@ -1175,10 +1177,6 @@ class PPU {
         ptTile[tileIndex].setScanline(leftOver - 8, ppuMem.load(address - 8), value);
       }      
     } else {
-      Expect.isTrue(value is List<int>);
-      Expect.isTrue(offset !== null);
-      Expect.isTrue(length !== null);
-
       List<int> valueList = value;
 
       for (int i = 0; i < length; i++) {

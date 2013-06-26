@@ -1,67 +1,74 @@
-#import('dart:core');
-#import('dart:html');
-#import('dart:json');
+library dartendo;
 
-#source('AppletUI.dart');
-#source('BufferView.dart');
-#source('ByteBuffer.dart'); 
-#source('ChannelDM.dart');
-#source('ChannelNoise.dart');
-#source('ChannelSquare.dart');
-#source('ChannelTriangle.dart');
-#source('Color.dart');
-#source('CPU.dart');
-#source('CpuInfo.dart');
-#source('FileLoader.dart');
-#source('Globals.dart');
-#source('KbInputHandler.dart');
-#source('MemoryMapper.dart');
-#source('Mapper001.dart');
-#source('Mapper002.dart');
-#source('Mapper003.dart');
-#source('Mapper004.dart');
-#source('Mapper007.dart');
-#source('Mapper009.dart');
-#source('Mapper010.dart');
-#source('Mapper011.dart');
-#source('Mapper015.dart');
-#source('Mapper018.dart');
-#source('Mapper021.dart');
-#source('Mapper022.dart');
-#source('Mapper023.dart');
-#source('Mapper032.dart');
-#source('Mapper033.dart');
-#source('Mapper034.dart');
-#source('Mapper048.dart');
-#source('Mapper064.dart'); 
-#source('Mapper066.dart');
-#source('Mapper068.dart');
-#source('Mapper071.dart');
-#source('Mapper072.dart');
-#source('Mapper075.dart');
-#source('Mapper078.dart');
-#source('Mapper079.dart');
-#source('Mapper087.dart');
-#source('Mapper094.dart'); 
-#source('Mapper105.dart');
-#source('Mapper140.dart');
-#source('Mapper182.dart');
-#source('MapperDefault.dart');
-#source('misc.dart');
-#source('memory.dart');
-#source('NameTable.dart');
-#source('NES.dart');
-#source('PaletteTable.dart');
-#source('PAPU.dart');
-#source('PapuChannel.dart');
-#source('PPU.dart');
-#source('ROM.dart');
-#source('RomManager.dart');
-#source('Tile.dart');
-#source('Scale.dart');
-#source('UI.dart');
-#source('Util.dart');
-#source('WebAudio.dart');
+import 'dart:core';
+import 'dart:html';
+import 'dart:json';
+import 'dart:math' as Math;
+import 'dart:json' as JSON;
+import 'dart:typed_data';
+import 'dart:async';
+import 'dart:web_audio';
+
+part 'AppletUI.dart';
+part 'BufferView.dart';
+part 'ByteBuffer.dart'; 
+part 'ChannelDM.dart';
+part 'ChannelNoise.dart';
+part 'ChannelSquare.dart';
+part 'ChannelTriangle.dart';
+part 'Color.dart';
+part 'CPU.dart';
+part 'CpuInfo.dart';
+part 'FileLoader.dart';
+part 'Globals.dart';
+part 'KbInputHandler.dart';
+part 'MemoryMapper.dart';
+part 'Mapper001.dart';
+part 'Mapper002.dart';
+part 'Mapper003.dart';
+part 'Mapper004.dart';
+part 'Mapper007.dart';
+part 'Mapper009.dart';
+part 'Mapper010.dart';
+part 'Mapper011.dart';
+part 'Mapper015.dart';
+part 'Mapper018.dart';
+part 'Mapper021.dart';
+part 'Mapper022.dart';
+part 'Mapper023.dart';
+part 'Mapper032.dart';
+part 'Mapper033.dart';
+part 'Mapper034.dart';
+part 'Mapper048.dart';
+part 'Mapper064.dart'; 
+part 'Mapper066.dart';
+part 'Mapper068.dart';
+part 'Mapper071.dart';
+part 'Mapper072.dart';
+part 'Mapper075.dart';
+part 'Mapper078.dart';
+part 'Mapper079.dart';
+part 'Mapper087.dart';
+part 'Mapper094.dart'; 
+part 'Mapper105.dart';
+part 'Mapper140.dart';
+part 'Mapper182.dart';
+part 'MapperDefault.dart';
+part 'misc.dart';
+part 'memory.dart';
+part 'NameTable.dart';
+part 'NES.dart';
+part 'PaletteTable.dart';
+part 'PAPU.dart';
+part 'PapuChannel.dart';
+part 'PPU.dart';
+part 'ROM.dart';
+part 'RomManager.dart';
+part 'Tile.dart';
+part 'Scale.dart';
+part 'UI.dart';
+part 'Util.dart';
+part 'WebAudio.dart';
 
 // TODO: Replace with WebSocket object.
 //var socketInterface = null;
@@ -97,7 +104,8 @@ class Controller {
   Color bgColor;
   bool started;
 
-  num lastTime = 0;
+  Stopwatch stopWatch = null;
+  int lastTime = 0;
   int sleepTime = 0;
   int frameCount = 0;
   int paintedFrameCount = 0;
@@ -126,7 +134,7 @@ class Controller {
     progress = 0;
     bgColor = new Color(0,0,0);
     started = false;
-    lastTime = 0;
+    stopWatch = new Stopwatch()..start();
     sleepTime = 0;
 
     _netplay = false;
@@ -160,7 +168,7 @@ class Controller {
     // TODO: Why is this enabled before now and then disabled here?
     nes.enableSound(sound);
     nes.reset();
-    window.setInterval(_updateFps, 1000);
+    new Future.delayed(const Duration(milliseconds: 1000), _updateFps);
 
     romManager.init();
 
@@ -175,12 +183,13 @@ class Controller {
 
   void _updateFps() {
     if (fps) {
-      document.query('#fps_counter').innerHTML =
+      document.query('#fps_counter').innerHtml =
         "${frameCount - _lastFrameCount} "
         "[${paintedFrameCount - _lastPaintedFrameCount}]";
       _lastFrameCount = frameCount;
       _lastPaintedFrameCount = paintedFrameCount;
     }
+    new Future.delayed(const Duration(milliseconds: 1000), _updateFps);
   }
 
   void addScreenView() {
@@ -200,8 +209,7 @@ class Controller {
     started = true;
 
     // Load ROM file:
-    print("vNES 2.14 \u00A9 2006-2011 Jamie Sanders");
-    print("For updates, see www.thatsanderskid.com");
+    print("Dartendo based on vNES 2.14 \u00A9 2006-2011 Jamie Sanders");
     print("Use of this program subject to GNU GPL, Version 3.");
 
     nes.loadRom(romManager.romBytes);
@@ -231,20 +239,18 @@ class Controller {
 
     intList[3] = 2;
 
-    document.on.keyDown.add((Event e) {
-        Expect.isTrue(e is KeyboardEvent);
+    document.onKeyDown.listen((Event e) {
         KeyboardEvent ke = e;
         gui.kbJoy1.keyPressed(ke);
         return false;
-        }, true);
-    document.on.keyUp.add((Event e) {
-        Expect.isTrue(e is KeyboardEvent);
+        });
+    document.onKeyUp.listen((Event e) {
         KeyboardEvent ke = e;
         gui.kbJoy1.keyReleased(ke);
         return false;
-        }, true);
+        });
 
-    window.setTimeout(animate, 1000);
+    window.requestAnimationFrame(animate);
   }
 
   void stop() {
@@ -276,7 +282,7 @@ class Controller {
   }
 
   static String getQueryValue(String key) {
-    if (window.location.search.length === 0)
+    if (window.location.search.length == 0)
       return null;
     List vars = window.location.search.substring(1).split("&");
     for (var i = 0; i < vars.length; ++i) {
@@ -299,7 +305,7 @@ class Controller {
 
     tmp = getQueryValue('fps');
     if (tmp == null || tmp == ("")) {
-      fps = false;
+      fps = true;
     } else {
       fps = tmp == ("on");
     }
@@ -318,8 +324,7 @@ class Controller {
      */
     tmp = getQueryValue('sound');
     if (tmp == null || tmp == ('')) {
-      // TODO: reenable sound when WebAudio works
-      sound = false;
+      sound = AudioContext.supported;
     } else {
       sound = (tmp == ('on'));
     }
@@ -336,20 +341,20 @@ class Controller {
     if (tmp == null || tmp == ('')) {
       matchid = 0;
     } else {
-      matchid = Math.parseInt(tmp);
+      matchid = int.parse(tmp);
     }
 
     tmp = getQueryValue('playerid');
     if (tmp == null || tmp == ('')) {
       playerid = 0;
     } else {
-      playerid = Math.parseInt(tmp);
+      playerid = int.parse(tmp);
     }
 
     romSize = -1;
   }
 
-  void animate() {
+  void animate(num _) {
 
     if (nes.getCpu().stopRunning) {
       print('NOT RUNNING');
@@ -357,37 +362,40 @@ class Controller {
       return;
     }
 
-    num time = 1000 * Clock.now() / Clock.frequency();
-    num frameTime = time - lastTime;
+    int time = (1000 * stopWatch.elapsedTicks) ~/ stopWatch.frequency;
+    int frameTime = time - lastTime;
     //print("dartendo.animate($time) begins -> $frameTime");
     // Skip one frame to set lastTime and skip if too much time has passed since
     // the last frame.
-    bool audioReady = !sound || (nes.papu.audio.dataAvailable ||
+    bool audioReady = !sound || (!nes.papu.audio.dataAvailable ||
         nes.papu.bufferIndex < (nes.papu.sampleBufferL.length ~/ 2));
-    print("DATA AVAILABLE: ${nes.papu.audio.dataAvailable}");
-    if(frameTime < 4000 && audioReady) {
+    //print("DATA AVAILABLE: ${nes.papu.audio.dataAvailable} AUDIO INFO ${nes.papu.bufferIndex} < ${(nes.papu.sampleBufferL.length ~/ 2)}");
+    if(frameTime < 1000 && audioReady) {
       final BufferView screen = nes.getGui().getScreenView();
       final CPU cpu = nes.getCpu();
       final PPU ppu = nes.getPpu();
       while(sleepTime <= 0) {
-        //print('SLEEP TIME'+sleepTime);
+        //print('SLEEP TIME ${sleepTime}');
         int cycles = 0;
         while(true) {
-          if (cpu.cyclesToHalt === 0) {
+          if (cpu.cyclesToHalt == 0) {
             cycles = cpu.emulate();
-            if (cpu.emulateSound)
+            if (sound) {
               nes.papu.clockFrameCounter(cycles);
+            }
             cycles *= 3;
           } else {
             if (cpu.cyclesToHalt > 8) {
               cycles = 24;
-              if (cpu.emulateSound)
+              if (sound) {
                 nes.papu.clockFrameCounter(8);
+              }
               cpu.cyclesToHalt -= 8;
             } else {
               cycles = cpu.cyclesToHalt * 3;
-              if (cpu.emulateSound)
+              if (sound) {
                 nes.papu.clockFrameCounter(cpu.cyclesToHalt);
+              }
               cpu.cyclesToHalt = 0;
             }
           }
@@ -411,10 +419,11 @@ class Controller {
             break;
           }
         }
-        if(sound == false) {
+        if(true || sound == false) {
           sleepTime += 16;
         } else {
           int audioToSleep = ((nes.papu.samplesAhead * 1000) ~/ nes.papu.sampleRate);
+          //print("AUDIO TO SLEEP ${audioToSleep}");
           sleepTime += audioToSleep;
           nes.papu.samplesAhead = 0;
         }
@@ -422,10 +431,10 @@ class Controller {
       sleepTime -= frameTime;
       //print("FRAME TIME: "+(time-lastTime));
     } else {
-      print('SKIPPING FRAME frameTime: $frameTime');
+      //print('SKIPPING FRAME frameTime: $frameTime');
     }
     lastTime = time;
-    window.setTimeout(animate, 1000);
+    window.requestAnimationFrame(animate);
   }
 
   void _sendStatus() {
@@ -455,9 +464,9 @@ class Controller {
 
   void _recvStatus(e) {
     var data = e.data;
-    if (data !== null) {
+    if (data != null) {
       Map<String, Map<String, int>> resp_map = JSON.parse(data);
-      resp_map.forEach((k, v) => _recvNetStatus[Math.parseInt(k)] = v);
+      resp_map.forEach((k, v) => _recvNetStatus[int.parse(k)] = v);
     }
   }
 
@@ -485,7 +494,7 @@ class Controller {
 
   void _handleRemoteInput() {
     Map<String, int> status = _recvNetStatus[frameCount];
-    if (status === null) return;
+    if (status == null) return;
     KbInputHandler joy = (playerid == 1 ? gui.kbJoy2 : gui.kbJoy1);
     joy.setKeyState(KbInputHandler.KEY_LEFT, status['left']);
     joy.setKeyState(KbInputHandler.KEY_RIGHT, status['right']);

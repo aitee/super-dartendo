@@ -1,3 +1,5 @@
+part of dartendo;
+
 class ScaleStatics {
   int brightenShift = 0;
   int brightenShiftMask = 0;

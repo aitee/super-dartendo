@@ -1,3 +1,5 @@
+part of dartendo;
+
 class PaletteTable {
     static List<int> curTable;
     static List<int> origTable;
@@ -43,7 +45,7 @@ class PaletteTable {
           //print("PaletteTable.loadPalette(...): success!");
           return true;
   
-      } catch (Exception e) {
+      } catch (e) {
           // Unable to load palette.
           print("PaletteTable.loadPalette(...): Exception.  Loading Internal Palette instead.");
           loadDefaultPalette();

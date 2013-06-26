@@ -1,3 +1,5 @@
+part of dartendo;
+
 class KbInputHandler {
 
   // Joypad keys:
@@ -76,7 +78,7 @@ class KbInputHandler {
     allKeysState[kc] = false;
 
     if (id == 0) {
-      switch (ke.keyIdentifier) {
+      switch (ke.$dom_keyIdentifier) {
         case 'F5': {
                      //Util.printDebug('KbInputHandler.keyReleased: Resetting game IF running.', debugMe);
                      // Reset game:

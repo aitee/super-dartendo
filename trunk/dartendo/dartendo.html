@@ -135,7 +135,7 @@
     <div class="fps" id="fps_counter">
     </div>
       <h1>DARTENDO</h1>
-      <h5>Up: i Left: j Down: k Right: l A: x B: z Select: m Start: Enter</h5>
+      <h5>Up: <span style="color:blue;">w</span> Left: <span style="color:blue;">a</span> Down: <span style="color:blue;">s</span> Right: <span style="color:blue;">d</span> A: <span style="color:blue;">k</span> B: <span style="color:blue;">j</span> Select: <span style="color:blue;">m</span> Start: <span style="color:blue;">Enter</span></h5>
       <img id="tv" src="tv.png"></img>
       <canvas id="webGlCanvas" width="256" height="240"></canvas>
     </div>
@@ -162,8 +162,9 @@
       </div>
     </div>
 
-    <script src="./socket.js" type="text/javascript"></script>
-
+    <script type="application/dart" src="dartendo.dart"></script>
+    <script src="packages/browser/dart.js"></script>
+    <!--
     <script type="text/javascript">
       var script = document.createElement("script");
       script.setAttribute("type", "application/dart");
@@ -235,5 +236,6 @@
     <script type='text/javascript'
         src='http://dart.googlecode.com/svn/branches/bleeding_edge/dart/client/dart.js'>
     </script>
+    -->
   </body>
 </html>

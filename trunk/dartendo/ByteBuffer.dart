@@ -1,19 +1,4 @@
-/*
-   vNES
-   Copyright © 2011 Occupy Nintendo
-
-   This program is free software: you can redistribute it and/or modify it under
-   the terms of the GNU General  License as published by the Free Software
-   Foundation, either version 3 of the License, or (at your option) any later
-   version.
-
-   This program is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-   PARTICULAR PURPOSE.  See the GNU General  License for more details.
-
-   You should have received a copy of the GNU General  License along with
-   this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+part of dartendo;
 
 class MemByteBuffer {
   bool debugMe = true;
@@ -51,7 +36,7 @@ class MemByteBuffer {
       this.byteOrder = byteOrdering;
       curPos = 0;
       hasBeenErrors = false;
-    } catch (Exception e) {
+    } catch (e) {
       print("MemByteBuffer: Couldn't create buffer from empty array.");
     }
   }
@@ -287,7 +272,7 @@ class MemByteBuffer {
     int theChar;
     if (inRangeWithLength(pos, myString.length * 2)) {
       for (int i = 0; i < myString.length; i++) {
-        theChar = (myString.charCodeAt(i));
+        theChar = (myString.codeUnits[i]);
         buf[pos + 0] = ((theChar >> 8) & 255);
         buf[pos + 1] = ((theChar) & 255);
         pos += 2;
@@ -354,7 +339,7 @@ class MemByteBuffer {
     String charArr = myvar;
     if (inRangeWithLength(pos, myvar.length)) {
       for (int i = 0; i < myvar.length; i++) {
-        buf[pos] = charArr.charCodeAt(i);
+        buf[pos] = charArr.codeUnits[i];
         pos++;
       }
       return true;
@@ -420,7 +405,7 @@ class MemByteBuffer {
     int tmp;
     for (int i = 0; i < (size - 1); i += 2) {
       tmp =  ((buf[i] << 8) | (buf[i + 1]));
-      strBuf.add(tmp);
+      strBuf.write(tmp);
     }
     return strBuf.toString();
   }
@@ -428,7 +413,7 @@ class MemByteBuffer {
   String toStringAscii() {
     StringBuffer strBuf = new StringBuffer();
     for (int i = 0; i < size; i++) {
-      strBuf.add(buf[i]);
+      strBuf.write(buf[i]);
     }
     return strBuf.toString();
   }
@@ -543,7 +528,7 @@ class MemByteBuffer {
     StringBuffer tmp = new StringBuffer();
     if (inRangeWithLength(pos, length * 2) && length > 0) {
       for (int i = 0; i < length; i++) {
-        tmp.add(readCharWithPosition(pos + i * 2));
+        tmp.write(readCharWithPosition(pos + i * 2));
       }
       return tmp.toString();
     }
@@ -579,7 +564,7 @@ class MemByteBuffer {
     StringBuffer tmp = new StringBuffer();
     if (inRangeWithLength(pos, length) && length > 0) {
       for (int i = 0; i < length; i++) {
-        tmp.add(readCharAsciiWithPosition(pos + i)); //JJG: MAKE THIS USE String.fromCharCodes
+        tmp.write(readCharAsciiWithPosition(pos + i)); //JJG: MAKE THIS USE String.fromCharCodes
       }
       return tmp.toString();
     } else {

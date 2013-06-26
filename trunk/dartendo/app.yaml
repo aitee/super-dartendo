@@ -1,5 +1,5 @@
-application: google.com:dartendo
-version: 1
+application: dartendo
+version: 3
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -10,8 +10,8 @@ handlers:
   upload: favicon\.ico
 
 - url: /
-  static_files: nesdart.html
-  upload: nesdart.html
+  static_files: dartendo.html
+  upload: dartendo.html
 
 - url: /(.*\.(html|css|js|png|json|nes|jpg|gif|swf))
   static_files: \1

@@ -1,6 +1,6 @@
 
 
-f = open(r'./dartendo/BattleCity.nes', 'rb')
+f = open(r'TestCart.nes', 'rb')
 
 bytes = f.read()
 print '[',

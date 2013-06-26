@@ -1,7 +1,5 @@
-/**
- * Manages ROMs.  Maintains bytes for the current ROM in memory and 
- * handles events in the ROM menu. 
- */
+part of dartendo;
+
 class RomManager {
 
   final Controller _controller;
@@ -30,6 +28,8 @@ class RomManager {
     this._romsContent = document.query('#roms-content');
     this._inputFile = document.query('#input-file');
     this._tv = document.query('#tv');
+    _menu.style.transition = 'bottom 0.2s';
+    _menu.style.bottom = '0';
   }
 
   void toggleMenuVisibility() {
@@ -46,10 +46,8 @@ class RomManager {
   }
   
   void hideMenu() {
-    _romsContent.computedStyle.then((value) {
-      _menu.style.transition = 'bottom 0.2s';
-      _menu.style.bottom = "-$value.height";
-    });
+    _menu.style.transition = 'bottom 0.2s';
+    _menu.style.bottom = _menu.clientHeight.toString();
   }
   
   void init() {
@@ -57,30 +55,30 @@ class RomManager {
     _loadDefaultRom();
   }
   
-  List<int> get romBytes() => _romBytes;
+  List<int> get romBytes => _romBytes;
 
   void _registerEventHandlers() {
-    _romsLabel.on.click.add((event) {
+    _romsLabel.onClick.listen((event) {
       event.preventDefault();
       toggleMenuVisibility();
     });
 
     // Input handler
-    _inputFile.on.change.add((event) {
+    _inputFile.onChange.listen((event) {
       event.preventDefault();
-      File file = _inputFile.files.item(0);
+      File file = _inputFile.files[0];
       _loadFile(file);
     });
 
     
     // change background color of drag area if it's dragged over
-    _romsContent.on.dragEnter.add((event) {
+    _romsContent.onDragEnter.listen((event) {
       event.preventDefault();
       _dragState++;
       _updateRomsContentDragStyle();
     });
   
-    _romsContent.on.dragLeave.add((event) {
+    _romsContent.onDragLeave.listen((event) {
       event.preventDefault();
       _dragState--;
       _updateRomsContentDragStyle();
@@ -88,16 +86,16 @@ class RomManager {
   
     // dragOver needs to be cancelled in order for the drop event to fire.
     var onDragOverHandler = (event) => event.preventDefault();
-    _romsContent.on.dragOver.add(onDragOverHandler);
-    _tv.on.dragOver.add(onDragOverHandler);
+    _romsContent.onDragOver.listen(onDragOverHandler);
+    _tv.onDragOver.listen(onDragOverHandler);
   
     // if a file is dropped, attempt to load it as a rom.
     var onDropHandler = (e) {
       e.preventDefault();
       _loadFile(e.dataTransfer.files[0]);
     };
-    _romsContent.on.drop.add(onDropHandler);
-    _tv.on.drop.add(onDropHandler);
+    _romsContent.onDrop.listen(onDropHandler);
+    _tv.onDrop.listen(onDropHandler);
   }
   
   void _updateRomsContentDragStyle() {
@@ -114,8 +112,8 @@ class RomManager {
     if (romParameter != null && romParameter.length > 0)
       defaultRom = "roms/$romParameter.json";
     
-    final req = new XMLHttpRequest();
-    req.open('GET', '${FileLoader.home}/$defaultRom', false);
+    final req = new HttpRequest();
+    req.open('GET', '${FileLoader.home}/$defaultRom', async:false);
     req.send();
     
     _romBytes = JSON.parse(req.responseText);
@@ -126,8 +124,8 @@ class RomManager {
     document.query('#size').text = "$file.size";
 
     FileReader reader = new FileReader();
-    reader.on.load.add((e) {
-      List<int> fromFileBytes = new Uint8Array.fromBuffer(reader.result);
+    reader.onLoadEnd.listen((e) {
+      List<int> fromFileBytes = new Uint8List.fromList(reader.result);
       _romBytes = fromFileBytes;
       hideMenu();
       _controller.run();

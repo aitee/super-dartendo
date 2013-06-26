@@ -1,3 +1,5 @@
+part of dartendo;
+
 class PAPU {
   NES nes;
   Controller controller;
@@ -118,7 +120,7 @@ class PAPU {
 
     // Init sound registers:
     for (var i = 0; i < 0x14; i++) {
-      if (i === 0x10)
+      if (i == 0x10)
         this.writeReg(0x4010, 0x10);
       else
         this.writeReg(0x4000 + i, 0);
@@ -295,7 +297,7 @@ class PAPU {
       square2.squareCounter &= 0x7;
       square2.updateSampleValue();
     }
-
+    
     // Clock noise channel Prog timer:
     int acc_c = nCycles;
     final int noiseCycleDelta = noise.progTimerCount - acc_c;
@@ -309,8 +311,8 @@ class PAPU {
       while ((acc_c--) > 0) {
         if (--noise.progTimerCount <= 0 && noise.progTimerMax > 0) {
           // Update noise shift register:
-          noise.shiftReg <<= 1;
-          noise.tmp = (((noise.shiftReg << (noise.randomMode == 0 ? 1 : 6)) ^ noise.shiftReg) & 0x8000);
+          noise.shiftReg = (noise.shiftReg << 1) & 0x7FFFFFFF;
+          noise.tmp = ((((noise.shiftReg << (noise.randomMode == 0 ? 1 : 6)) & 0x7FFFFFFF) ^ noise.shiftReg) & 0x8000);
           if (noise.tmp != 0) {
             // Sample value must be 0.
             noise.shiftReg |= 0x01;
@@ -391,7 +393,7 @@ class PAPU {
       square1.clockSweep();
       square2.clockSweep();
     }
-
+    
     if (derivedFrameCounter >= 0 && derivedFrameCounter < 4) {
       // Clock linear & decay:
       square1.clockEnvDecay();
@@ -460,13 +462,13 @@ class PAPU {
     // Remove DC from left channel:
     int smpDiffL = sampleValueL - prevSampleL;
     prevSampleL += smpDiffL;
-    smpAccumL += smpDiffL - (smpAccumL >> 10);
+    smpAccumL += smpDiffL - Util.lsr(smpAccumL , 10);
     sampleValueL = smpAccumL;
 
     // Remove DC from right channel:
     int smpDiffR = sampleValueR - prevSampleR;
     prevSampleR += smpDiffR;
-    smpAccumR += smpDiffR - (smpAccumR >> 10);
+    smpAccumR += smpDiffR - Util.lsr(smpAccumR , 10);
     sampleValueR = smpAccumR;
 
     // Write:
@@ -476,10 +478,9 @@ class PAPU {
     ++samplesAhead;
 
     // Write the buffer out if full
-    if (bufferIndex === sampleBufferL.length) {
+    //print("WRITING BUFFER ${bufferIndex} LENGTH ${sampleBufferL.length}");
+    if (bufferIndex == sampleBufferL.length) {
       audio.write(sampleBufferL, sampleBufferR);
-      sampleBufferL = new List<double>(bufferSize);
-      sampleBufferR = new List<double>(bufferSize);
       bufferIndex = 0;
     }
 

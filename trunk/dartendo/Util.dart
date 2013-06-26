@@ -1,3 +1,5 @@
+part of dartendo;
+
 class CUtil {
 
   // System.arraycopy(rom.getRomBank(bank), 0, cpuMem.mem, address, 16384);
@@ -49,6 +51,14 @@ class CUtil {
     }
 
     return r;
+  }
+  
+  /**
+   * Compute 32-bit logical shift right of a value. This emulates the JavaScript >>> operator.
+   */
+
+  int lsr(int n, int shift) {
+    return n ~/ (1 << shift);
   }
 }
 

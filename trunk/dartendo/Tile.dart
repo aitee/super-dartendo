@@ -1,5 +1,8 @@
+part of dartendo;
+
 // iainmcgin: arithmetic operations in this class haven't been
 // audited at all. Possible overflow / truncation semantic differences.
+
 class Tile {
   // Tile data:
   List<int> pix;

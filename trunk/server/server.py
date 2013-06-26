@@ -1,7 +1,11 @@
 import cherrypy
-import json
 import os
 
+try:
+    import json
+except ImportError:
+    import simplejson as json
+    
 matchPlayerTimeInputs = {}
 
 class HelloWorld(object):
@@ -65,6 +69,7 @@ conf = {
     'global': {
         'server.socket_host': '0.0.0.0',
         'server.socket_port': 8000,
+        'server.nodelay':False,
     },
     '/': {
 'tools.sessions.on' : True,

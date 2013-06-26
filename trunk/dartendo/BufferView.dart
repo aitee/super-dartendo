@@ -1,3 +1,5 @@
+part of dartendo;
+
 class BufferView {
 
   CanvasElement canvas;
@@ -68,18 +70,18 @@ class BufferView {
 
     skipFrame = (skipFrame+1)%100;
 
-    if(nes.gui.applet.sleepTime <= -16) //We are too far behind, skip the frame
+    if(nes.gui.applet.sleepTime <= -16) {
+      //We are too far behind, skip the frame
+      //print("SKIPPING RENDER");
       return false;
-
-    if (nes.gui.applet.sound)
-      nes.getGui().imageReady();
+    }
 
     //if(skipFrame%2 != 0)
     //  return;
 
     //Util.printDebug('BufferView.paint: Getting imagedata', debugMe);
     ImageData imageData = context.getImageData(0,0,256,240);
-    Uint8ClampedArray data = imageData.data;
+    Uint8ClampedList data = imageData.data;
     //Util.printDebug('BufferView.paint: data.length = ' + data.length, debugMe);
 
     List<int> ppu_buffer = nes.ppu.buffer;       

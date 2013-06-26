@@ -1,3 +1,5 @@
+part of dartendo;
+
 class Memory{
   
   List<int> mem;
@@ -5,6 +7,7 @@ class Memory{
   NES nes;
   
   Memory(NES nes, int byteCount) {
+    print("BYTE COUNT: ${byteCount}");
     this.nes = nes;
     mem = Util.newIntList(byteCount, 0);
     memLength = byteCount;

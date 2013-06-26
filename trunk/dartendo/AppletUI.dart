@@ -1,3 +1,5 @@
+part of dartendo;
+
 class AppletUI {
 
   bool debugMe = false;
@@ -26,18 +28,24 @@ class AppletUI {
     kbJoy2 = new KbInputHandler(nes, 1);
 
     // Grab Controller Setting for Player 1:
+    /*
     kbJoy1.mapKey(KbInputHandler.KEY_A, 88);
     kbJoy1.mapKey(KbInputHandler.KEY_B, 90);
     kbJoy1.mapKey(KbInputHandler.KEY_START, 13);
     kbJoy1.mapKey(KbInputHandler.KEY_SELECT, 77);
-    //kbJoy1.mapKey(KbInputHandler.KEY_UP, 38);
-    //kbJoy1.mapKey(KbInputHandler.KEY_DOWN, 40);
-    //kbJoy1.mapKey(KbInputHandler.KEY_LEFT, 37);
-    //kbJoy1.mapKey(KbInputHandler.KEY_RIGHT, 39);
     kbJoy1.mapKey(KbInputHandler.KEY_UP, 73);
     kbJoy1.mapKey(KbInputHandler.KEY_DOWN, 75);
     kbJoy1.mapKey(KbInputHandler.KEY_LEFT, 74);
     kbJoy1.mapKey(KbInputHandler.KEY_RIGHT, 76);
+    */
+    kbJoy1.mapKey(KbInputHandler.KEY_A, 75);
+    kbJoy1.mapKey(KbInputHandler.KEY_B, 74);
+    kbJoy1.mapKey(KbInputHandler.KEY_START, 13);
+    kbJoy1.mapKey(KbInputHandler.KEY_SELECT, 77);
+    kbJoy1.mapKey(KbInputHandler.KEY_UP, 87);
+    kbJoy1.mapKey(KbInputHandler.KEY_DOWN, 83);
+    kbJoy1.mapKey(KbInputHandler.KEY_LEFT, 65);
+    kbJoy1.mapKey(KbInputHandler.KEY_RIGHT, 68);
 
     kbJoy2.mapKey(KbInputHandler.KEY_A, 88);
     kbJoy2.mapKey(KbInputHandler.KEY_B, 90);
@@ -51,17 +59,6 @@ class AppletUI {
     kbJoy2.mapKey(KbInputHandler.KEY_DOWN, 75);
     kbJoy2.mapKey(KbInputHandler.KEY_LEFT, 74);
     kbJoy2.mapKey(KbInputHandler.KEY_RIGHT, 76);
-  }
-
-  // BufferView.paint() calls AppletUI.imageReady()
-  void imageReady() {
-    // Sleep a bit if sound is disabled:
-    if (Globals.timeEmulation && !Globals.enableSound) {
-
-      // applet.addSleepTime(16);
-    }
-    // Update timer:
-    t1 = t2;
   }
 
   int getRomFileSize() {
@@ -94,16 +91,6 @@ class AppletUI {
 
   String getWindowCaption() {
     return "";
-  }
-
-  void setWindowCaption(String s) {
-  }
-
-  void showErrorMsg(String s) {
-    print(s);
-  }
-
-  void setTitle(String s) {
   }
 
   int getWidth() => 256;

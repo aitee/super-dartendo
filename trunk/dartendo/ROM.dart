@@ -1,3 +1,5 @@
+part of dartendo;
+
 class ROM {
 
   // Mirroring types:
